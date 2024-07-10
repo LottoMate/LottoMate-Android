@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
             LottomateTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
-                        name = "Android",
+                        name = "LottoMate",
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
