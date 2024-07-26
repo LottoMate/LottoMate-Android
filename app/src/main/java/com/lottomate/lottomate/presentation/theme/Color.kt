@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.ui.theme
+package com.lottomate.lottomate.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

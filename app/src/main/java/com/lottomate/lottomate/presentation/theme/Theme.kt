@@ -1,6 +1,5 @@
-package com.lottomate.lottomate.ui.theme
+package com.lottomate.lottomate.presentation.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
