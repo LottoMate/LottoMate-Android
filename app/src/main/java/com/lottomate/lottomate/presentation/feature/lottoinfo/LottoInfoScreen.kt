@@ -27,10 +27,15 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
+import com.lottomate.lottomate.presentation.feature.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.feature.lottoinfo.model.LottoInfoItem
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
@@ -54,6 +60,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow50
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +68,12 @@ fun LottoInfoScreen(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
 ) {
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val pickerState = rememberPickerState()
+    val coroutineScope = rememberCoroutineScope()
+    val lastRound by remember { mutableIntStateOf(1131) }
+    var currentRound by remember() { mutableIntStateOf(1131) }
+
     BottomSheetScaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -82,15 +95,37 @@ fun LottoInfoScreen(
             )
         },
         containerColor = LottoMateWhite,
+        scaffoldState = scaffoldState,
+        sheetContainerColor = LottoMateWhite,
+        sheetPeekHeight = 0.dp,
         sheetContent = {
-            // TODO : BottomSheetDialog Content
-        }
+            LottoRoundWheelPicker(
+                initialRound = currentRound,
+                scaffoldState = scaffoldState,
+                pickerState = pickerState,
+                onSelectRound = {
+                    currentRound = pickerState.selectedItem.toInt()
+                },
+            )
+        },
+        snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }
     ) { innerPadding ->
         LottoInfoContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            lottoWinInfo = LottoInfoItem.lottoInfoMock[2]
+            lottoWinInfo = LottoInfoItem.lottoInfoMock.first {
+                it.roundNum == currentRound
+            },
+            hasPreRound = currentRound > 1,
+            hasNextRound = currentRound < lastRound,
+            onClickPreRound = { currentRound = currentRound.minus(1) },
+            onClickNextRound = { currentRound = currentRound.plus(1) },
+            onClickCurrentRound = {
+                coroutineScope.launch {
+                    scaffoldState.bottomSheetState.expand()
+                }
+            }
         )
     }
 }
@@ -99,6 +134,11 @@ fun LottoInfoScreen(
 private fun LottoInfoContent(
     modifier: Modifier = Modifier,
     lottoWinInfo: LottoInfoItem,
+    hasPreRound: Boolean,
+    hasNextRound: Boolean,
+    onClickPreRound: () -> Unit,
+    onClickNextRound: () -> Unit,
+    onClickCurrentRound: () -> Unit,
 ) {
     var currentIndex by rememberSaveable {
         mutableIntStateOf(0)
@@ -123,8 +163,11 @@ private fun LottoInfoContent(
             modifier = Modifier.fillMaxWidth(),
             currentRound = lottoWinInfo.roundNum,
             currentDate = lottoWinInfo.drwtDate.replace("-", "."),
-            onClickPreRound = {},
-            onClickNextRound = {},
+            hasPreRound = hasPreRound,
+            hasNextRound = hasNextRound,
+            onClickPreRound = onClickPreRound,
+            onClickNextRound = onClickNextRound,
+            onClickCurrentRound = onClickCurrentRound
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -195,6 +238,7 @@ private fun LottoRound(
     hasNextRound: Boolean = false,
     onClickPreRound: () -> Unit,
     onClickNextRound: () -> Unit,
+    onClickCurrentRound: () -> Unit,
 ) {
     Row(
         modifier = modifier,
@@ -214,19 +258,29 @@ private fun LottoRound(
             contentDescription = "Previous Lotto Round Click",
         )
         Spacer(modifier = Modifier.width(80.dp))
-        Text(
-            text = currentRound.toString().plus("회"),
-            style = MaterialTheme.typography.headlineLarge
-        )
 
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Text(
-            text = currentDate,
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = LottoMateGray70,
+        Row(
+            modifier = Modifier.clickable {
+                onClickCurrentRound()
+            },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            Text(
+                text = currentRound.toString().plus("회"),
+                style = MaterialTheme.typography.headlineLarge
             )
-        )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = currentDate,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = LottoMateGray70,
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.width(80.dp))
         Icon(
             modifier = Modifier
@@ -368,3 +422,10 @@ private fun LottoInfoScreenPreview() {
         )
     }
 }
+
+class PickerState {
+    var selectedItem by mutableStateOf("")
+}
+
+@Composable
+fun rememberPickerState() = remember { PickerState() }
