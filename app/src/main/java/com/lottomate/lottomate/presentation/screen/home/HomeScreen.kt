@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.home
+package com.lottomate.lottomate.presentation.screen.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

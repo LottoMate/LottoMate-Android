@@ -1,10 +1,10 @@
-package com.lottomate.lottomate.presentation.feature.main
+package com.lottomate.lottomate.presentation.screen.main
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.lottomate.lottomate.presentation.feature.lottoinfo.navigation.navigateLottoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
 
 class MainNavigator(

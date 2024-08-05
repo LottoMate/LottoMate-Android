@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.lottoinfo
+package com.lottomate.lottomate.presentation.screen.lottoinfo
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
-import com.lottomate.lottomate.presentation.feature.lottoinfo.component.LottoRoundWheelPicker
-import com.lottomate.lottomate.presentation.feature.lottoinfo.model.LottoInfoItem
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfoItem
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20

@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.lottoinfo.component
+package com.lottomate.lottomate.presentation.screen.lottoinfo.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -39,8 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
-import com.lottomate.lottomate.presentation.feature.lottoinfo.PickerState
-import com.lottomate.lottomate.presentation.feature.lottoinfo.rememberPickerState
+import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
+import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.DateUtils.calLottoRoundDate

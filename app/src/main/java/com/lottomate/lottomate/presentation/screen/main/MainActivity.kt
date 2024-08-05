@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.main
+package com.lottomate.lottomate.presentation.screen.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.main
+package com.lottomate.lottomate.presentation.screen.main
 
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute

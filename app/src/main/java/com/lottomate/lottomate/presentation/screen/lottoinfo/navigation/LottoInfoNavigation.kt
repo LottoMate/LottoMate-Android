@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.lottoinfo.navigation
+package com.lottomate.lottomate.presentation.screen.lottoinfo.navigation
 
 import androidx.navigation.NavController
 import com.lottomate.lottomate.presentation.navigation.LottoRoute

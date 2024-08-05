@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.main
+package com.lottomate.lottomate.presentation.screen.main
 
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost

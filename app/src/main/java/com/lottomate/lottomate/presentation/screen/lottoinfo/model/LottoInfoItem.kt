@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.feature.lottoinfo.model
+package com.lottomate.lottomate.presentation.screen.lottoinfo.model
 
 data class LottoInfoItem(
     val roundNum: Int,
