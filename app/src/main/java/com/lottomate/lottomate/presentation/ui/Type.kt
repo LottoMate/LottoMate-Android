@@ -86,8 +86,8 @@ private val label2 = pretendardStyle.copy(
     lineHeight = 22.sp,
 )
 
-private val label3 = pretendardStyle.copy(
-    fontWeight = FontWeight.Normal,
+private val caption = pretendardStyle.copy(
+    fontWeight = FontWeight.SemiBold,
     fontSize = 12.sp,
     lineHeight = 18.sp,
 )
@@ -108,5 +108,5 @@ val Typography = Typography(
 
     labelLarge = label1,
     labelMedium = label2,
-    labelSmall = label3,
+    labelSmall = caption,
 )
