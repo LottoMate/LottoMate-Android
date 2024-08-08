@@ -1,10 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,16 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,20 +40,31 @@ import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoWinNumberCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfoItem
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
-import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
-import com.lottomate.lottomate.presentation.ui.LottoMateGray90
-import com.lottomate.lottomate.presentation.ui.LottoMateGreen50
-import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.presentation.ui.LottoMateYellow50
 import kotlinx.coroutines.launch
+
+enum class LottoType(val game: String) {
+    LOTTO645("로또"), LOTTO720("연금복권"), SPEETTO("스피또");
+
+    companion object {
+        fun findCurrentLottoType(currentIndex: Int): LottoType {
+            return entries[currentIndex]
+        }
+    }
+}
+
+class PickerState {
+    var selectedItem by mutableStateOf("")
+}
+
+@Composable
+fun rememberPickerState() = remember { PickerState() }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,6 +77,9 @@ fun LottoInfoScreen(
     val coroutineScope = rememberCoroutineScope()
     val lastRound by remember { mutableIntStateOf(1131) }
     var currentRound by remember() { mutableIntStateOf(1131) }
+    var currentLottoTypeIndex by rememberSaveable {
+        mutableIntStateOf(LottoType.LOTTO720.ordinal)
+    }
 
     BottomSheetScaffold(
         modifier = modifier.fillMaxSize(),
@@ -110,29 +117,49 @@ fun LottoInfoScreen(
         },
         snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }
     ) { innerPadding ->
-        LottoInfoContent(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            lottoWinInfo = LottoInfoItem.lottoInfoMock.first {
-                it.roundNum == currentRound
-            },
-            hasPreRound = currentRound > 1,
-            hasNextRound = currentRound < lastRound,
-            onClickPreRound = { currentRound = currentRound.minus(1) },
-            onClickNextRound = { currentRound = currentRound.plus(1) },
-            onClickCurrentRound = {
-                coroutineScope.launch {
-                    scaffoldState.bottomSheetState.expand()
+                .padding(innerPadding)
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+
+            TopToggleButtonSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                currentIndex = currentLottoTypeIndex,
+                onClick = { currentLottoTypeIndex = it }
+            )
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            LottoInfoContent(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                currentLottoType = LottoType.findCurrentLottoType(currentLottoTypeIndex),
+                lottoWinInfo = LottoInfoItem.lottoInfoMock.first {
+                    it.roundNum == currentRound
+                },
+                hasPreRound = currentRound > 1,
+                hasNextRound = currentRound < lastRound,
+                onClickPreRound = { currentRound = currentRound.minus(1) },
+                onClickNextRound = { currentRound = currentRound.plus(1) },
+                onClickCurrentRound = {
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.expand()
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 
 @Composable
 private fun LottoInfoContent(
     modifier: Modifier = Modifier,
+    currentLottoType: LottoType,
     lottoWinInfo: LottoInfoItem,
     hasPreRound: Boolean,
     hasNextRound: Boolean,
@@ -140,26 +167,8 @@ private fun LottoInfoContent(
     onClickNextRound: () -> Unit,
     onClickCurrentRound: () -> Unit,
 ) {
-    var currentIndex by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
     Column(modifier = modifier) {
-        Spacer(modifier = Modifier.height(24.dp))
-
-        TopToggleButtons(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            currentIndex = currentIndex,
-            onClick = { index ->
-                currentIndex = index
-            }
-        )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        LottoRound(
+        LottoRoundSection(
             modifier = Modifier.fillMaxWidth(),
             currentRound = lottoWinInfo.roundNum,
             currentDate = lottoWinInfo.drwtDate.replace("-", "."),
@@ -172,10 +181,11 @@ private fun LottoInfoContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        LottoWinNumbers(
+        LottoWinNumberSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
+            currentLottoType = currentLottoType,
             winNumbers = lottoWinInfo.drwtNums,
             bonusNumber = lottoWinInfo.drwtBonusNum,
         )
@@ -183,12 +193,16 @@ private fun LottoInfoContent(
 }
 
 @Composable
-private fun TopToggleButtons(
+private fun TopToggleButtonSection(
     modifier: Modifier = Modifier,
     currentIndex: Int,
     onClick: (Int) -> Unit,
 ) {
-    val toggleButtons = listOf("로또", "연금복권", "스피또")
+    val toggleButtons = listOf(
+        LottoType.LOTTO645.game,
+        LottoType.LOTTO720.game,
+        LottoType.SPEETTO.game,
+    )
 
     Row(
         modifier = modifier,
@@ -230,7 +244,7 @@ private fun ToggleButtonItem(
 }
 
 @Composable
-private fun LottoRound(
+private fun LottoRoundSection(
     modifier: Modifier = Modifier,
     currentRound: Int,
     currentDate: String,
@@ -298,10 +312,11 @@ private fun LottoRound(
 }
 
 @Composable
-private fun LottoWinNumbers(
+private fun LottoWinNumberSection(
     modifier: Modifier = Modifier,
+    currentLottoType: LottoType,
     winNumbers: List<Int>,
-    bonusNumber: Int,
+    bonusNumber: List<Int>,
 ) {
     Column(modifier = modifier) {
         Text(
@@ -311,105 +326,11 @@ private fun LottoWinNumbers(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Card(
-            modifier = Modifier,
-            colors = CardDefaults.cardColors(
-                containerColor = LottoMateWhite,
-            ),
-            border = BorderStroke(
-                width = 1.dp,
-                color = LottoMateGray20
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 28.dp, vertical = 20.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "당첨 번호",
-                        style = MaterialTheme.typography.labelSmall
-                            .copy(color = LottoMateGray70)
-                    )
-                    Text(
-                        text = "보너스",
-                        style = MaterialTheme.typography.labelSmall
-                            .copy(color = LottoMateGray70)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    winNumbers.forEach { number ->
-                        LottoBall(number = number)
-                    }
-
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = "Just Separator",
-                    )
-
-                    LottoBall(number = bonusNumber)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun LottoBall(
-    modifier: Modifier = Modifier,
-    number: Int,
-) {
-    Box(
-        modifier = modifier
-            .background(
-                color = when (number) {
-                    in 1..10 -> LottoMateYellow50
-                    in 11..20 -> LottoMateBlue50
-                    in 21..30 -> LottoMateRed50
-                    in 31..40 -> LottoMateGray90
-                    in 41..45 -> LottoMateGreen50
-                    else -> LottoMateTransparent
-                },
-                shape = CircleShape,
-            )
-            .size(30.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = number.toString(),
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = LottoMateWhite
-            )
+        LottoWinNumberCard(
+            lottoType = currentLottoType,
+            winNumbers = winNumbers,
+            bonusNumbers = bonusNumber,
         )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LottoBallPreview() {
-    LottoMateTheme {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            LottoBall(number = 1)
-            LottoBall(number = 11)
-            LottoBall(number = 21)
-            LottoBall(number = 31)
-            LottoBall(number = 41)
-        }
     }
 }
 
@@ -422,10 +343,3 @@ private fun LottoInfoScreenPreview() {
         )
     }
 }
-
-class PickerState {
-    var selectedItem by mutableStateOf("")
-}
-
-@Composable
-fun rememberPickerState() = remember { PickerState() }
