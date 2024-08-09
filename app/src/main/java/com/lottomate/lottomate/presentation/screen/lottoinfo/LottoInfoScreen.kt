@@ -1,7 +1,9 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,19 +36,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoWinNumberCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfoItem
-import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateGray40
-import com.lottomate.lottomate.presentation.ui.LottoMateGray70
-import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.presentation.ui.*
 import kotlinx.coroutines.launch
 
 enum class LottoType(val game: String) {
@@ -334,7 +334,42 @@ private fun LottoWinNumberSection(
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+private fun BottomBanner(
+    modifier: Modifier = Modifier,
+    onClickBanner: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = LottoMateBlue5,
+                shape = RoundedCornerShape(Dimens.RadiusLarge)
+            )
+            .clip(RoundedCornerShape(Dimens.RadiusLarge))
+            .clickable { onClickBanner() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.banner_lotto_info_title),
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(id = R.string.banner_lotto_info_sub_title),
+                style = MaterialTheme.typography.labelSmall,
+                color = LottoMateGray120
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, heightDp = 2000)
 @Composable
 private fun LottoInfoScreenPreview() {
     LottoMateTheme {
