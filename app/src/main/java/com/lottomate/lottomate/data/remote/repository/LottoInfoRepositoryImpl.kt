@@ -16,7 +16,7 @@ class LottoInfoRepositoryImpl @Inject constructor(
     override val latestLottoInfo: Map<Int, LottoInfo>
         get() = _latestLottoInfo.toMap()
 
-    override fun getLatestLottoInfo(): Flow<Map<Int, LottoInfo>> = flow {
+    override fun fetchLatestLottoInfo(): Flow<Map<Int, LottoInfo>> = flow {
         val result = lottoInfoApi.getLatestLottoInfo()
 
         if (result.code == 200) {
@@ -37,7 +37,7 @@ class LottoInfoRepositoryImpl @Inject constructor(
     }
 
     override fun getLatestLottoInfoByLottoType(lottoType: LottoType): Flow<LottoInfo> = flow {
-        if (latestLottoInfo.isEmpty()) getLatestLottoInfo()
+        if (latestLottoInfo.isEmpty()) fetchLatestLottoInfo()
 
         val latestLottoInfo = when (lottoType) {
             LottoType.L645 -> latestLottoInfo.getValue(LottoType.L645.num)

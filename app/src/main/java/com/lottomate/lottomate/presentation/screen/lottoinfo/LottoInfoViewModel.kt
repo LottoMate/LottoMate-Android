@@ -61,7 +61,7 @@ class LottoInfoViewModel @Inject constructor(
 
     private fun loadLatestLottoInfo() {
         viewModelScope.launch {
-            lottoInfoRepository.getLatestLottoInfo()
+            lottoInfoRepository.fetchLatestLottoInfo()
                 .collectLatest {
                     val info = when (currentTabMenu.intValue) {
                         LottoType.L645.ordinal -> { it.getValue(LottoType.L645.num) }

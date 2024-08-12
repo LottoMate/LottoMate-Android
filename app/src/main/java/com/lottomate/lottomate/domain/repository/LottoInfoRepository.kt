@@ -7,6 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface LottoInfoRepository {
     val latestLottoInfo: Map<Int, LottoInfo>
 
-    fun getLatestLottoInfo(): Flow<Map<Int, LottoInfo>>
+    fun fetchLatestLottoInfo(): Flow<Map<Int, LottoInfo>>
     fun getLatestLottoInfoByLottoType(lottoType: LottoType): Flow<LottoInfo>
 }
