@@ -1,20 +1,28 @@
 package com.lottomate.lottomate.di
 
 import com.lottomate.lottomate.BuildConfig
-import com.lottomate.lottomate.data.remote.api.TestApi
+import com.lottomate.lottomate.data.remote.api.LottoInfoApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL: String = BuildConfig.DATABASE_BASE_URL
+    private const val BASE_URL: String = BuildConfig.MOCK_SERVER_URL
+
+    private val jsonOptions = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
 
     @Provides
     @Singleton
@@ -24,6 +32,7 @@ object NetworkModule {
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
+            .addConverterFactory(jsonOptions.asConverterFactory("application/json; charset=UTF8".toMediaType()))
             .build()
     }
 
@@ -45,5 +54,5 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideTestApi(retrofit: Retrofit): TestApi = retrofit.create(TestApi::class.java)
+    fun provideLottoInfoApi(retrofit: Retrofit): LottoInfoApi = retrofit.create(LottoInfoApi::class.java)
 }

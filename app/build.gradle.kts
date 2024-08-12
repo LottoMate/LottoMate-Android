@@ -29,6 +29,7 @@ android {
         }
 
         buildConfigField("String", "DATABASE_BASE_URL", localProperties.getProperty("DATABASE_BASE_URL"))
+        buildConfigField("String", "MOCK_SERVER_URL", localProperties.getProperty("MOCK_SERVER_URL"))
     }
 
     buildTypes {
