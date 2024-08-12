@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo
 
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.model.LottoType
@@ -19,6 +20,10 @@ class LottoInfoViewModel @Inject constructor(
     private val lottoInfoRepository: LottoInfoRepository,
 ) : ViewModel() {
     var currentTabMenu = mutableIntStateOf(LottoType.L645.ordinal)
+        private set
+    var hasPreLottoRound = mutableStateOf(true)
+        private set
+    var hasNextLottoRound = mutableStateOf(false)
         private set
 
     private val _lottoInfo = MutableStateFlow<LottoInfoUiState>(LottoInfoUiState.Loading)
@@ -48,15 +53,40 @@ class LottoInfoViewModel @Inject constructor(
         }
     }
 
-    private fun getLatestLottoInfoByLottoType(lottoType: LottoType) {
+    fun getLottoInfo(lottoRndNum: Int) {
+        val lottoType = LottoType.findLottoType(currentTabMenu.intValue).num
+
         viewModelScope.launch {
-            lottoInfoRepository.getLatestLottoInfoByLottoType(lottoType)
+            lottoInfoRepository.fetchLottoInfoByRound(lottoType, lottoRndNum)
                 .collectLatest { lottoInfo ->
+                    judgePreOrNextLottoRound(lottoInfo.lottoRndNum)
+
                     _lottoInfo.update {
                         LottoInfoUiState.Success(lottoInfo)
                     }
                 }
         }
+    }
+
+    private fun getLatestLottoInfoByLottoType(lottoType: LottoType) {
+        viewModelScope.launch {
+            lottoInfoRepository.getLatestLottoInfoByLottoType(lottoType)
+                .collectLatest { lottoInfo ->
+                    judgePreOrNextLottoRound(lottoInfo.lottoRndNum)
+
+                    _lottoInfo.update {
+                        LottoInfoUiState.Success(lottoInfo)
+                    }
+                }
+        }
+    }
+
+    private fun judgePreOrNextLottoRound(lottoRndNum: Int) {
+        val currentLottoType = LottoType.findLottoType(currentTabMenu.intValue).num
+        val latestLottoRound = lottoInfoRepository.latestLottoInfo.getValue(currentLottoType)
+
+        hasNextLottoRound.value = lottoRndNum != latestLottoRound.lottoRndNum
+        hasPreLottoRound.value = lottoRndNum != LOTTO_FIRST_ROUND
     }
 
     private fun loadLatestLottoInfo() {
@@ -77,6 +107,10 @@ class LottoInfoViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    companion object {
+        private const val LOTTO_FIRST_ROUND = 1
     }
 }
 

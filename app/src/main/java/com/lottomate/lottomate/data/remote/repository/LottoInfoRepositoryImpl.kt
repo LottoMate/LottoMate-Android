@@ -36,6 +36,20 @@ class LottoInfoRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun fetchLottoInfoByRound(lottoType: Int, lottoRndNum: Int): Flow<LottoInfo> = flow {
+        val result = lottoInfoApi.fetchLottoInfo(lottoType, lottoRndNum)
+
+        if (result.code == 200) {
+            result.lotto645?.let {
+                emit(LottoInfoMapper.toLotto645Info(it))
+            }
+
+            result.lotto720?.let {
+                emit(LottoInfoMapper.toLotto720Info(it))
+            }
+        }
+    }
+
     override fun getLatestLottoInfoByLottoType(lottoType: LottoType): Flow<LottoInfo> = flow {
         if (latestLottoInfo.isEmpty()) fetchLatestLottoInfo()
 
