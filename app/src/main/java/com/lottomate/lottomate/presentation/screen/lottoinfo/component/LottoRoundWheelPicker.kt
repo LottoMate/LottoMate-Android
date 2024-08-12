@@ -88,6 +88,12 @@ fun LottoRoundWheelPicker(
         )
     }
 
+    LaunchedEffect(currentLottoRound) {
+        val targetIndex = lastRound - currentLottoRound
+        scrollState.scrollToItem(targetIndex)
+        pickerState.selectedItem = getLottoRound(targetIndex + visibleItemsMiddle)
+    }
+
     LaunchedEffect(scrollState) {
         snapshotFlow { scrollState.firstVisibleItemIndex }
             .map { index -> getItem(index + visibleItemsMiddle) }
