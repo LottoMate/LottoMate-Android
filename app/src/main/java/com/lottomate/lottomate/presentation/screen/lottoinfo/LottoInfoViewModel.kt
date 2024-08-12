@@ -35,7 +35,28 @@ class LottoInfoViewModel @Inject constructor(
     fun changeTabMenu(index: Int) {
         currentTabMenu.intValue = index
 
-        loadLatestLottoInfo()
+        when (index) {
+            LottoType.L645.ordinal -> {
+                getLatestLottoInfoByLottoType(LottoType.L645)
+            }
+            LottoType.L720.ordinal -> {
+                getLatestLottoInfoByLottoType(LottoType.L720)
+            }
+            else -> {
+                // TODO : 스피또 (수정예정)
+            }
+        }
+    }
+
+    private fun getLatestLottoInfoByLottoType(lottoType: LottoType) {
+        viewModelScope.launch {
+            lottoInfoRepository.getLatestLottoInfoByLottoType(lottoType)
+                .collectLatest { lottoInfo ->
+                    _lottoInfo.update {
+                        LottoInfoUiState.Success(lottoInfo)
+                    }
+                }
+        }
     }
 
     private fun loadLatestLottoInfo() {
