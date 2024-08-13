@@ -211,7 +211,7 @@ private fun LottoInfoContent(
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            LottoRound(
+            LottoRoundSection(
                 modifier = Modifier.fillMaxWidth(),
                 currentRound = lottoInfo.lottoRndNum,
                 currentDate = lottoInfo.drwtDate,
@@ -309,7 +309,7 @@ private fun ToggleButtonItem(
 }
 
 @Composable
-private fun LottoRound(
+private fun LottoRoundSection(
     modifier: Modifier = Modifier,
     currentRound: Int,
     currentDate: String,
