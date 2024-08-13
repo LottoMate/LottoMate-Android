@@ -37,8 +37,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
+import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoRoundViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
@@ -51,8 +54,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun LottoRoundWheelPicker(
-    modifier: Modifier = Modifier,
-    initialRound: Int,
+    vm: LottoRoundViewModel = hiltViewModel(),
     scaffoldState: BottomSheetScaffoldState,
     pickerState: PickerState,
     onSelectRound: () -> Unit,
@@ -61,10 +63,9 @@ fun LottoRoundWheelPicker(
     val lastRound = 1131
     val lastDate = "2024-08-03"
 
-    val roundRange = (1..lastRound+1).map { round ->
-        if (round > lastRound) ""
-        else round.toString()
-    }.toList().reversed()
+    val lastRound by vm.latestLottoRound.collectAsStateWithLifecycle()
+    val lastDate by vm.latestLottoDate.collectAsStateWithLifecycle()
+    val lottoRoundRange by vm.lottoRoundRange
 
     val visibleItemCount = 3
     val visibleItemsMiddle = visibleItemCount / 2
