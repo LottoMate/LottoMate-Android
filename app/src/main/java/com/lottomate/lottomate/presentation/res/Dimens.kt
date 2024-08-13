@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation
+package com.lottomate.lottomate.presentation.res
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.dimensionResource

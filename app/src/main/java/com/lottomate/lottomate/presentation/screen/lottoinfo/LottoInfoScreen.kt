@@ -51,6 +51,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
+import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
