@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,18 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -377,78 +372,6 @@ private fun LottoRoundSection(
 }
 
 @Composable
-private fun LottoWinNumbers(
-    modifier: Modifier = Modifier,
-    winNumbers: List<Int>,
-    bonusNumber: List<Int>,
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = "당첨 번호 보기",
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Card(
-            modifier = Modifier,
-            colors = CardDefaults.cardColors(
-                containerColor = LottoMateWhite,
-            ),
-            border = BorderStroke(
-                width = 1.dp,
-                color = LottoMateGray20
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp
-            )
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 28.dp, vertical = 20.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "당첨 번호",
-                        style = MaterialTheme.typography.labelSmall
-                            .copy(color = LottoMateGray70)
-                    )
-                    Text(
-                        text = "보너스",
-                        style = MaterialTheme.typography.labelSmall
-                            .copy(color = LottoMateGray70)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    winNumbers.forEach { number ->
-                        LottoBall(number = number)
-                    }
-
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = "Just Separator",
-                    )
-
-                    LottoBall(number = bonusNumber[0])
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun LottoWinNumberSection(
     modifier: Modifier = Modifier,
     currentLottoType: LottoType,
@@ -471,7 +394,6 @@ private fun LottoWinNumberSection(
     }
 }
 
-@Preview(showBackground = true)
 @Composable
 private fun BottomBannerSection(
     modifier: Modifier = Modifier,
