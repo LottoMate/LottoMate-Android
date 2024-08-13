@@ -5,4 +5,34 @@
         <item>연금복권</item>
         <item>스피또</item>
     </string-array>
+
+    <string-array name="lotto645_win_condition">
+        <item>당첨번호 6개 일치</item>
+        <item>당첨번호 5개 일치\n+ 보너스 일치</item>
+        <item>당첨번호 5개 일치</item>
+        <item>당첨번호 4개 일치</item>
+        <item>당첨번호 3개 일치</item>
+    </string-array>
+
+    <string-array name="lotto720_win_prize">
+        <item>월 700만원 x 20년</item>
+        <item>월 100만원 X 10년</item>
+        <item>1,000,000원</item>
+        <item>100,000원</item>
+        <item>50,000원</item>
+        <item>5,000원</item>
+        <item>1,000원</item>
+        <item>월 100만원 x 10년</item>
+    </string-array>
+
+    <string-array name="lotto720_win_condition">
+        <item>1등번호 7자리 일치</item>
+        <item>1등번호 뒤 6자리 일치</item>
+        <item>1등번호 뒤 5자리 일치</item>
+        <item>1등번호 뒤 4자리 일치</item>
+        <item>1등번호 뒤 3자리 일치</item>
+        <item>1등번호 뒤 2자리 일치</item>
+        <item>1등번호 뒤 1자리 일치</item>
+        <item>보너스 번호 6자리 일치</item>
+    </string-array>
 </resources>
