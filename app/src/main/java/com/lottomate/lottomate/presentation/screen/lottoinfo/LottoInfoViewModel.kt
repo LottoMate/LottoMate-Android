@@ -38,10 +38,6 @@ class LottoInfoViewModel @Inject constructor(
         loadLatestLottoInfo()
     }
 
-    fun getLottoInfoByRound(round: Int) {
-
-    }
-
     fun changeTabMenu(index: Int) {
         currentTabMenu.intValue = index
 
