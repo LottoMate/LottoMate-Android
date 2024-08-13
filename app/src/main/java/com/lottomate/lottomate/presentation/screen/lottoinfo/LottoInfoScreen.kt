@@ -56,6 +56,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoWinNumberCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import com.lottomate.lottomate.presentation.ui.*
 import kotlinx.coroutines.flow.collectLatest
@@ -227,10 +228,11 @@ private fun LottoInfoContent(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            LottoWinNumbers(
+            LottoWinNumberSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
+                currentLottoType = LottoType.findLottoType(currentTabIndex),
                 winNumbers = lottoInfo.drwtNum,
                 bonusNumber = lottoInfo.drwtBonusNum,
             )
@@ -447,31 +449,24 @@ private fun LottoWinNumbers(
 }
 
 @Composable
-private fun LottoBall(
+private fun LottoWinNumberSection(
     modifier: Modifier = Modifier,
-    number: Int,
+    currentLottoType: LottoType,
+    winNumbers: List<Int>,
+    bonusNumber: List<Int>,
 ) {
-    Box(
-        modifier = modifier
-            .background(
-                color = when (number) {
-                    in 1..10 -> LottoMateYellow50
-                    in 11..20 -> LottoMateBlue50
-                    in 21..30 -> LottoMateRed50
-                    in 31..40 -> LottoMateGray90
-                    in 41..45 -> LottoMateGreen50
-                    else -> LottoMateTransparent
-                },
-                shape = CircleShape,
-            )
-            .size(30.dp),
-        contentAlignment = Alignment.Center,
-    ) {
+    Column(modifier = modifier) {
         Text(
-            text = number.toString(),
-            style = MaterialTheme.typography.labelMedium.copy(
-                color = LottoMateWhite
-            )
+            text = "당첨 번호 보기",
+            style = MaterialTheme.typography.headlineLarge
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LottoWinNumberCard(
+            lottoType = currentLottoType,
+            winNumbers = winNumbers,
+            bonusNumbers = bonusNumber,
         )
     }
 }

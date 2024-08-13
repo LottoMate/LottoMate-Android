@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
-import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoType
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
@@ -49,19 +49,19 @@ fun LottoWinNumberCard(
         ),
     ) {
         when (lottoType) {
-            LottoType.LOTTO645 -> {
+            LottoType.L645 -> {
                 Lotto645WinNumber(
                     winNumbers = winNumbers,
                     bonusNumber = bonusNumbers.first()
                 )
             }
-            LottoType.LOTTO720 -> {
+            LottoType.L720 -> {
                 Lotto720WinNumber(
                     winNumbers = winNumbers,
                     bonusNumbers = bonusNumbers,
                 )
             }
-            LottoType.SPEETTO -> {
+            else -> {
                 // TODO : 스피또 당첨 정보 상세
             }
         }
@@ -224,7 +224,7 @@ private fun Lotto720WinNumber(
 private fun Lotto645WinNumberPreview() {
     LottoMateTheme {
         LottoWinNumberCard(
-            lottoType = LottoType.LOTTO645,
+            lottoType = LottoType.L645,
             winNumbers = listOf(4, 5, 11, 21, 37, 40),
             bonusNumbers = listOf(43)
         )
@@ -236,7 +236,7 @@ private fun Lotto645WinNumberPreview() {
 private fun Lotto720WinNumberPreview() {
     LottoMateTheme {
         LottoWinNumberCard(
-            lottoType = LottoType.LOTTO720,
+            lottoType = LottoType.L720,
             winNumbers = listOf(5, 8, 1, 7, 5, 0, 9),
             bonusNumbers = listOf(1, 6, 1, 7, 1, 7),
         )
