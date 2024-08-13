@@ -100,12 +100,11 @@ fun LottoInfoScreen(
         sheetPeekHeight = 0.dp,
         sheetContent = {
             LottoRoundWheelPicker(
-                initialRound = currentRound,
+                currentLottoRound = lottoInfo.lottoRndNum,
+                currentTabIndex = currentTabIndex,
                 scaffoldState = scaffoldState,
                 pickerState = pickerState,
-                onSelectRound = {
-                    currentRound = pickerState.selectedItem.toInt()
-                },
+                onClickSelect = onChangeLottoRound,
             )
         },
         snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }
