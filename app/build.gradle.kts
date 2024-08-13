@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 val localProperties = Properties()
@@ -28,6 +29,7 @@ android {
         }
 
         buildConfigField("String", "DATABASE_BASE_URL", localProperties.getProperty("DATABASE_BASE_URL"))
+        buildConfigField("String", "MOCK_SERVER_URL", localProperties.getProperty("MOCK_SERVER_URL"))
     }
 
     buildTypes {
@@ -84,6 +86,11 @@ dependencies {
     implementation(libs.squareup.retrofit2)
     implementation(libs.squareup.okhttp3)
     implementation(libs.squareup.okhttp3.logger.interceptor)
+
+    // Kotlin Serialization
+    implementation(libs.org.jetbrains.kotlin.serialization)
+    implementation(libs.org.jetbrains.kotlinx.serialization.json)
+    implementation(libs.squareup.retrofit2.converter.serialization)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
