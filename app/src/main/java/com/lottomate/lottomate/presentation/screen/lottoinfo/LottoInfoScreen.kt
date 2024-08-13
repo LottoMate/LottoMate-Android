@@ -50,10 +50,20 @@ import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto645WinInfoCard
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto720WinInfoCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoWinNumberCard
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
-import com.lottomate.lottomate.presentation.ui.*
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateBlue5
+import com.lottomate.lottomate.presentation.ui.LottoMateGray120
+import com.lottomate.lottomate.presentation.ui.LottoMateGray40
+import com.lottomate.lottomate.presentation.ui.LottoMateGray70
+import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -231,6 +241,16 @@ private fun LottoInfoContent(
                 winNumbers = lottoInfo.drwtNum,
                 bonusNumber = lottoInfo.drwtBonusNum,
             )
+
+            Spacer(modifier = Modifier.height(42.dp))
+
+            LottoWinInfoSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                lottoInfo = lottoInfo,
+                lottoType = LottoType.findLottoType(currentTabIndex)
+            )
             
             Spacer(modifier = Modifier.height(16.dp))
             
@@ -391,6 +411,71 @@ private fun LottoWinNumberSection(
             winNumbers = winNumbers,
             bonusNumbers = bonusNumber,
         )
+    }
+}
+
+@Composable
+private fun LottoWinInfoSection(
+    modifier: Modifier = Modifier,
+    lottoInfo: LottoInfo,
+    lottoType: LottoType,
+) {
+    Column (
+        modifier = modifier,
+    ){
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            Text(
+                text = "등수별 당첨 정보",
+                style = MaterialTheme.typography.headlineLarge
+            )
+
+            if (lottoType == LottoType.L645) {
+                val info = lottoInfo as Lotto645Info
+
+                Text(
+                    text = "총 판매 금액 : ${info.drwtSaleMoney}원",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = LottoMateGray70,
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        when (lottoType) {
+            LottoType.L645 -> {
+                val info = lottoInfo as Lotto645Info
+
+                repeat(5) { rank ->
+                    Lotto645WinInfoCard(
+                        rank = rank,
+                        lottoInfo = info,
+                    )
+
+                    if (rank != 4) Spacer(modifier = Modifier.height(20.dp))
+                }
+            }
+            LottoType.L720 -> {
+                val info = lottoInfo as Lotto720Info
+
+                repeat(8) { rank ->
+                    Lotto720WinInfoCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        rank = rank,
+                        lottoInfo = info
+                    )
+
+                    if (rank != 7) Spacer(modifier = Modifier.height(20.dp))
+                }
+            }
+            else -> {
+                // TODO : 스피또 (수정예정)
+            }
+        }
     }
 }
 
