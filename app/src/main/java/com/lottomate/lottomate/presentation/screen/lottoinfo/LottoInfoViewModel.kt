@@ -8,8 +8,11 @@ import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -28,6 +31,8 @@ class LottoInfoViewModel @Inject constructor(
 
     private val _lottoInfo = MutableStateFlow<LottoInfoUiState>(LottoInfoUiState.Loading)
     val lottoInfo get() = _lottoInfo.asStateFlow()
+    private val _errorFlow = MutableSharedFlow<Throwable>()
+    val errorFlow get() = _errorFlow.asSharedFlow()
 
     init {
         loadLatestLottoInfo()
@@ -92,6 +97,9 @@ class LottoInfoViewModel @Inject constructor(
     private fun loadLatestLottoInfo() {
         viewModelScope.launch {
             lottoInfoRepository.fetchLatestLottoInfo()
+                .catch { throwable ->
+                    _errorFlow.emit(throwable)
+                }
                 .collectLatest {
                     val info = when (currentTabMenu.intValue) {
                         LottoType.L645.ordinal -> { it.getValue(LottoType.L645.num) }

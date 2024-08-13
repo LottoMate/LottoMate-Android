@@ -32,6 +32,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow50
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @Composable
@@ -77,6 +79,10 @@ fun LottoInfoRoute(
     val currentTabIndex by rememberSaveable { vm.currentTabMenu }
     val hasPreRound by rememberSaveable { vm.hasPreLottoRound }
     val hasNextRound by rememberSaveable { vm.hasNextLottoRound }
+
+    LaunchedEffect(true) {
+        vm.errorFlow.collectLatest{ throwable -> onShowErrorSnackBar(throwable) }
+    }
 
     LottoInfoScreen(
         modifier = Modifier,
