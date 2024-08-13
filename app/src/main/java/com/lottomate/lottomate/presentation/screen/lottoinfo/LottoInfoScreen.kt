@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.KeyboardArrowLeft
@@ -43,29 +44,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
-import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
-import com.lottomate.lottomate.presentation.ui.LottoMateGray20
-import com.lottomate.lottomate.presentation.ui.LottoMateGray40
-import com.lottomate.lottomate.presentation.ui.LottoMateGray70
-import com.lottomate.lottomate.presentation.ui.LottoMateGray90
-import com.lottomate.lottomate.presentation.ui.LottoMateGreen50
-import com.lottomate.lottomate.presentation.ui.LottoMateRed50
-import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
-import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.presentation.ui.LottoMateYellow50
+import com.lottomate.lottomate.presentation.ui.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -74,6 +66,7 @@ fun LottoInfoRoute(
     vm: LottoInfoViewModel = hiltViewModel(),
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onBackPressed: () -> Unit,
+    onClickBottomBanner: () -> Unit,
 ) {
     val lottoInfoUiState by vm.lottoInfo.collectAsStateWithLifecycle()
     val pickerState = rememberPickerState()
@@ -103,6 +96,7 @@ fun LottoInfoRoute(
             val nextLottoRound = it.plus(1)
             vm.getLottoInfo(nextLottoRound)
         },
+        onClickBottomBanner = onClickBottomBanner,
     )
 }
 
@@ -120,6 +114,7 @@ fun LottoInfoScreen(
     onChangeLottoRound: () -> Unit,
     onClickPreRound: (Int) -> Unit,
     onClickNextRound: (Int) -> Unit,
+    onClickBottomBanner: () -> Unit,
 ) {
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -142,6 +137,7 @@ fun LottoInfoScreen(
                 onChangeLottoRound = onChangeLottoRound,
                 onClickPreRound = onClickPreRound,
                 onClickNextRound = onClickNextRound,
+                onClickBottomBanner = onClickBottomBanner
             )
         }
     }
@@ -162,6 +158,7 @@ private fun LottoInfoContent(
     onChangeLottoRound: () -> Unit,
     onClickPreRound: (Int) -> Unit,
     onClickNextRound: (Int) -> Unit,
+    onClickBottomBanner: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -236,6 +233,27 @@ private fun LottoInfoContent(
                     .padding(horizontal = 20.dp),
                 winNumbers = lottoInfo.drwtNum,
                 bonusNumber = lottoInfo.drwtBonusNum,
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Text(
+                text = stringResource(id = R.string.lotto_info_bottom_notice),
+                style = MaterialTheme.typography.labelSmall,
+                color = LottoMateGray70,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+
+            BottomBannerSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 68.dp),
+                onClickBanner = onClickBottomBanner
             )
         }
     }
@@ -460,14 +478,36 @@ private fun LottoBall(
 
 @Preview(showBackground = true)
 @Composable
-private fun LottoBallPreview() {
-    LottoMateTheme {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            LottoBall(number = 1)
-            LottoBall(number = 11)
-            LottoBall(number = 21)
-            LottoBall(number = 31)
-            LottoBall(number = 41)
+private fun BottomBannerSection(
+    modifier: Modifier = Modifier,
+    onClickBanner: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = LottoMateBlue5,
+                shape = RoundedCornerShape(Dimens.RadiusLarge)
+            )
+            .clip(RoundedCornerShape(Dimens.RadiusLarge))
+            .clickable { onClickBanner() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 15.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.banner_lotto_info_title),
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = stringResource(id = R.string.banner_lotto_info_sub_title),
+                style = MaterialTheme.typography.labelSmall,
+                color = LottoMateGray120
+            )
         }
     }
 }
