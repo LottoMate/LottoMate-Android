@@ -1,7 +1,7 @@
 package com.lottomate.lottomate.di
 
-import com.lottomate.lottomate.data.remote.repository.TestRepositoryImpl
-import com.lottomate.lottomate.domain.repository.TestRepository
+import com.lottomate.lottomate.data.remote.repository.LottoInfoRepositoryImpl
+import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ import javax.inject.Singleton
 abstract class RepositoryModule {
     @Binds
     @Singleton
-    abstract fun bindTestRepository(
-        testRepositoryImpl: TestRepositoryImpl
-    ): TestRepository
+    abstract fun bindLottoInfoRepository(
+        lottoInfoRepositoryImpl: LottoInfoRepositoryImpl
+    ): LottoInfoRepository
 }

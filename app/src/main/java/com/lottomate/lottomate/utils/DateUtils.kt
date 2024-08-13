@@ -1,8 +1,11 @@
 package com.lottomate.lottomate.utils
 
 import java.util.Calendar
+import java.util.Locale
 
 object DateUtils {
+    private const val DAYS_IN_WEEK = 7
+
     /**
      * Lotto 회차 날짜 계산 (7일 간격)
      *
@@ -15,17 +18,17 @@ object DateUtils {
         val (year, month, day) = lastRoundDate.split("-").map { it.toInt() }
         val date = Calendar.getInstance().apply {
             set(Calendar.YEAR, year)
-            set(Calendar.MONTH, month)
+            set(Calendar.MONTH, month.minus(1))
             set(Calendar.DAY_OF_MONTH, day)
-            add(Calendar.DATE, -(7 * index.minus(1)))
+            add(Calendar.DATE, -(DAYS_IN_WEEK * index.minus(1)))
         }
 
         return buildString {
             append(date.get(Calendar.YEAR))
             append(".")
-            append(String.format("%02d", date.get(Calendar.MONTH)))
+            append(String.format(Locale.KOREA, "%02d", date.get(Calendar.MONTH).plus(1)))
             append(".")
-            append(String.format("%02d", date.get(Calendar.DAY_OF_MONTH)))
+            append(String.format(Locale.KOREA, "%02d", date.get(Calendar.DAY_OF_MONTH)))
         }
     }
 }

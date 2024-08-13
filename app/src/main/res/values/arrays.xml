@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="lotto_info_tab_menu">
+        <item>로또</item>
+        <item>연금복권</item>
+        <item>스피또</item>
+    </string-array>
+</resources>
