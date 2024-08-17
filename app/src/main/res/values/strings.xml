@@ -4,4 +4,6 @@
     <string name="lotto_info_bottom_notice">* 지급 개시일부터 1년 내 당첨금을 찾아가야 해요. (휴일일 경우 다음날까지)</string>
     <string name="banner_lotto_info_title">행운의 1등 로또\n어디서 샀을까?</string>
     <string name="banner_lotto_info_sub_title">터치해서 당첨 판매점 보기</string>
+
+    <string name="top_app_bar_title_lotto_info">당첨 정보 상세</string>
 </resources>
