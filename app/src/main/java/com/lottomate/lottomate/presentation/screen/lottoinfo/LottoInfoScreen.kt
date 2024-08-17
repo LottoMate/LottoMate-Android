@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +53,7 @@ import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
+import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto645WinInfoCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto720WinInfoCard
@@ -173,27 +175,6 @@ private fun LottoInfoContent(
 
     BottomSheetScaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "당첨 번호 상세",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            imageVector = Icons.Rounded.KeyboardArrowLeft,
-                            contentDescription = null
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = LottoMateWhite,
-                )
-            )
-        },
         containerColor = LottoMateWhite,
         scaffoldState = scaffoldState,
         sheetContainerColor = LottoMateWhite,
@@ -209,77 +190,88 @@ private fun LottoInfoContent(
         },
         snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }
     ) { innerPadding ->
-        Column(modifier = modifier
-            .padding(innerPadding)
-            .verticalScroll(rememberScrollState())
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
-
-            TopToggleButtons(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                currentIndex = currentTabIndex,
-                onClick = onChangeTabMenu,
-            )
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = 80.dp)
+            ) {
+                TopToggleButtons(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    currentIndex = currentTabIndex,
+                    onClick = onChangeTabMenu,
+                )
 
-            Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-            LottoRoundSection(
-                modifier = Modifier.fillMaxWidth(),
-                currentRound = lottoInfo.lottoRndNum,
-                currentDate = lottoInfo.drwtDate,
-                hasPreRound = hasPreRound,
-                hasNextRound = hasNextRound,
-                onClickPreRound = { onClickPreRound(lottoInfo.lottoRndNum) },
-                onClickNextRound = { onClickNextRound(lottoInfo.lottoRndNum) },
-                onClickCurrentRound = {
-                    coroutineScope.launch {
-                        scaffoldState.bottomSheetState.expand()
+                LottoRoundSection(
+                    modifier = Modifier.fillMaxWidth(),
+                    currentRound = lottoInfo.lottoRndNum,
+                    currentDate = lottoInfo.drwtDate,
+                    hasPreRound = hasPreRound,
+                    hasNextRound = hasNextRound,
+                    onClickPreRound = { onClickPreRound(lottoInfo.lottoRndNum) },
+                    onClickNextRound = { onClickNextRound(lottoInfo.lottoRndNum) },
+                    onClickCurrentRound = {
+                        coroutineScope.launch {
+                            scaffoldState.bottomSheetState.expand()
+                        }
                     }
-                }
-            )
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-            LottoWinNumberSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                currentLottoType = LottoType.findLottoType(currentTabIndex),
-                winNumbers = lottoInfo.drwtNum,
-                bonusNumber = lottoInfo.drwtBonusNum,
-            )
+                LottoWinNumberSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    currentLottoType = LottoType.findLottoType(currentTabIndex),
+                    winNumbers = lottoInfo.drwtNum,
+                    bonusNumber = lottoInfo.drwtBonusNum,
+                )
 
-            Spacer(modifier = Modifier.height(42.dp))
+                Spacer(modifier = Modifier.height(42.dp))
 
-            LottoWinInfoSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                lottoInfo = lottoInfo,
-                lottoType = LottoType.findLottoType(currentTabIndex)
-            )
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            Text(
-                text = stringResource(id = R.string.lotto_info_bottom_notice),
-                style = MaterialTheme.typography.labelSmall,
-                color = LottoMateGray70,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
+                LottoWinInfoSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                    lottoInfo = lottoInfo,
+                    lottoType = LottoType.findLottoType(currentTabIndex)
+                )
 
-            BottomBannerSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .padding(bottom = 68.dp),
-                onClickBanner = onClickBottomBanner
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(id = R.string.lotto_info_bottom_notice),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = LottoMateGray70,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp),
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                BottomBannerSection(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(bottom = 68.dp),
+                    onClickBanner = onClickBottomBanner
+                )
+            }
+
+            LottoMateTopAppBar(
+                titleRes = R.string.top_app_bar_title_lotto_info,
+                hasNavigation = true,
+                onBackPressed = onBackPressed,
             )
         }
     }
@@ -520,16 +512,6 @@ private fun BottomBannerSection(
                 color = LottoMateGray120
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LottoInfoScreenPreview() {
-    LottoMateTheme {
-        LottoInfoScreen(
-            onBackPressed = {}
-        )
     }
 }
 
