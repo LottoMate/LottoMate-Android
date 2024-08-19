@@ -2,6 +2,7 @@ package com.lottomate.lottomate.presentation.screen.lottoinfo.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -23,10 +25,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.dropShadow
 
 @Composable
 fun LottoWinNumberCard(
@@ -36,16 +41,20 @@ fun LottoWinNumberCard(
     bonusNumbers: List<Int>,
 ) {
     Card(
-        modifier = modifier,
-        colors = CardDefaults.cardColors(
-            containerColor = LottoMateWhite,
+        modifier = modifier.dropShadow(
+            shape = RoundedCornerShape(Dimens.RadiusLarge),
+            color = LottoMateBlack.copy(alpha = 0.1f),
+            blur = 8.dp,
+            offsetX = 0.dp,
+            offsetY = 0.dp
         ),
         border = BorderStroke(
             width = 1.dp,
             color = LottoMateGray20
         ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
+        shape = RoundedCornerShape(Dimens.RadiusLarge),
+        colors = CardDefaults.cardColors(
+            containerColor = LottoMateWhite,
         ),
     ) {
         when (lottoType) {
@@ -223,11 +232,14 @@ private fun Lotto720WinNumber(
 @Composable
 private fun Lotto645WinNumberPreview() {
     LottoMateTheme {
-        LottoWinNumberCard(
-            lottoType = LottoType.L645,
-            winNumbers = listOf(4, 5, 11, 21, 37, 40),
-            bonusNumbers = listOf(43)
-        )
+        Box(modifier = Modifier.padding(16.dp)) {
+            LottoWinNumberCard(
+                lottoType = LottoType.L645,
+                winNumbers = listOf(4, 5, 11, 21, 37, 40),
+                bonusNumbers = listOf(43)
+            )
+        }
+
     }
 }
 
@@ -235,10 +247,12 @@ private fun Lotto645WinNumberPreview() {
 @Composable
 private fun Lotto720WinNumberPreview() {
     LottoMateTheme {
-        LottoWinNumberCard(
-            lottoType = LottoType.L720,
-            winNumbers = listOf(5, 8, 1, 7, 5, 0, 9),
-            bonusNumbers = listOf(1, 6, 1, 7, 1, 7),
-        )
+        Box(modifier = Modifier.padding(16.dp)) {
+            LottoWinNumberCard(
+                lottoType = LottoType.L720,
+                winNumbers = listOf(5, 8, 1, 7, 5, 0, 9),
+                bonusNumbers = listOf(1, 6, 1, 7, 1, 7),
+            )
+        }
     }
 }

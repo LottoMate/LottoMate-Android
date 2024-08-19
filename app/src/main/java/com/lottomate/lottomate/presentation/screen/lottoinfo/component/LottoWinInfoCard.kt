@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,11 +24,13 @@ import com.lottomate.lottomate.presentation.res.StringArrays.Lotto720WinConditio
 import com.lottomate.lottomate.presentation.res.StringArrays.Lotto720WinPrizes
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.dropShadow
 
 @Composable
 fun Lotto645WinInfoCard(
@@ -92,13 +95,17 @@ private fun LottoWinInfoBaseCard(
     totalPrizeContent: @Composable (() -> Unit)? = null,
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.dropShadow(
+            shape = RoundedCornerShape(Dimens.RadiusLarge),
+            color = LottoMateBlack.copy(alpha = 0.16f),
+            blur = 8.dp,
+            offsetX = 0.dp,
+            offsetY = 0.dp
+        ),
         colors = CardDefaults.cardColors(
             containerColor = LottoMateWhite,
         ),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 8.dp
-        )
+        shape = RoundedCornerShape(Dimens.RadiusLarge),
     ) {
         Column(
             modifier = Modifier
@@ -172,29 +179,32 @@ private fun LottoWinInfoRow(
 @Composable
 private fun LottoWinnerInfoCardPreview() {
     LottoMateTheme {
-        LottoWinInfoBaseCard(
-            modifier = Modifier.fillMaxWidth(),
-            rank = 2,
-            prize = "48,077,032원",
-            condition = "당첨번호 6개 일치\n+ 보너스 일치",
-            isBonus = false,
-            winnerCountContent = {
-                Spacer(modifier = Modifier.height(10.dp))
+        Box(modifier = Modifier.padding(16.dp)) {
+            LottoWinInfoBaseCard(
+                modifier = Modifier.fillMaxWidth(),
+                rank = 2,
+                prize = "48,077,032원",
+                condition = "당첨번호 6개 일치\n+ 보너스 일치",
+                isBonus = false,
+                winnerCountContent = {
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                LottoWinInfoRow(
-                    title = "당첨자 수",
-                    text = "91명"
-                )
-            },
-            totalPrizeContent = {
-                Spacer(modifier = Modifier.height(10.dp))
+                    LottoWinInfoRow(
+                        title = "당첨자 수",
+                        text = "91명"
+                    )
+                },
+                totalPrizeContent = {
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                LottoWinInfoRow(
-                    title = "총 당첨금",
-                    text = "48,077,032원"
-                )
-            }
-        )
+                    LottoWinInfoRow(
+                        title = "총 당첨금",
+                        text = "48,077,032원"
+                    )
+                }
+            )
+        }
+
 
     }
 }
