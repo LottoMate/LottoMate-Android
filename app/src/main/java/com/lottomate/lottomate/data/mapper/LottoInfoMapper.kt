@@ -22,7 +22,8 @@ object LottoInfoMapper {
             },
             drwtNum = lottoInfoEntity.drwtNum,
             drwtBonusNum = lottoInfoEntity.drwtBonusNum,
-            drwtSaleMoney = lottoInfoEntity.drwtSaleMoney
+            drwtSaleMoney = if (lottoInfoEntity.drwtSaleMoney == 0L) formatNumberWithCommas(lottoInfoEntity.prizeMoney.sum())
+            else formatNumberWithCommas(lottoInfoEntity.drwtSaleMoney)
         )
     }
 

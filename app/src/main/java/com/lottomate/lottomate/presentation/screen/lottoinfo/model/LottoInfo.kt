@@ -16,7 +16,7 @@ data class Lotto645Info(
     override val drwtBonusNum: List<Int>,
     val prizeMoney: List<String>,
     val drwtMoney: List<String>,
-    val drwtSaleMoney: Long = 0L,
+    val drwtSaleMoney: String,
 ): LottoInfo
 
 data class Lotto720Info(
