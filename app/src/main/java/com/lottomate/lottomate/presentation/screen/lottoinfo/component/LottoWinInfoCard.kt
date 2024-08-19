@@ -81,6 +81,7 @@ fun Lotto720WinInfoCard(
                 text = "${lottoInfo.drwtWinNum[rank]}매"
             )
         },
+        isBonus = rank == 7
     )
 }
 
