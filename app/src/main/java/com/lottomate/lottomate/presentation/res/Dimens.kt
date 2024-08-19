@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation
+package com.lottomate.lottomate.presentation.res
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.dimensionResource
@@ -20,4 +20,7 @@ object Dimens {
 
     val RadiusExtraLarge: Dp
         @Composable get() = dimensionResource(id = R.dimen.radius_extra_large)
+    
+    val TopAppBarHeight: Dp
+        @Composable get() = dimensionResource(id = R.dimen.top_app_bar_height)
 }

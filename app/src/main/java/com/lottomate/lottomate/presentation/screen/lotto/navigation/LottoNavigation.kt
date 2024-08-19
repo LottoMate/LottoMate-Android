@@ -14,6 +14,7 @@ fun NavGraphBuilder.lottoNavGraph(
         LottoInfoRoute(
             onShowErrorSnackBar = onShowErrorSnackBar,
             onBackPressed = {},
+            onClickBottomBanner = {}
         )
     }
 }
