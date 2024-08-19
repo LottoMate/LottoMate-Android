@@ -27,10 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
-private val topAppBarHeight = 56.dp
 private val topAppBarHorizontalPadding = 12.dp
 
 @Composable
@@ -44,7 +44,7 @@ fun LottoMateTopAppBar(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .height(topAppBarHeight)
+            .height(Dimens.TopAppBarHeight)
             .background(LottoMateWhite.copy(alpha = 0.8f)),
     ) {
         if (hasNavigation) {
@@ -62,7 +62,6 @@ fun LottoMateTopAppBar(
             text = stringResource(id = titleRes),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.headlineLarge,
-            modifier = Modifier.fillMaxWidth(),
         )
 
         Row(
