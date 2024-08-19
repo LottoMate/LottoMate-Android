@@ -336,9 +336,9 @@ private fun LottoRoundSection(
     onClickCurrentRound: () -> Unit,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Icon(
             modifier = Modifier
@@ -348,11 +348,10 @@ private fun LottoRoundSection(
                         onClickPreRound()
                     }
                 },
-            imageVector = Icons.Rounded.KeyboardArrowLeft,
+            painter = painterResource(id = R.drawable.icon_arrow_small_left),
             tint = if (hasPreRound) LottoMateBlack else LottoMateGray40,
             contentDescription = "Previous Lotto Round Click",
         )
-        Spacer(modifier = Modifier.width(80.dp))
 
         Row(
             modifier = Modifier.clickable {
@@ -369,14 +368,13 @@ private fun LottoRoundSection(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = currentDate,
+                text = currentDate.replace("-", "."),
                 style = MaterialTheme.typography.labelMedium.copy(
                     color = LottoMateGray70,
                 )
             )
         }
 
-        Spacer(modifier = Modifier.width(80.dp))
         Icon(
             modifier = Modifier
                 .clip(CircleShape)
@@ -385,7 +383,7 @@ private fun LottoRoundSection(
                         onClickNextRound()
                     }
                 },
-            imageVector = Icons.Rounded.KeyboardArrowRight,
+            painter = painterResource(id = R.drawable.icon_arrow_small_right),
             tint = if (hasNextRound) LottoMateBlack else LottoMateGray40,
             contentDescription = "Next Lotto Round Click",
         )
