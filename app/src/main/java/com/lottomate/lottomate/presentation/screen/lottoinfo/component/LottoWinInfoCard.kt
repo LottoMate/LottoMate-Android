@@ -24,11 +24,16 @@ import com.lottomate.lottomate.presentation.res.StringArrays.Lotto720WinPrizes
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateBlue40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
+import com.lottomate.lottomate.presentation.ui.LottoMateGreen50
+import com.lottomate.lottomate.presentation.ui.LottoMateRed30
+import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.presentation.ui.LottoMateYellow60
 import com.lottomate.lottomate.utils.dropShadow
 
 @Composable
@@ -94,6 +99,15 @@ private fun LottoWinInfoBaseCard(
     winnerCountContent: @Composable (() -> Unit)? = null,
     totalPrizeContent: @Composable (() -> Unit)? = null,
 ) {
+    val rankColor = when (rank) {
+        1 -> LottoMateRed50
+        2 -> LottoMateRed30
+        3 -> LottoMateYellow60
+        4 -> LottoMateGreen50
+        5 -> LottoMateBlue40
+        else -> LottoMateGray100
+    }
+
     Card(
         modifier = modifier.dropShadow(
             shape = RoundedCornerShape(Dimens.RadiusLarge),
@@ -114,8 +128,8 @@ private fun LottoWinInfoBaseCard(
         ) {
             Text(
                 text = if (isBonus) "보너스" else "${rank}등",
-                style = LottoMateTheme.typography.headline2,
-                color = LottoMateGray100,
+                style = LottoMateTheme.typography.headline2
+                    .copy(color = rankColor),
             )
 
             Spacer(modifier = Modifier.height(2.dp))
