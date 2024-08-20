@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -89,7 +88,7 @@ private fun LottoBaseBall(
     ) {
         Text(
             text = number.toString(),
-            style = MaterialTheme.typography.labelMedium.copy(
+            style = LottoMateTheme.typography.label2.copy(
                 color = LottoMateWhite
             )
         )

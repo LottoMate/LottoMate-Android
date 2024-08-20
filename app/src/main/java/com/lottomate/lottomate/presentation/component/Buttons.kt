@@ -178,8 +178,8 @@ fun LottoMateTextButton(
         Text(
             text = buttonText,
             style = when (buttonSize) {
-                LottoMateButtonProperty.Size.LARGE -> MaterialTheme.typography.labelLarge
-                else -> MaterialTheme.typography.labelMedium
+                LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
+                else -> LottoMateTheme.typography.label2
             },
             color = if (isPressed) pressedTextColor
             else if (isDisabled) LottoMateGray40
@@ -231,8 +231,8 @@ private fun LottoMateBaseButton(
             text = text,
             color = textColor,
             style = when (buttonSize) {
-                LottoMateButtonProperty.Size.SMALL -> MaterialTheme.typography.labelMedium
-                else -> MaterialTheme.typography.labelLarge
+                LottoMateButtonProperty.Size.SMALL -> LottoMateTheme.typography.label2
+                else -> LottoMateTheme.typography.label1
             },
         )
     }

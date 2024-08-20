@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -115,7 +114,7 @@ private fun LottoWinInfoBaseCard(
         ) {
             Text(
                 text = if (isBonus) "보너스" else "${rank}등",
-                style = MaterialTheme.typography.headlineMedium,
+                style = LottoMateTheme.typography.headline2,
                 color = LottoMateGray100,
             )
 
@@ -123,7 +122,7 @@ private fun LottoWinInfoBaseCard(
 
             Text(
                 text = prize,
-                style = MaterialTheme.typography.titleSmall,
+                style = LottoMateTheme.typography.title3,
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -165,13 +164,13 @@ private fun LottoWinInfoRow(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineMedium,
+            style = LottoMateTheme.typography.body1,
             color = LottoMateGray90,
             modifier = Modifier.width(88.dp)
         )
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge
+            style = LottoMateTheme.typography.headline2,
         )
     }
 }

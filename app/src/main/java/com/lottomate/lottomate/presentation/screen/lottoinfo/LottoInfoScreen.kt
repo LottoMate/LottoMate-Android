@@ -16,19 +16,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowLeft
-import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +37,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -250,7 +242,7 @@ private fun LottoInfoContent(
 
                 Text(
                     text = stringResource(id = R.string.lotto_info_bottom_notice),
-                    style = MaterialTheme.typography.labelSmall,
+                    style = LottoMateTheme.typography.caption,
                     color = LottoMateGray70,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -362,14 +354,14 @@ private fun LottoRoundSection(
         ) {
             Text(
                 text = currentRound.toString().plus("회"),
-                style = MaterialTheme.typography.headlineLarge
+                style = LottoMateTheme.typography.headline1,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
                 text = currentDate.replace("-", "."),
-                style = MaterialTheme.typography.labelMedium.copy(
+                style = LottoMateTheme.typography.label2.copy(
                     color = LottoMateGray70,
                 )
             )
@@ -400,7 +392,7 @@ private fun LottoWinNumberSection(
     Column(modifier = modifier) {
         Text(
             text = "당첨 번호 보기",
-            style = MaterialTheme.typography.headlineLarge
+            style = LottoMateTheme.typography.headline1,
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -429,7 +421,7 @@ private fun LottoWinInfoSection(
         ) {
             Text(
                 text = "등수별 당첨 정보",
-                style = MaterialTheme.typography.headlineLarge
+                style = LottoMateTheme.typography.headline1,
             )
 
             if (lottoType == LottoType.L645) {
@@ -437,7 +429,7 @@ private fun LottoWinInfoSection(
 
                 Text(
                     text = "총 판매 금액 : ${info.drwtSaleMoney}원",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = LottoMateTheme.typography.caption,
                     color = LottoMateGray70,
                 )
             }
@@ -499,14 +491,14 @@ private fun BottomBannerSection(
         ) {
             Text(
                 text = stringResource(id = R.string.banner_lotto_info_title),
-                style = MaterialTheme.typography.headlineMedium
+                style = LottoMateTheme.typography.headline2,
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = stringResource(id = R.string.banner_lotto_info_sub_title),
-                style = MaterialTheme.typography.labelSmall,
+                style = LottoMateTheme.typography.caption,
                 color = LottoMateGray120
             )
         }
