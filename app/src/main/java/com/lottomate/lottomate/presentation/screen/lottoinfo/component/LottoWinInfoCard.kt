@@ -14,9 +14,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.res.StringArrays.Lotto645WinConditions
 import com.lottomate.lottomate.presentation.res.StringArrays.Lotto720WinConditions
@@ -27,6 +31,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
+import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateGreen50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed30
@@ -47,6 +52,7 @@ fun Lotto645WinInfoCard(
         rank = rank.plus(1),
         prize = "${lottoInfo.prizeMoney[rank]}원",
         condition = Lotto645WinConditions[rank],
+        lottoType = LottoType.L645,
         winnerCountContent = {
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -77,6 +83,8 @@ fun Lotto720WinInfoCard(
         rank = rank.plus(1),
         prize = Lotto720WinPrizes[rank],
         condition = Lotto720WinConditions[rank],
+        isBonus = rank == 7,
+        lottoType = LottoType.L720,
         winnerCountContent = {
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -85,7 +93,6 @@ fun Lotto720WinInfoCard(
                 text = "${lottoInfo.drwtWinNum[rank]}매"
             )
         },
-        isBonus = rank == 7
     )
 }
 
@@ -96,6 +103,7 @@ private fun LottoWinInfoBaseCard(
     prize: String,
     condition: String,
     isBonus: Boolean = false,
+    lottoType: LottoType,
     winnerCountContent: @Composable (() -> Unit)? = null,
     totalPrizeContent: @Composable (() -> Unit)? = null,
 ) {
@@ -134,10 +142,22 @@ private fun LottoWinInfoBaseCard(
 
             Spacer(modifier = Modifier.height(2.dp))
 
-            Text(
-                text = prize,
-                style = LottoMateTheme.typography.title3,
-            )
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = prize,
+                    style = LottoMateTheme.typography.title3,
+                )
+
+                if (lottoType == LottoType.L645) {
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = stringResource(id = R.string.lotto_info_per_person),
+                        style = LottoMateTheme.typography.label2
+                            .copy(color = LottoMateGray80)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -197,6 +217,7 @@ private fun LottoWinnerInfoCardPreview() {
             LottoWinInfoBaseCard(
                 modifier = Modifier.fillMaxWidth(),
                 rank = 2,
+                lottoType = LottoType.L645,
                 prize = "48,077,032원",
                 condition = "당첨번호 6개 일치\n+ 보너스 일치",
                 isBonus = false,
