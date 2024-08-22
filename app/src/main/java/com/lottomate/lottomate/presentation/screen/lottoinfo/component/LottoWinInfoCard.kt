@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -134,11 +137,22 @@ private fun LottoWinInfoBaseCard(
                 .fillMaxWidth()
                 .padding(20.dp),
         ) {
-            Text(
-                text = if (isBonus) "보너스" else "${rank}등",
-                style = LottoMateTheme.typography.headline2
-                    .copy(color = rankColor),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (rank == 1) {
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.icon_lotto_rank_first),
+                        contentDescription = "Lotto Rank First Icon"
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                
+                Text(
+                    text = if (isBonus) "보너스" else "${rank}등",
+                    style = LottoMateTheme.typography.headline2
+                        .copy(color = rankColor),
+                )
+            }
 
             Spacer(modifier = Modifier.height(2.dp))
 
