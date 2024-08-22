@@ -44,6 +44,20 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow60
 import com.lottomate.lottomate.utils.dropShadow
 
+enum class LottoRank(val rank: Int) {
+    FIRST(1), SECOND(2), THIRD(3), FOURTH(4), FIFTH(5), SIXTH(6), SEVENTH(7), BONUS(8);
+
+    companion object {
+        fun getLottoRankLabel(rank: Int): String {
+            return when (val lottoRank = entries.find { it.rank == rank }) {
+                BONUS -> "보너스"
+                null -> "ERROR"
+                else -> "${lottoRank.rank}등"
+            }
+        }
+    }
+}
+
 @Composable
 fun Lotto645WinInfoCard(
     modifier: Modifier = Modifier,
@@ -86,7 +100,6 @@ fun Lotto720WinInfoCard(
         rank = rank.plus(1),
         prize = Lotto720WinPrizes[rank],
         condition = Lotto720WinConditions[rank],
-        isBonus = rank == 7,
         lottoType = LottoType.L720,
         winnerCountContent = {
             Spacer(modifier = Modifier.height(10.dp))
@@ -105,17 +118,16 @@ private fun LottoWinInfoBaseCard(
     rank: Int,
     prize: String,
     condition: String,
-    isBonus: Boolean = false,
     lottoType: LottoType,
     winnerCountContent: @Composable (() -> Unit)? = null,
     totalPrizeContent: @Composable (() -> Unit)? = null,
 ) {
     val rankColor = when (rank) {
-        1 -> LottoMateRed50
-        2 -> LottoMateRed30
-        3 -> LottoMateYellow60
-        4 -> LottoMateGreen50
-        5 -> LottoMateBlue40
+        LottoRank.FIRST.rank -> LottoMateRed50
+        LottoRank.SECOND.rank -> LottoMateRed30
+        LottoRank.THIRD.rank -> LottoMateYellow60
+        LottoRank.FOURTH.rank -> LottoMateGreen50
+        LottoRank.FIFTH.rank -> LottoMateBlue40
         else -> LottoMateGray100
     }
 
@@ -138,7 +150,7 @@ private fun LottoWinInfoBaseCard(
                 .padding(20.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (rank == 1) {
+                if (rank == LottoRank.FIRST.rank) {
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.icon_lotto_rank_first),
                         contentDescription = "Lotto Rank First Icon"
@@ -148,7 +160,7 @@ private fun LottoWinInfoBaseCard(
                 }
                 
                 Text(
-                    text = if (isBonus) "보너스" else "${rank}등",
+                    text = LottoRank.getLottoRankLabel(rank),
                     style = LottoMateTheme.typography.headline2
                         .copy(color = rankColor),
                 )
@@ -234,7 +246,6 @@ private fun LottoWinnerInfoCardPreview() {
                 lottoType = LottoType.L645,
                 prize = "48,077,032원",
                 condition = "당첨번호 6개 일치\n+ 보너스 일치",
-                isBonus = false,
                 winnerCountContent = {
                     Spacer(modifier = Modifier.height(10.dp))
 
