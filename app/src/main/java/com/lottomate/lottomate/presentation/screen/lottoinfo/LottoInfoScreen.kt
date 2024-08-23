@@ -2,6 +2,7 @@ package com.lottomate.lottomate.presentation.screen.lottoinfo
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -354,9 +355,11 @@ private fun LottoRoundSection(
         )
 
         Row(
-            modifier = Modifier.clickable {
-                onClickCurrentRound()
-            },
+            modifier = Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClickCurrentRound,
+            ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
