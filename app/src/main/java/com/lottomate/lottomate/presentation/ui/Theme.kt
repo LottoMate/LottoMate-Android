@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 // TODO : Color 선택 완료되면 다시 수정
 private val LightColorScheme = lightColorScheme(
@@ -29,9 +30,15 @@ fun LottoMateTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = LightColorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalLottoMateTypography provides Typography) {
+        MaterialTheme(
+            colorScheme = LightColorScheme,
+            content = content
+        )
+    }
+}
+
+object LottoMateTheme {
+    val typography: LottoMateTypography
+        @Composable get() = LocalLottoMateTypography.current
 }

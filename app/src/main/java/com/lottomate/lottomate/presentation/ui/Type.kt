@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.ui
 
-import androidx.compose.material3.Typography
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -92,21 +93,50 @@ private val caption = pretendardStyle.copy(
     lineHeight = 18.sp,
 )
 
-val Typography = Typography(
-    displayLarge = display1,
-    displayMedium = display2,
-
-    titleLarge = title1,
-    titleMedium = title2,
-    titleSmall = title3,
-
-    headlineLarge = headline1,
-    headlineMedium = headline2,
-
-    bodyLarge = body1,
-    bodyMedium = body2,
-
-    labelLarge = label1,
-    labelMedium = label2,
-    labelSmall = caption,
+@Immutable
+data class LottoMateTypography(
+    val display1: TextStyle,
+    val display2: TextStyle,
+    val title1: TextStyle,
+    val title2: TextStyle,
+    val title3: TextStyle,
+    val headline1: TextStyle,
+    val headline2: TextStyle,
+    val body1: TextStyle,
+    val body2: TextStyle,
+    val label1: TextStyle,
+    val label2: TextStyle,
+    val caption: TextStyle
 )
+
+val Typography = LottoMateTypography(
+    display1 = display1,
+    display2 = display2,
+    title1 = title1,
+    title2 = title2,
+    title3 = title3,
+    headline1 = headline1,
+    headline2 = headline2,
+    body1 = body1,
+    body2 = body2,
+    label1 = label1,
+    label2 = label2,
+    caption = caption,
+)
+
+val LocalLottoMateTypography = staticCompositionLocalOf {
+    LottoMateTypography(
+        display1 = display1,
+        display2 = display2,
+        title1 = title1,
+        title2 = title2,
+        title3 = title3,
+        headline1 = headline1,
+        headline2 = headline2,
+        body1 = body1,
+        body2 = body2,
+        label1 = label1,
+        label2 = label2,
+        caption = caption,
+    )
+}

@@ -15,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -95,12 +94,12 @@ private fun Lotto645WinNumber(
         ) {
             Text(
                 text = "당첨 번호",
-                style = MaterialTheme.typography.labelSmall
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray70)
             )
             Text(
                 text = "보너스",
-                style = MaterialTheme.typography.labelSmall
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray70)
             )
         }
@@ -139,8 +138,8 @@ private fun Lotto720WinNumber(
     ) {
         Text(
             text = "1등",
-            style = MaterialTheme.typography.labelSmall,
-            color = LottoMateGray70,
+            style = LottoMateTheme.typography.caption
+                .copy(LottoMateGray70),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -164,7 +163,7 @@ private fun Lotto720WinNumber(
 
                 Text(
                     text = "조",
-                    style = MaterialTheme.typography.labelMedium
+                    style = LottoMateTheme.typography.label2,
                 )
             }
 
@@ -187,8 +186,8 @@ private fun Lotto720WinNumber(
 
         Text(
             text = "보너스",
-            style = MaterialTheme.typography.labelSmall,
-            color = LottoMateGray70,
+            style = LottoMateTheme.typography.caption
+                .copy(LottoMateGray70),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -204,14 +203,14 @@ private fun Lotto720WinNumber(
             ) {
                 Text(
                     text = "각",
-                    style = MaterialTheme.typography.bodyLarge
+                    style = LottoMateTheme.typography.body1,
                 )
 
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Text(
                     text = "조",
-                    style = MaterialTheme.typography.labelMedium
+                    style = LottoMateTheme.typography.label2,
                 )
             }
 

@@ -6,4 +6,5 @@
     <string name="banner_lotto_info_sub_title">터치해서 당첨 판매점 보기</string>
 
     <string name="top_app_bar_title_lotto_info">당첨 정보 상세</string>
+    <string name="lotto_info_per_person">1인당</string>
 </resources>
