@@ -224,8 +224,8 @@ private fun LottoWinInfoRow(
     ) {
         Text(
             text = title,
-            style = LottoMateTheme.typography.body1,
-            color = LottoMateGray90,
+            style = LottoMateTheme.typography.body1
+                .copy(LottoMateGray90),
             modifier = Modifier.width(88.dp)
         )
         Text(

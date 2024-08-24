@@ -138,8 +138,8 @@ private fun Lotto720WinNumber(
     ) {
         Text(
             text = "1등",
-            style = LottoMateTheme.typography.caption,
-            color = LottoMateGray70,
+            style = LottoMateTheme.typography.caption
+                .copy(LottoMateGray70),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -186,8 +186,8 @@ private fun Lotto720WinNumber(
 
         Text(
             text = "보너스",
-            style = LottoMateTheme.typography.caption,
-            color = LottoMateGray70,
+            style = LottoMateTheme.typography.caption
+                .copy(LottoMateGray70),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
