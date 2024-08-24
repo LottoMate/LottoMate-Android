@@ -191,6 +191,12 @@ private fun LottoInfoContent(
         },
         sheetDragHandle = null,
         sheetSwipeEnabled = false,
+        sheetShape = RoundedCornerShape(
+            topStart = 32.dp,
+            topEnd = 32.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
         snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }
     ) { innerPadding ->
         Box(
