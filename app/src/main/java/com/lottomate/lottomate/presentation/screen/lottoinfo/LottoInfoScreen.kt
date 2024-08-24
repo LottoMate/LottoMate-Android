@@ -27,12 +27,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -173,6 +175,11 @@ private fun LottoInfoContent(
     onClickBottomBanner: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val isDimVisible by remember {
+        derivedStateOf {
+            scaffoldState.bottomSheetState.targetValue == SheetValue.Expanded
+        }
+    }
 
     BottomSheetScaffold(
         modifier = modifier.fillMaxSize(),
@@ -281,6 +288,16 @@ private fun LottoInfoContent(
                 titleRes = R.string.top_app_bar_title_lotto_info,
                 hasNavigation = true,
                 onBackPressed = onBackPressed,
+            )
+
+            BottomSheetDimBackground(
+                modifier = Modifier.fillMaxSize(),
+                isDimVisible = isDimVisible,
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.partialExpand()
+                    }
+                }
             )
         }
     }
@@ -521,6 +538,21 @@ private fun BottomBannerSection(
                 color = LottoMateGray120
             )
         }
+    }
+}
+
+@Composable
+private fun BottomSheetDimBackground(
+    modifier: Modifier = Modifier,
+    isDimVisible: Boolean,
+    onClick: () -> Unit,
+) {
+    if (isDimVisible) {
+        Box(
+            modifier = modifier
+                .background(LottoMateBlack.copy(0.4f))
+                .clickable { onClick() }
+        )
     }
 }
 
