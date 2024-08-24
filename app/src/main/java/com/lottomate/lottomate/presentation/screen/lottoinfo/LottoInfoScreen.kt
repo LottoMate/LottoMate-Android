@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,6 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -58,7 +61,6 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateBlue5
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
@@ -66,6 +68,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.presentation.ui.LottoMateYellow5
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -506,29 +509,42 @@ private fun BottomBannerSection(
 ) {
     Box(
         modifier = modifier
+            .height(100.dp)
             .background(
-                color = LottoMateBlue5,
+                color = LottoMateYellow5,
                 shape = RoundedCornerShape(Dimens.RadiusLarge)
             )
-            .clip(RoundedCornerShape(Dimens.RadiusLarge))
-            .clickable { onClickBanner() }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClickBanner
+            )
     ) {
-        Column(
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 15.dp)
+                .padding(top = 15.dp, start = 20.dp, end = 18.dp),
         ) {
-            Text(
-                text = stringResource(id = R.string.banner_lotto_info_title),
-                style = LottoMateTheme.typography.headline2,
-            )
+            Column {
+                Text(
+                    text = stringResource(id = R.string.banner_lotto_info_title),
+                    style = LottoMateTheme.typography.headline2,
+                )
 
-            Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = stringResource(id = R.string.banner_lotto_info_sub_title),
-                style = LottoMateTheme.typography.caption
-                    .copy(LottoMateGray90),
+                Text(
+                    text = stringResource(id = R.string.banner_lotto_info_sub_title),
+                    style = LottoMateTheme.typography.caption
+                        .copy(LottoMateGray90),
+                )
+            }
+
+            Image(
+                bitmap = ImageBitmap.imageResource(id = R.drawable.bn_pochi_lotto_info),
+                contentDescription = "Lotto Info Bottom Banner Image",
+                modifier = Modifier.padding(bottom = 7.dp),
             )
         }
     }
