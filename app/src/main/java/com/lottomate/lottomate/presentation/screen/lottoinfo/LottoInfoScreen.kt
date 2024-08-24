@@ -189,6 +189,8 @@ private fun LottoInfoContent(
                 onClickSelect = onChangeLottoRound,
             )
         },
+        sheetDragHandle = null,
+        sheetSwipeEnabled = false,
         snackbarHost = { SnackbarHost(hostState = scaffoldState.snackbarHostState) }
     ) { innerPadding ->
         Box(
