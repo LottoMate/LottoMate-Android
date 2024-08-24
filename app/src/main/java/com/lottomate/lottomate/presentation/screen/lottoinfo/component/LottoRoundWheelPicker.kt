@@ -4,18 +4,24 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,23 +32,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoRoundViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
+import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateGray90
+import com.lottomate.lottomate.presentation.ui.LottoMateRed5
+import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.DateUtils.calLottoRoundDate
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -95,6 +103,7 @@ fun LottoRoundWheelPicker(
         lastDate = lastDate,
         visibleItemCount = visibleItemCount,
         lottoRoundRange = lottoRoundRange,
+        currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
         scaffoldState = scaffoldState,
         scrollState = scrollState,
         flingBehavior = flingBehavior,
@@ -109,6 +118,8 @@ private fun LottoRoundWheelPickerContent(
     lastDate: String,
     visibleItemCount: Int,
     lottoRoundRange: List<String>,
+    currentIndex: Int,
+    pickerMaxHeight: Dp = 116.dp,
     scaffoldState: BottomSheetScaffoldState,
     scrollState: LazyListState,
     flingBehavior: FlingBehavior,
@@ -119,18 +130,26 @@ private fun LottoRoundWheelPickerContent(
     var itemHeightPixel by remember { mutableIntStateOf(0) }
     val itemHeightToDp = pixelsToDp(pixels = itemHeightPixel)
 
-    val fadingEdgeGradient = remember {
-        Brush.verticalGradient(
-            0f to Color.Transparent,
-            0.5f to Color.Black,
-            1f to Color.Transparent
-        )
-    }
-
     Column(modifier = modifier.background(LottoMateWhite)) {
         Spacer(modifier = Modifier.height(32.dp))
 
-        Box(modifier = modifier) {
+        Text(
+            text = "회차 선택",
+            style = MaterialTheme.typography.headlineLarge,
+            modifier = Modifier.padding(start = 20.dp),
+        )
+
+        Spacer(modifier = Modifier.height((23.372).dp))
+
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset(y = itemHeightToDp - (40.dp - itemHeightToDp) / 2)
+                    .background(LottoMateRed5)
+                    .height(40.dp)
+            )
+
             LazyColumn(
                 state = scrollState,
                 flingBehavior = flingBehavior,
@@ -138,57 +157,97 @@ private fun LottoRoundWheelPickerContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(itemHeightToDp * visibleItemCount)
-                    .fadingEdge(fadingEdgeGradient)
             ) {
                 items(lottoRoundRange.size) { index ->
-                    Text(
-                        text = if (index == 0) {
-                            lottoRoundRange[index]
-                        } else {
-                            lottoRoundRange[index]
-                                .plus("회")
-                                .plus(" (")
-                                .plus(calLottoRoundDate(lastDate, index))
-                                .plus(")")
-                        },
-                        textAlign = TextAlign.Center,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                    Row(
                         modifier = Modifier
-                            .onSizeChanged { size -> itemHeightPixel = size.height }
-                            .padding(vertical = 4.dp)
-                    )
+                            .fillMaxWidth()
+                            .height(pickerMaxHeight * 0.333f)
+                            .padding(horizontal = 20.dp)
+                            .onSizeChanged { size -> itemHeightPixel = size.height },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            text = if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회"),
+                            textAlign = TextAlign.Center,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.headlineLarge
+                                .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
+                        )
+
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        Text(
+                            text = if (index == 0) "" else calLottoRoundDate(lastDate, index),
+                            style = MaterialTheme.typography.bodyLarge
+                                .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
+                        )
+                    }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height((23.372).dp))
 
-        LottoMateSolidButton(
-            text = "선택",
-            buttonSize = LottoMateButtonProperty.Size.LARGE,
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            onClick = {
-                onClickSelect()
+                .padding(horizontal = 20.dp),
+        ) {
+            LottoMateAssistiveButton(
+                text = "취소",
+                buttonSize = LottoMateButtonProperty.Size.LARGE,
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.partialExpand()
+                    }
+                },
+                modifier = Modifier.weight(1f),
+            )
 
-                coroutineScope.launch {
-                    scaffoldState.bottomSheetState.partialExpand()
+            Spacer(modifier = Modifier.width(15.dp))
+
+            LottoMateSolidButton(
+                text = "확인",
+                buttonSize = LottoMateButtonProperty.Size.LARGE,
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    onClickSelect()
+
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.partialExpand()
+                    }
                 }
-            }
-        )
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(28.dp))
     }
 }
 
-private fun Modifier.fadingEdge(brush: Brush) = this
-    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-    .drawWithContent {
-        drawContent()
-        drawRect(brush = brush, blendMode = BlendMode.DstIn)
-    }
-
 @Composable
 private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Preview(showBackground = true)
+@Composable
+private fun LottoRoundWheelPickerContentPreview() {
+    LottoMateTheme {
+        val scrollState = rememberLazyListState()
+        val pickerState = rememberPickerState()
+        val ranges = List(20) { it.toString() }
+
+        LottoRoundWheelPickerContent(
+            lastDate = "2024-03-01",
+            lottoRoundRange = ranges,
+            visibleItemCount = 3,
+            scaffoldState = rememberBottomSheetScaffoldState(),
+            scrollState = scrollState,
+            currentIndex = ranges.indexOf(pickerState.selectedItem),
+            flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState),
+            onClickSelect = {}
+        )
+    }
+}
