@@ -281,6 +281,16 @@ private fun LottoInfoContent(
                 hasNavigation = true,
                 onBackPressed = onBackPressed,
             )
+
+            BottomSheetDimBackground(
+                modifier = Modifier.fillMaxSize(),
+                isDimVisible = isDimVisible,
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.partialExpand()
+                    }
+                }
+            )
         }
     }
 }
