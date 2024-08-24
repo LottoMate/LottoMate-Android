@@ -17,8 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -152,7 +151,13 @@ private fun LottoWinInfoBaseCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (rank == LottoRank.FIRST.rank) {
                     Image(
-                        bitmap = ImageBitmap.imageResource(id = R.drawable.icon_lotto_rank_first),
+                        painter = painterResource(
+                            id = when (lottoType) {
+                                LottoType.L645 -> R.drawable.icon_lotto645_rank_first
+                                LottoType.L720 -> R.drawable.icon_lotto720_rank_first
+                                else -> R.drawable.icon_speetto_rank_first
+                            }
+                        ),
                         contentDescription = "Lotto Rank First Icon"
                     )
 
@@ -242,7 +247,7 @@ private fun LottoWinnerInfoCardPreview() {
         Box(modifier = Modifier.padding(16.dp)) {
             LottoWinInfoBaseCard(
                 modifier = Modifier.fillMaxWidth(),
-                rank = 2,
+                rank = 1,
                 lottoType = LottoType.L645,
                 prize = "48,077,032원",
                 condition = "당첨번호 6개 일치\n+ 보너스 일치",
