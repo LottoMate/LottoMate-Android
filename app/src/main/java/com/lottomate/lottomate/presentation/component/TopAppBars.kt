@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -27,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
@@ -39,37 +41,53 @@ fun LottoMateTopAppBar(
     onBackPressed: () -> Unit = {},
     actionButtons: @Composable () -> Unit = {},
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(Dimens.TopAppBarHeight)
+    val statusHeight = LocalContext.current.resources.getDimensionPixelSize(
+        LocalContext.current.resources.getIdentifier("status_bar_height", "dimen", "android")
+    ).run {
+        pixelsToDp(pixels = this)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
             .background(LottoMateWhite.copy(alpha = 0.8f)),
     ) {
-        if (hasNavigation) {
-            LottoMateIconButton(
-                iconRes = R.drawable.icon_arrow_left,
-                contentDescription = "Navigation Back Button",
-                onClick = onBackPressed,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = topAppBarHorizontalPadding)
-            )
-        }
-
-        Text(
-            text = stringResource(id = titleRes),
-            textAlign = TextAlign.Center,
-            style = LottoMateTheme.typography.headline1,
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.End,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = topAppBarHorizontalPadding),
+                .height(statusHeight)
+        )
+
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(Dimens.TopAppBarHeight),
         ) {
-            actionButtons()
+            if (hasNavigation) {
+                LottoMateIconButton(
+                    iconRes = R.drawable.icon_arrow_left,
+                    contentDescription = "Navigation Back Button",
+                    onClick = onBackPressed,
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .padding(start = topAppBarHorizontalPadding)
+                )
+            }
+
+            Text(
+                text = stringResource(id = titleRes),
+                textAlign = TextAlign.Center,
+                style = LottoMateTheme.typography.headline1,
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = topAppBarHorizontalPadding),
+            ) {
+                actionButtons()
+            }
         }
     }
 }
