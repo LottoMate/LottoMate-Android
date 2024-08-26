@@ -60,7 +60,7 @@ class LottoInfoViewModel @Inject constructor(
         viewModelScope.launch {
             lottoInfoRepository.fetchLottoInfoByRound(lottoType, lottoRndNum)
                 .collectLatest { lottoInfo ->
-                    judgePreOrNextLottoRound(lottoInfo.lottoRndNum)
+                    judgePreOrNextLottoRound(lottoInfo.lottoRound)
 
                     _lottoInfo.update {
                         LottoInfoUiState.Success(lottoInfo)
@@ -73,7 +73,7 @@ class LottoInfoViewModel @Inject constructor(
         viewModelScope.launch {
             lottoInfoRepository.getLatestLottoInfoByLottoType(lottoType)
                 .collectLatest { lottoInfo ->
-                    judgePreOrNextLottoRound(lottoInfo.lottoRndNum)
+                    judgePreOrNextLottoRound(lottoInfo.lottoRound)
 
                     _lottoInfo.update {
                         LottoInfoUiState.Success(lottoInfo)
@@ -86,7 +86,7 @@ class LottoInfoViewModel @Inject constructor(
         val currentLottoType = LottoType.findLottoType(currentTabMenu.intValue).num
         val latestLottoRound = lottoInfoRepository.latestLottoInfo.getValue(currentLottoType)
 
-        hasNextLottoRound.value = lottoRndNum != latestLottoRound.lottoRndNum
+        hasNextLottoRound.value = lottoRndNum != latestLottoRound.lottoRound
         hasPreLottoRound.value = lottoRndNum != LOTTO_FIRST_ROUND
     }
 

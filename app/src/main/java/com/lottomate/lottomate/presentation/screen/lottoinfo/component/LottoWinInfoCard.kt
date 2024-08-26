@@ -66,7 +66,7 @@ fun Lotto645WinInfoCard(
     LottoWinInfoBaseCard(
         modifier = modifier,
         rank = rank.plus(1),
-        prize = "${lottoInfo.prizeMoney[rank]}원",
+        prize = "${lottoInfo.lottoPrize[rank]}원",
         condition = Lotto645WinConditions[rank],
         lottoType = LottoType.L645,
         winnerCountContent = {
@@ -74,7 +74,7 @@ fun Lotto645WinInfoCard(
 
             LottoWinInfoRow(
                 title = "당첨자 수",
-                text = "${lottoInfo.drwtWinNum[rank]}명"
+                text = "${lottoInfo.lottoWinnerNum[rank]}명"
             )
         },
         totalPrizeContent = {
@@ -82,7 +82,7 @@ fun Lotto645WinInfoCard(
 
             LottoWinInfoRow(
                 title = "총 당첨금",
-                text = "${lottoInfo.prizeMoney[rank]}원"
+                text = "${lottoInfo.lottoPrize[rank]}원"
             )
         }
     )
@@ -105,7 +105,7 @@ fun Lotto720WinInfoCard(
 
             LottoWinInfoRow(
                 title = "당첨 수",
-                text = "${lottoInfo.drwtWinNum[rank]}매"
+                text = "${lottoInfo.lottoWinnerNum[rank]}매"
             )
         },
     )

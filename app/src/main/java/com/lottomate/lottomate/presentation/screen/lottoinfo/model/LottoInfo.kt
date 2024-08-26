@@ -1,28 +1,27 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.model
 
 sealed interface LottoInfo {
-    val lottoRndNum: Int
-    val drwtDate: String
-    val drwtWinNum: List<String>
-    val drwtNum: List<Int>
-    val drwtBonusNum: List<Int>
+    val lottoRound: Int
+    val lottoDate: String
+    val lottoNum: List<Int>
+    val lottoBonusNum: List<Int>
+    val lottoWinnerNum: List<String>
 }
 
 data class Lotto645Info(
-    override val lottoRndNum: Int,
-    override val drwtDate: String,
-    override val drwtWinNum: List<String>,
-    override val drwtNum: List<Int>,
-    override val drwtBonusNum: List<Int>,
-    val prizeMoney: List<String>,
-    val drwtMoney: List<String>,
-    val drwtSaleMoney: String,
+    val lottoPrize: List<String>,
+    val totalSalesPrice: String,
+    override val lottoRound: Int,
+    override val lottoDate: String,
+    override val lottoNum: List<Int>,
+    override val lottoBonusNum: List<Int>,
+    override val lottoWinnerNum: List<String>,
 ): LottoInfo
 
 data class Lotto720Info(
-    override val lottoRndNum: Int,
-    override val drwtDate: String,
-    override val drwtWinNum: List<String>,
-    override val drwtNum: List<Int>,
-    override val drwtBonusNum: List<Int>,
+    override val lottoRound: Int,
+    override val lottoDate: String,
+    override val lottoNum: List<Int>,
+    override val lottoBonusNum: List<Int>,
+    override val lottoWinnerNum: List<String>
 ): LottoInfo

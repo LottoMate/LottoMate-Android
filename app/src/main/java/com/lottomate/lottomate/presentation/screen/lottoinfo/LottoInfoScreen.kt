@@ -186,7 +186,7 @@ private fun LottoInfoContent(
         sheetPeekHeight = 0.dp,
         sheetContent = {
             LottoRoundWheelPicker(
-                currentLottoRound = lottoInfo.lottoRndNum,
+                currentLottoRound = lottoInfo.lottoRound,
                 currentTabIndex = currentTabIndex,
                 scaffoldState = scaffoldState,
                 pickerState = pickerState,
@@ -225,12 +225,12 @@ private fun LottoInfoContent(
 
                 LottoRoundSection(
                     modifier = Modifier.fillMaxWidth(),
-                    currentRound = lottoInfo.lottoRndNum,
-                    currentDate = lottoInfo.drwtDate,
+                    currentRound = lottoInfo.lottoRound,
+                    currentDate = lottoInfo.lottoDate,
                     hasPreRound = hasPreRound,
                     hasNextRound = hasNextRound,
-                    onClickPreRound = { onClickPreRound(lottoInfo.lottoRndNum) },
-                    onClickNextRound = { onClickNextRound(lottoInfo.lottoRndNum) },
+                    onClickPreRound = { onClickPreRound(lottoInfo.lottoRound) },
+                    onClickNextRound = { onClickNextRound(lottoInfo.lottoRound) },
                     onClickCurrentRound = {
                         coroutineScope.launch {
                             scaffoldState.bottomSheetState.expand()
@@ -245,8 +245,8 @@ private fun LottoInfoContent(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     currentLottoType = LottoType.findLottoType(currentTabIndex),
-                    winNumbers = lottoInfo.drwtNum,
-                    bonusNumber = lottoInfo.drwtBonusNum,
+                    winNumbers = lottoInfo.lottoNum,
+                    bonusNumber = lottoInfo.lottoBonusNum,
                 )
 
                 Spacer(modifier = Modifier.height(42.dp))
@@ -460,7 +460,7 @@ private fun LottoWinInfoSection(
                 val info = lottoInfo as Lotto645Info
 
                 Text(
-                    text = "총 판매 금액 : ${info.drwtSaleMoney}원",
+                    text = "총 판매 금액 : ${info.totalSalesPrice}원",
                     style = LottoMateTheme.typography.caption
                         .copy(LottoMateGray100),
                 )

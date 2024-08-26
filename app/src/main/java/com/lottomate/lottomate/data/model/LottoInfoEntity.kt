@@ -9,22 +9,40 @@ sealed interface LottoInfoEntity
 @Serializable
 @SerialName("645")
 data class Lotto645InfoEntity(
-    val lottoRndNum: Int,
-    val drwtDate: String,
-    val prizeMoney: List<Long>,
-    val drwtWinNum: List<Int>,
-    val drwtMoney: List<Long>,
-    val drwtNum: List<Int>,
-    val drwtBonusNum: List<Int>,
-    val drwtSaleMoney: Long = 0L,
+    val lottoDrwNo: Int,
+    val lottoType: String,
+    val lottoNum: List<Int>,
+    val lottoBonusNum: List<Int>,
+    val drwDate: String,
+    val drwNum: Int,
+    val totalSalesPrice: Long,
+    val p1Jackpot: Long,
+    val p1WinnrCnt: Int,
+    val p2Jackpot: Long,
+    val p2WinnrCnt: Int,
+    val p3Jackpot: Long,
+    val p3WinnrCnt: Int,
+    val p4Jackpot: Long,
+    val p4WinnrCnt: Int,
+    val p5Jackpot: Long,
+    val p5WinnrCnt: Int,
 ): LottoInfoEntity
 
 @Serializable
 @SerialName("720")
 data class Lotto720InfoEntity(
-    val lottoRndNum: Int,
-    val drwtDate: String,
-    val drwtWinNum: List<Int> = emptyList(),
-    val drwtNum: List<Int>,
-    val drwtBonusNum: List<Int>,
+    val lottoDrwNo: Int,
+    val lottoType: String,
+    val lottoNum: List<Int>,
+    val lottoBonusNum: List<Int>,
+    val drwDate: String,
+    val drwNum: Int,
+    val p1WinnrCnt: Int,
+    val p2WinnrCnt: Int,
+    val p3WinnrCnt: Int,
+    val p4WinnrCnt: Int,
+    val p5WinnrCnt: Int,
+    val p6WinnrCnt: Int,
+    val p7WinnrCnt: Int,
+    val p8WinnrCnt: Int,
 ): LottoInfoEntity

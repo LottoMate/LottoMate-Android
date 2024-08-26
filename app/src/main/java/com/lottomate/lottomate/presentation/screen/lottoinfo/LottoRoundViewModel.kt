@@ -31,8 +31,8 @@ class LottoRoundViewModel @Inject constructor(
 
     private fun loadLatestLottoInfo(lottoType: LottoType) {
         with(lottoInfoRepository.latestLottoInfo.getValue(lottoType.num)) {
-            _latestLottoRound.update { lottoRndNum }
-            _latestLottoDate.update { drwtDate }
+            _latestLottoRound.update { lottoRound }
+            _latestLottoDate.update { lottoDate }
         }
     }
 
