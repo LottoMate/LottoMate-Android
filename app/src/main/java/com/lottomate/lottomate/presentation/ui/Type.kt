@@ -2,10 +2,12 @@ package com.lottomate.lottomate.presentation.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import com.lottomate.lottomate.R
 
@@ -19,6 +21,13 @@ private val pretendardFontFamily = FontFamily(
 private val pretendardStyle = TextStyle(
     fontFamily = pretendardFontFamily,
     letterSpacing = (-0.6).sp,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    ),
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 private val display1 = pretendardStyle.copy(
@@ -53,7 +62,7 @@ private val title3 = pretendardStyle.copy(
 
 private val headline1 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 18.sp,
+    fontSize = 20.sp,
     lineHeight = 28.sp,
 )
 
