@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -54,7 +55,7 @@ private const val TAB_WIDTH = 40
 private const val TAB_CONTAINER_WIDTH = 72
 private const val TAB_HEIGHT = 44
 private const val TAB_INDICATOR_HEIGHT = 2
-private const val TAB_EDGE_PADDING = 20
+private const val TAB_EDGE_PADDING = 11
 
 @Composable
 fun LottoMateScrollableTabRow(
