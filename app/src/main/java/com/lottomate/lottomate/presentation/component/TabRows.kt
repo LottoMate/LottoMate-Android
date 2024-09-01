@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -134,7 +135,12 @@ private fun LottoMateScrollableTabRow(
             height = TAB_INDICATOR_HEIGHT.dp
         )
     },
-    divider: @Composable () -> Unit = {},
+    divider: @Composable () -> Unit = {
+        Divider(
+            thickness = 1.dp,
+            color = LottoMateGray20,
+        )
+    },
     tabs: @Composable () -> Unit
 ) {
     Surface(
