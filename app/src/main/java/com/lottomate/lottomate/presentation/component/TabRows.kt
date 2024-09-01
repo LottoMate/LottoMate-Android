@@ -88,7 +88,7 @@ fun LottoMateScrollableTabRow(
                                 indication = null
                             ),
                     ) {
-                        Text(
+                        LottoMateText(
                             text = tab,
                             textAlign = TextAlign.Center,
                             style = if (index == tabState.currentTabIndex) {

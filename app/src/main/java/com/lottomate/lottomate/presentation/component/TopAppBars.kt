@@ -74,7 +74,7 @@ fun LottoMateTopAppBar(
                 )
             }
 
-            Text(
+            LottoMateText(
                 text = stringResource(id = titleRes),
                 textAlign = TextAlign.Center,
                 style = LottoMateTheme.typography.headline1,
