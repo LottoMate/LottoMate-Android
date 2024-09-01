@@ -92,11 +92,10 @@ fun LottoMateScrollableTabRow(
                             text = tab,
                             textAlign = TextAlign.Center,
                             style = if (index == tabState.currentTabIndex) {
-                                LottoMateTheme.typography.headline1
+                                LottoMateTheme.typography.headline2
                             } else {
                                 LottoMateTheme.typography.body1
                             },
-                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.width(TAB_WIDTH.dp),
                         )
                     }
