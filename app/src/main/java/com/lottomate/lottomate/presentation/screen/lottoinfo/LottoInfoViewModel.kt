@@ -60,7 +60,9 @@ class LottoInfoViewModel @Inject constructor(
         viewModelScope.launch {
             lottoInfoRepository.fetchLottoInfoByRound(lottoType, lottoRndNum)
                 .collectLatest { lottoInfo ->
-                    judgePreOrNextLottoRound(lottoInfo.lottoRound)
+                    lottoInfo.lottoRound?.let { round ->
+                        judgePreOrNextLottoRound(round)
+                    }
 
                     _lottoInfo.update {
                         LottoInfoUiState.Success(lottoInfo)
@@ -73,7 +75,9 @@ class LottoInfoViewModel @Inject constructor(
         viewModelScope.launch {
             lottoInfoRepository.getLatestLottoInfoByLottoType(lottoType)
                 .collectLatest { lottoInfo ->
-                    judgePreOrNextLottoRound(lottoInfo.lottoRound)
+                    lottoInfo.lottoRound?.let { round ->
+                        judgePreOrNextLottoRound(round)
+                    }
 
                     _lottoInfo.update {
                         LottoInfoUiState.Success(lottoInfo)
