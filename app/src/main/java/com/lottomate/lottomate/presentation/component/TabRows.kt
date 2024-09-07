@@ -7,9 +7,11 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -57,12 +59,13 @@ private const val TAB_EDGE_PADDING = 11
 
 @Composable
 fun LottoMateScrollableTabRow(
+    modifier: Modifier = Modifier,
     tabState: TabState,
     tabs: List<String>,
 ) {
     LottoMateScrollableTabRow(
         selectedTabIndex = tabState.currentTabIndex,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
         tabs.forEachIndexed { index, tab ->
             Tab(
@@ -107,14 +110,21 @@ fun LottoMateScrollableTabRow(
 @Composable
 private fun LottoMateTabRowsPreview() {
     LottoMateTheme {
-        LottoMateScrollableTabRow(
-            tabState = rememberTabState(),
-            tabs = listOf(
-                LottoType.S2000.num.toString(),
-                LottoType.S1000.num.toString(),
-                LottoType.S500.num.toString(),
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            LottoMateScrollableTabRow(
+                tabState = rememberTabState(),
+                tabs = listOf(
+                    LottoType.S2000.num.toString(),
+                    LottoType.S1000.num.toString(),
+                    LottoType.S500.num.toString(),
+                ),
+                modifier = Modifier.fillMaxWidth(),
             )
-        )
+        }
     }
 }
 
@@ -133,12 +143,6 @@ private fun LottoMateScrollableTabRow(
             height = TAB_INDICATOR_HEIGHT.dp
         )
     },
-    divider: @Composable () -> Unit = {
-        Divider(
-            thickness = 1.dp,
-            color = LottoMateGray20,
-        )
-    },
     tabs: @Composable () -> Unit
 ) {
     Surface(
@@ -154,73 +158,72 @@ private fun LottoMateScrollableTabRow(
                 coroutineScope = coroutineScope
             )
         }
-        SubcomposeLayout(
-            Modifier
-                .fillMaxWidth()
-                .wrapContentSize(align = Alignment.CenterStart)
-                .horizontalScroll(scrollState)
-                .selectableGroup()
-                .clipToBounds()
-        ) { constraints ->
-            val minTabWidth = 0
-            val padding = edgePadding.roundToPx()
-
-            val tabMeasurables = subcompose(TabSlots.Tabs, tabs)
-
-            val layoutHeight = tabMeasurables.fold(initial = 0) { curr, measurable ->
-                maxOf(curr, measurable.maxIntrinsicHeight(Constraints.Infinity))
-            }
-
-            val tabConstraints = constraints.copy(
-                minWidth = minTabWidth,
-                minHeight = layoutHeight,
-                maxHeight = layoutHeight,
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Divider(
+                thickness = 1.dp,
+                color = LottoMateGray20,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter),
             )
-            val tabPlaceables = tabMeasurables
-                .map { it.measure(tabConstraints) }
 
-            val layoutWidth = tabPlaceables.fold(initial = padding * 2) { curr, measurable ->
-                curr + measurable.width
-            }
+            SubcomposeLayout(
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize(align = Alignment.CenterStart)
+                    .horizontalScroll(scrollState)
+                    .selectableGroup()
+                    .clipToBounds()
+            ) { constraints ->
+                val minTabWidth = 0
+                val padding = edgePadding.roundToPx()
 
-            // Position the children.
-            layout(layoutWidth, layoutHeight) {
-                // Place the tabs
-                val tabPositions = mutableListOf<TabPosition>()
-                var left = padding
-                tabPlaceables.forEach {
-                    it.placeRelative(left, 0)
-                    tabPositions.add(TabPosition(left = left.toDp(), width = it.width.toDp()))
-                    left += it.width
+                val tabMeasurables = subcompose(TabSlots.Tabs, tabs)
+
+                val layoutHeight = tabMeasurables.fold(initial = 0) { curr, measurable ->
+                    maxOf(curr, measurable.maxIntrinsicHeight(Constraints.Infinity))
                 }
 
-                // The divider is measured with its own height, and width equal to the total width
-                // of the tab row, and then placed on top of the tabs.
-                subcompose(TabSlots.Divider, divider).forEach {
-                    val placeable = it.measure(
-                        constraints.copy(
-                            minHeight = 0,
-                            minWidth = layoutWidth,
-                            maxWidth = layoutWidth
-                        )
-                    )
-                    placeable.placeRelative(0, layoutHeight - placeable.height)
-                }
-
-                // The indicator container is measured to fill the entire space occupied by the tab
-                // row, and then placed on top of the divider.
-                subcompose(TabSlots.Indicator) {
-                    indicator(tabPositions)
-                }.forEach {
-                    it.measure(Constraints.fixed(layoutWidth, layoutHeight)).placeRelative(0, 0)
-                }
-
-                scrollableTabData.onLaidOut(
-                    density = this@SubcomposeLayout,
-                    edgeOffset = padding,
-                    tabPositions = tabPositions,
-                    selectedTab = selectedTabIndex
+                val tabConstraints = constraints.copy(
+                    minWidth = minTabWidth,
+                    minHeight = layoutHeight,
+                    maxHeight = layoutHeight,
                 )
+                val tabPlaceables = tabMeasurables
+                    .map { it.measure(tabConstraints) }
+
+                val layoutWidth = tabPlaceables.fold(initial = padding * 2) { curr, measurable ->
+                    curr + measurable.width
+                }
+
+                // Position the children.
+                layout(layoutWidth, layoutHeight) {
+                    // Place the tabs
+                    val tabPositions = mutableListOf<TabPosition>()
+                    var left = padding
+                    tabPlaceables.forEach {
+                        it.placeRelative(left, 0)
+                        tabPositions.add(TabPosition(left = left.toDp(), width = it.width.toDp()))
+                        left += it.width
+                    }
+
+                    // The indicator container is measured to fill the entire space occupied by the tab
+                    // row, and then placed on top of the divider.
+                    subcompose(TabSlots.Indicator) {
+                        indicator(tabPositions)
+                    }.forEach {
+                        it.measure(Constraints.fixed(layoutWidth, layoutHeight)).placeRelative(0, 0)
+                    }
+
+                    scrollableTabData.onLaidOut(
+                        density = this@SubcomposeLayout,
+                        edgeOffset = padding,
+                        tabPositions = tabPositions,
+                        selectedTab = selectedTabIndex
+                    )
+                }
             }
         }
     }
