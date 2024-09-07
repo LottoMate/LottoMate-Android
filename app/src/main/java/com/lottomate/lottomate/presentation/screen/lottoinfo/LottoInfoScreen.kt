@@ -327,6 +327,7 @@ private fun LottoInfoWithBallsContent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
+        lottoInfo = lottoInfo,
         currentLottoType = LottoType.findLottoType(currentTabIndex),
         winNumbers = lottoInfo.lottoNum,
         bonusNumber = lottoInfo.lottoBonusNum,
@@ -494,15 +495,32 @@ private fun LottoRoundSection(
 @Composable
 private fun LottoWinNumberSection(
     modifier: Modifier = Modifier,
+    lottoInfo: LottoInfo,
     currentLottoType: LottoType,
     winNumbers: List<Int>,
     bonusNumber: List<Int>,
 ) {
     Column(modifier = modifier) {
-        Text(
-            text = "당첨 번호 보기",
-            style = LottoMateTheme.typography.headline1,
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom,
+        ) {
+            Text(
+                text = "당첨 번호 보기",
+                style = LottoMateTheme.typography.headline1,
+            )
+
+            if (currentLottoType == LottoType.L645) {
+                val info = lottoInfo as Lotto645Info
+
+                Text(
+                    text = "총 판매 금액 : ${info.totalSalesPrice}원",
+                    style = LottoMateTheme.typography.caption
+                        .copy(LottoMateGray80),
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -524,9 +542,11 @@ private fun LottoWinInfoSection(
         modifier = modifier,
     ){
         Row(
-            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 8.dp),
         ) {
             Text(
                 text = "등수별 당첨 정보",
@@ -534,12 +554,10 @@ private fun LottoWinInfoSection(
             )
 
             if (lottoType == LottoType.L645) {
-                val info = lottoInfo as Lotto645Info
-
                 Text(
-                    text = "총 판매 금액 : ${info.totalSalesPrice}원",
+                    text = "1인당 당첨 수령 금액",
                     style = LottoMateTheme.typography.caption
-                        .copy(LottoMateGray100),
+                        .copy(LottoMateGray80),
                 )
             }
         }
