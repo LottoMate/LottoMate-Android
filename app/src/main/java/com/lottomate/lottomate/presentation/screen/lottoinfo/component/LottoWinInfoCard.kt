@@ -78,24 +78,26 @@ fun Lotto645WinInfoCard(
         prize = "${lottoInfo.lottoPrizePerPerson[rank]}원",
         lottoType = LottoType.L645,
         infoDetailContent = {
-            LottoWinInfoRow(
-                modifier = Modifier.fillMaxWidth(),
-                title = "당첨 조건",
-                text = Lotto645WinConditions[rank]
-            )
+            LottoWinInfoBaseDetailContent {
+                LottoWinInfoRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "당첨 조건",
+                    text = Lotto645WinConditions[rank]
+                )
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            LottoWinInfoRow(
-                title = "당첨자 수",
-                text = "${lottoInfo.lottoWinnerNum[rank]}명"
-            )
-            Spacer(modifier = Modifier.height(10.dp))
+                LottoWinInfoRow(
+                    title = "당첨자 수",
+                    text = "${lottoInfo.lottoWinnerNum[rank]}명"
+                )
+                Spacer(modifier = Modifier.height(10.dp))
 
-            LottoWinInfoRow(
-                title = "총 당첨금",
-                text = "${lottoInfo.lottoPrize[rank]}원"
-            )
+                LottoWinInfoRow(
+                    title = "총 당첨금",
+                    text = "${lottoInfo.lottoPrize[rank]}원"
+                )
+            }
         }
     )
 }
@@ -112,18 +114,20 @@ fun Lotto720WinInfoCard(
         prize = Lotto720WinPrizes[rank],
         lottoType = LottoType.L720,
         infoDetailContent = {
-            LottoWinInfoRow(
-                modifier = Modifier.fillMaxWidth(),
-                title = "당첨 조건",
-                text = Lotto720WinConditions[rank]
-            )
+            LottoWinInfoBaseDetailContent {
+                LottoWinInfoRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "당첨 조건",
+                    text = Lotto720WinConditions[rank]
+                )
 
-            Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-            LottoWinInfoRow(
-                title = "당첨 수",
-                text = "${lottoInfo.lottoWinnerNum[rank]}매"
-            )
+                LottoWinInfoRow(
+                    title = "당첨 수",
+                    text = "${lottoInfo.lottoWinnerNum[rank]}매"
+                )
+            }
         },
     )
 }
