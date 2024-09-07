@@ -318,18 +318,8 @@ private fun LottoWinInfoBaseCard(
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     text = prize,
-                    style = LottoMateTheme.typography.title3,
+                    style = LottoMateTheme.typography.title2,
                 )
-
-                if (lottoType == LottoType.L645) {
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    Text(
-                        text = stringResource(id = R.string.lotto_info_per_person),
-                        style = LottoMateTheme.typography.label2
-                            .copy(color = LottoMateGray80)
-                    )
-                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
