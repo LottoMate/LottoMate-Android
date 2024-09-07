@@ -30,3 +30,19 @@ data class Lotto720Info(
     override val lottoBonusNum: List<Int>,
     override val lottoWinnerNum: List<String>
 ): LottoInfoWithBalls
+
+data class SpeettoInfo(
+    val currentPage: Int,
+    val lastPage: Int,
+    val details: List<SpeettoInfoDetail>,
+    override val lottoRound: Int? = null,
+    override val lottoDate: String? = null,
+) : LottoInfo
+
+data class SpeettoInfoDetail(
+    val rank: Int,
+    val store: String,
+    val hasInterview: Boolean,
+    override val lottoRound: Int,
+    override val lottoDate: String,
+): LottoInfo
