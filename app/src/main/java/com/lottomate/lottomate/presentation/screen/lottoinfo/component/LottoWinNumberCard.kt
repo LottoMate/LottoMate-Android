@@ -69,9 +69,7 @@ fun LottoWinNumberCard(
                     bonusNumbers = bonusNumbers,
                 )
             }
-            else -> {
-                // TODO : 스피또 당첨 정보 상세
-            }
+            else -> {}
         }
     }
 }

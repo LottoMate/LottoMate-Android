@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,15 +44,9 @@ class LottoInfoViewModel @Inject constructor(
         currentTabMenu.intValue = index
 
         when (index) {
-            LottoType.L645.ordinal -> {
-                getLatestLottoInfoByLottoType(LottoType.L645)
-            }
-            LottoType.L720.ordinal -> {
-                getLatestLottoInfoByLottoType(LottoType.L720)
-            }
-            else -> {
-                // TODO : 스피또 (수정예정)
-            }
+            LottoType.L645.ordinal -> getLatestLottoInfoByLottoType(LottoType.L645)
+            LottoType.L720.ordinal -> getLatestLottoInfoByLottoType(LottoType.L720)
+            else -> getLatestLottoInfoByLottoType(LottoType.S2000)
         }
     }
 
@@ -97,23 +93,15 @@ class LottoInfoViewModel @Inject constructor(
     private fun loadLatestLottoInfo() {
         viewModelScope.launch {
             lottoInfoRepository.fetchLatestLottoInfo()
+                .onStart {
+                    _lottoInfo.update { LottoInfoUiState.Loading }
+                }
                 .catch { throwable ->
                     _errorFlow.emit(throwable)
                 }
-                .collectLatest {
-                    val info = when (currentTabMenu.intValue) {
-                        LottoType.L645.ordinal -> { it.getValue(LottoType.L645.num) }
-                        LottoType.L720.ordinal -> { it.getValue(LottoType.L720.num) }
-                        else -> {
-                            // TODO : 스피또 (수정예정)
-                            it.getValue(LottoType.L645.num)
-                        }
-                    }
+                .collect()
 
-                    _lottoInfo.update {
-                        LottoInfoUiState.Success(info)
-                    }
-                }
+            getLatestLottoInfoByLottoType(LottoType.L645)
         }
     }
 

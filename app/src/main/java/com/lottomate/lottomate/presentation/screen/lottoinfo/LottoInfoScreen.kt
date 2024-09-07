@@ -43,6 +43,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -50,16 +51,24 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
+import com.lottomate.lottomate.presentation.component.LottoMateScrollableTabRow
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
+import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
+import com.lottomate.lottomate.presentation.component.TabState
+import com.lottomate.lottomate.presentation.component.rememberTabState
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto645WinInfoCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto720WinInfoCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoWinNumberCard
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.SpeettoWinInfoCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfoWithBalls
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoMockDatas
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
@@ -172,6 +181,7 @@ private fun LottoInfoContent(
     onClickBottomBanner: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val tabRowState = rememberTabState()
     val isDimVisible by remember {
         derivedStateOf {
             scaffoldState.bottomSheetState.targetValue == SheetValue.Expanded
@@ -221,43 +231,31 @@ private fun LottoInfoContent(
                     onClick = onChangeTabMenu,
                 )
 
-                Spacer(modifier = Modifier.height(28.dp))
+                if (currentTabIndex == LottoType.S2000.ordinal) {
+                    val info = lottoInfo as SpeettoInfo
+                    
+                    SpeettoInfoContent(
+                        lottoInfo = info,
+                        currentTabIndex = currentTabIndex,
+                        tabState = tabRowState,
+                    )
+                } else {
+                    val info = lottoInfo as LottoInfoWithBalls
 
-                LottoRoundSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    currentRound = lottoInfo.lottoRound,
-                    currentDate = lottoInfo.lottoDate,
-                    hasPreRound = hasPreRound,
-                    hasNextRound = hasNextRound,
-                    onClickPreRound = { onClickPreRound(lottoInfo.lottoRound) },
-                    onClickNextRound = { onClickNextRound(lottoInfo.lottoRound) },
-                    onClickCurrentRound = {
-                        coroutineScope.launch {
-                            scaffoldState.bottomSheetState.expand()
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                LottoWinNumberSection(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    currentLottoType = LottoType.findLottoType(currentTabIndex),
-                    winNumbers = lottoInfo.lottoNum,
-                    bonusNumber = lottoInfo.lottoBonusNum,
-                )
-
-                Spacer(modifier = Modifier.height(42.dp))
-
-                LottoWinInfoSection(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp),
-                    lottoInfo = lottoInfo,
-                    lottoType = LottoType.findLottoType(currentTabIndex)
-                )
+                    LottoInfoWithBallsContent(
+                        currentTabIndex = currentTabIndex,
+                        lottoInfo = info,
+                        hasPreRound = hasPreRound,
+                        hasNextRound = hasNextRound,
+                        onClickCurrentRound = {
+                            coroutineScope.launch {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        },
+                        onClickPreRound = onClickPreRound,
+                        onClickNextRound = onClickNextRound
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -298,6 +296,85 @@ private fun LottoInfoContent(
             )
         }
     }
+}
+
+@Composable
+private fun LottoInfoWithBallsContent(
+    currentTabIndex: Int,
+    lottoInfo: LottoInfoWithBalls,
+    hasPreRound: Boolean,
+    hasNextRound: Boolean,
+    onClickCurrentRound: () -> Unit,
+    onClickPreRound: (Int) -> Unit,
+    onClickNextRound: (Int) -> Unit,
+) {
+    Spacer(modifier = Modifier.height(28.dp))
+
+    LottoRoundSection(
+        modifier = Modifier.fillMaxWidth(),
+        currentRound = lottoInfo.lottoRound,
+        currentDate = lottoInfo.lottoDate,
+        hasPreRound = hasPreRound,
+        hasNextRound = hasNextRound,
+        onClickPreRound = { onClickPreRound(lottoInfo.lottoRound) },
+        onClickNextRound = { onClickNextRound(lottoInfo.lottoRound) },
+        onClickCurrentRound = onClickCurrentRound,
+    )
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    LottoWinNumberSection(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        currentLottoType = LottoType.findLottoType(currentTabIndex),
+        winNumbers = lottoInfo.lottoNum,
+        bonusNumber = lottoInfo.lottoBonusNum,
+    )
+
+    Spacer(modifier = Modifier.height(42.dp))
+
+    LottoWinInfoSection(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        lottoInfo = lottoInfo,
+        lottoType = LottoType.findLottoType(currentTabIndex)
+    )
+}
+
+@Composable
+private fun SpeettoInfoContent(
+    lottoInfo: SpeettoInfo,
+    currentTabIndex: Int,
+    tabState: TabState,
+) {
+    val tabs = listOf(
+        LottoType.S2000.num.toString(),
+        LottoType.S1000.num.toString(),
+        LottoType.S500.num.toString()
+    )
+    Spacer(modifier = Modifier.height(12.dp))
+
+    LottoMateScrollableTabRow(
+        tabState = tabState,
+        tabs = tabs,
+        modifier = Modifier.fillMaxWidth(),
+    )
+
+    Spacer(modifier = Modifier.height(36.dp))
+
+    LottoMateText(text = "페이지네이션 수정 예정")
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    LottoWinInfoSection(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        lottoInfo = lottoInfo,
+        lottoType = LottoType.findLottoType(currentTabIndex)
+    )
 }
 
 @Composable
@@ -496,7 +573,12 @@ private fun LottoWinInfoSection(
                 }
             }
             else -> {
-                // TODO : 스피또 (수정예정)
+                val info = lottoInfo as SpeettoInfo
+
+                SpeettoWinInfoCard(
+                    speettoWinStoreInfo = info.details,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }
@@ -565,6 +647,16 @@ private fun BottomSheetDimBackground(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+private fun LottoWinInfoSectionPreview() {
+    LottoMateTheme {
+        LottoWinInfoSection(
+            lottoInfo = SpeettoMockDatas[0],
+            lottoType = LottoType.S2000
+        )
+    }
+}
 class PickerState {
     var selectedItem by mutableStateOf("")
 }
