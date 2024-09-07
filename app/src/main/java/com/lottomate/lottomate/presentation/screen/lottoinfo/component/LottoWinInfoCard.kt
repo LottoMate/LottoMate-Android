@@ -67,17 +67,21 @@ fun Lotto645WinInfoCard(
         modifier = modifier,
         rank = rank.plus(1),
         prize = "${lottoInfo.lottoPrize[rank]}원",
-        condition = Lotto645WinConditions[rank],
         lottoType = LottoType.L645,
         winnerCountContent = {
+        infoDetailContent = {
+            LottoWinInfoRow(
+                modifier = Modifier.fillMaxWidth(),
+                title = "당첨 조건",
+                text = Lotto645WinConditions[rank]
+            )
+
             Spacer(modifier = Modifier.height(10.dp))
 
             LottoWinInfoRow(
                 title = "당첨자 수",
                 text = "${lottoInfo.lottoWinnerNum[rank]}명"
             )
-        },
-        totalPrizeContent = {
             Spacer(modifier = Modifier.height(10.dp))
 
             LottoWinInfoRow(
@@ -98,9 +102,14 @@ fun Lotto720WinInfoCard(
         modifier = modifier,
         rank = rank.plus(1),
         prize = Lotto720WinPrizes[rank],
-        condition = Lotto720WinConditions[rank],
         lottoType = LottoType.L720,
-        winnerCountContent = {
+        infoDetailContent = {
+            LottoWinInfoRow(
+                modifier = Modifier.fillMaxWidth(),
+                title = "당첨 조건",
+                text = Lotto720WinConditions[rank]
+            )
+
             Spacer(modifier = Modifier.height(10.dp))
 
             LottoWinInfoRow(
@@ -114,12 +123,10 @@ fun Lotto720WinInfoCard(
 @Composable
 private fun LottoWinInfoBaseCard(
     modifier: Modifier = Modifier,
-    rank: Int,
+    rank: Int? = null,
     prize: String,
-    condition: String,
     lottoType: LottoType,
-    winnerCountContent: @Composable (() -> Unit)? = null,
-    totalPrizeContent: @Composable (() -> Unit)? = null,
+    infoDetailContent: @Composable () -> Unit
 ) {
     val rankColor = when (rank) {
         LottoRank.FIRST.rank -> LottoMateRed50
@@ -163,12 +170,14 @@ private fun LottoWinInfoBaseCard(
 
                     Spacer(modifier = Modifier.width(8.dp))
                 }
-                
-                Text(
-                    text = LottoRank.getLottoRankLabel(rank),
-                    style = LottoMateTheme.typography.headline2
-                        .copy(color = rankColor),
-                )
+
+                rank?.let {
+                    Text(
+                        text = LottoRank.getLottoRankLabel(it),
+                        style = LottoMateTheme.typography.headline2
+                            .copy(color = rankColor),
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(2.dp))
@@ -192,29 +201,25 @@ private fun LottoWinInfoBaseCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = LottoMateGray10,
-                        shape = RoundedCornerShape(Dimens.RadiusLarge)
-                    )
-                    .padding(vertical = 16.dp, horizontal = 20.dp)
-            ) {
-                LottoWinInfoRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    title = "당첨 조건",
-                    text = condition
-                )
-
-                if (winnerCountContent != null) {
-                    winnerCountContent()
-                }
-                if (totalPrizeContent != null) {
-                    totalPrizeContent()
-                }
-            }
+            infoDetailContent()
         }
+    }
+}
+
+@Composable
+private fun LottoWinInfoBaseDetailContent(
+    modifier: Modifier = Modifier,
+    infoDetailContent: @Composable () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                color = LottoMateGray10,
+                shape = RoundedCornerShape(Dimens.RadiusLarge)
+            )
+            .padding(vertical = 16.dp, horizontal = 20.dp)
+    ) {
+        infoDetailContent()
     }
 }
 
@@ -250,8 +255,13 @@ private fun LottoWinnerInfoCardPreview() {
                 rank = 1,
                 lottoType = LottoType.L645,
                 prize = "48,077,032원",
-                condition = "당첨번호 6개 일치\n+ 보너스 일치",
-                winnerCountContent = {
+                infoDetailContent = {
+                    LottoWinInfoRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        title = "당첨 조건",
+                        text = "당첨번호 6개 일치\n+ 보너스 일치"
+                    )
+
                     Spacer(modifier = Modifier.height(10.dp))
 
                     LottoWinInfoRow(
