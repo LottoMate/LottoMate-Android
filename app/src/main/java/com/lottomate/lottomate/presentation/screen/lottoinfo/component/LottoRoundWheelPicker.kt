@@ -227,7 +227,7 @@ private fun LottoRoundWheelPickerContent(
 }
 
 @Composable
-private fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
+fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Preview(showBackground = true)

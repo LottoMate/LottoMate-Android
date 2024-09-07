@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-    private const val BASE_URL: String = BuildConfig.MOCK_SERVER_URL
+    private const val BASE_URL: String = BuildConfig.DATABASE_BASE_URL
 
     private val jsonOptions = Json {
         ignoreUnknownKeys = true

@@ -25,14 +25,17 @@ class LottoRoundViewModel @Inject constructor(
     fun getLatestLottoInfo(tabIndex: Int) {
         val lottoType = LottoType.findLottoType(tabIndex)
 
-        loadLatestLottoInfo(lottoType)
-        setLottoRoundRange()
+        if (lottoType == LottoType.L645 || lottoType == LottoType.L720) {
+            loadLatestLottoInfo(lottoType)
+            setLottoRoundRange()
+        }
     }
 
     private fun loadLatestLottoInfo(lottoType: LottoType) {
         with(lottoInfoRepository.latestLottoInfo.getValue(lottoType.num)) {
-            _latestLottoRound.update { lottoRndNum }
-            _latestLottoDate.update { drwtDate }
+
+            _latestLottoRound.update { lottoRound!! }
+            _latestLottoDate.update { lottoDate!! }
         }
     }
 

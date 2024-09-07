@@ -211,7 +211,8 @@ private fun LottoMateBaseButton(
             },
             vertical = when (buttonSize) {
                 LottoMateButtonProperty.Size.LARGE -> 12.dp
-                else -> 8.dp
+                LottoMateButtonProperty.Size.MEDIUM -> 8.dp
+                LottoMateButtonProperty.Size.SMALL -> 6.dp
             }
         ),
         border = buttonBorder,
