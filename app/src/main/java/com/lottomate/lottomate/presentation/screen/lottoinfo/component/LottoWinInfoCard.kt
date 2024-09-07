@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
@@ -191,27 +192,27 @@ private fun SpeettoStoreInfo(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_small_home),
-                    contentDescription = "Speetto Win Store Info Icon",
-                    tint = LottoMateGray100,
-                )
+            Icon(
+                painter = painterResource(id = R.drawable.icon_small_home),
+                contentDescription = "Speetto Win Store Info Icon",
+                tint = LottoMateGray100,
+            )
 
-                Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(4.dp))
 
-                LottoMateText(
-                    text = storeInfo.store,
-                    style = LottoMateTheme.typography.headline2,
-                )
-            }
+            LottoMateText(
+                text = storeInfo.store,
+                style = LottoMateTheme.typography.headline2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+                maxLines = 1
+            )
 
-            
             if (storeInfo.hasInterview) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End,
                 ){
                     LottoMateText(
                         text = "당첨자 인터뷰",

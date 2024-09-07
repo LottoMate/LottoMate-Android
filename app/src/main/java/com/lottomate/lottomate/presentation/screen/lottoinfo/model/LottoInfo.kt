@@ -51,14 +51,14 @@ val SpeettoMockDatas = listOf(
     SpeettoInfoDetail(
         rank = 1,
         lottoRound = 55,
-        store = "천지개벽",
+        store = "진짜 이름이 아주 긴 판매점 보라매점보라매점",
         lottoDate = "2024.08.21",
         hasInterview = false
     ),
     SpeettoInfoDetail(
         rank = 1,
         lottoRound = 55,
-        store = "천지개벽",
+        store = "진짜 이름이 아주 긴 판매점 보라매점",
         lottoDate = "2024.08.21",
         hasInterview = true
     ),
