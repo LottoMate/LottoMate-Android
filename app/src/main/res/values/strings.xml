@@ -7,6 +7,7 @@
     <string name="speetto_rank_prize_first">10억원</string>
     <string name="speetto_rank_prize_second">1억원</string>
     <string name="lotto_info_bottom_notice">* 지급 개시일부터 1년 내 당첨금을 찾아가야 해요. (휴일일 경우 다음날까지)</string>
+    <string name="lotto_info_bottom_notice_speetto">* 1억원 이상의 당첨금 수령 후, 실물 확인된 복권만 안내해요</string>
 
     <!-- 바로가기 배너 -->
     <string name="banner_lotto_info_title">행운의 1등 로또\n어디서 샀을까?</string>

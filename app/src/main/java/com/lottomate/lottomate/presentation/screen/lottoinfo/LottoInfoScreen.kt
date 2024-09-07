@@ -260,7 +260,11 @@ private fun LottoInfoContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = stringResource(id = R.string.lotto_info_bottom_notice),
+                    text = if (currentTabIndex == 2) {
+                        stringResource(id = R.string.lotto_info_bottom_notice_speetto)
+                    } else {
+                        stringResource(id = R.string.lotto_info_bottom_notice)
+                    },
                     style = LottoMateTheme.typography.caption
                         .copy(LottoMateGray80),
                     modifier = Modifier
