@@ -16,6 +16,7 @@ sealed interface LottoInfoWithBalls : LottoInfo {
 data class Lotto645Info(
     val lottoPrize: List<String>,
     val totalSalesPrice: String,
+    val lottoPrizePerPerson: List<String>,
     override val lottoRound: Int,
     override val lottoDate: String,
     override val lottoNum: List<Int>,

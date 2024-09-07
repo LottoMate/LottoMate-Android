@@ -75,7 +75,7 @@ fun Lotto645WinInfoCard(
     LottoWinInfoBaseCard(
         modifier = modifier,
         rank = rank.plus(1),
-        prize = "${lottoInfo.lottoPrize[rank]}원",
+        prize = "${lottoInfo.lottoPrizePerPerson[rank]}원",
         lottoType = LottoType.L645,
         infoDetailContent = {
             LottoWinInfoRow(

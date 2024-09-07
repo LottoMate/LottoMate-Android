@@ -26,6 +26,11 @@ object LottoInfoMapper {
             lottoPrizes[4] = p5Jackpot
         }
 
+        val prizePerPerson = List(LOTTO_645_TOTAL_RANK_COUNT) {
+            val prize = lottoPrizes[it].div(lottoWinnerCntList[it])
+            formatNumberWithCommas(prize)
+        }
+
         return Lotto645Info(
             lottoRound = lottoInfoEntity.drwNum,
             lottoDate = lottoInfoEntity.drwDate,
@@ -33,6 +38,7 @@ object LottoInfoMapper {
             lottoBonusNum = lottoInfoEntity.lottoBonusNum,
             lottoWinnerNum = lottoWinnerCntList.map { formatNumberWithCommas(it) },
             lottoPrize = lottoPrizes.map { formatNumberWithCommas(it) },
+            lottoPrizePerPerson = prizePerPerson,
             totalSalesPrice = formatNumberWithCommas(lottoInfoEntity.totalSalesPrice),
         )
     }
