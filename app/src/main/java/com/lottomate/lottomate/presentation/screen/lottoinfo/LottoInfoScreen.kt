@@ -195,15 +195,17 @@ private fun LottoInfoContent(
         sheetContainerColor = LottoMateWhite,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-            val info = lottoInfo as LottoInfoWithBalls
+            if (currentTabIndex != 2) {
+                val info = lottoInfo as LottoInfoWithBalls
 
-            LottoRoundWheelPicker(
-                currentLottoRound = info.lottoRound,
-                currentTabIndex = currentTabIndex,
-                scaffoldState = scaffoldState,
-                pickerState = pickerState,
-                onClickSelect = onChangeLottoRound,
-            )
+                LottoRoundWheelPicker(
+                    currentLottoRound = info.lottoRound,
+                    currentTabIndex = currentTabIndex,
+                    scaffoldState = scaffoldState,
+                    pickerState = pickerState,
+                    onClickSelect = onChangeLottoRound,
+                )
+            }
         },
         sheetDragHandle = null,
         sheetSwipeEnabled = false,
