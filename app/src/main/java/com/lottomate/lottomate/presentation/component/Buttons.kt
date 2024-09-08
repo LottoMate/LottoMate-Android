@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -175,7 +174,7 @@ fun LottoMateTextButton(
         contentPadding = PaddingValues(horizontal = 8.dp),
         enabled = !isDisabled
     ) {
-        Text(
+        LottoMateText(
             text = buttonText,
             style = when (buttonSize) {
                 LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
@@ -228,7 +227,7 @@ private fun LottoMateBaseButton(
         ),
         onClick = { onClick() },
     ) {
-        Text(
+        LottoMateText(
             text = text,
             color = textColor,
             style = when (buttonSize) {
