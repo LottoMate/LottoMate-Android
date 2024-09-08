@@ -32,31 +32,31 @@ private val pretendardStyle = TextStyle(
 
 private val display1 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 48.sp,
+    fontSize = 52.sp,
     lineHeight = 62.sp,
 )
 
 private val display2 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 40.sp,
+    fontSize = 42.sp,
     lineHeight = 54.sp,
 )
 
 private val title1 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 36.sp,
+    fontSize = 40.sp,
     lineHeight = 48.sp,
 )
 
 private val title2 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 28.sp,
+    fontSize = 31.sp,
     lineHeight = 40.sp,
 )
 
 private val title3 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 24.sp,
+    fontSize = 27.sp,
     lineHeight = 34.sp,
 )
 
@@ -68,37 +68,37 @@ private val headline1 = pretendardStyle.copy(
 
 private val headline2 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 16.sp,
+    fontSize = 18.sp,
     lineHeight = 26.sp,
 )
 
 private val body1 = pretendardStyle.copy(
     fontWeight = FontWeight.Medium,
-    fontSize = 16.sp,
+    fontSize = 18.sp,
     lineHeight = 24.sp,
 )
 
 private val body2 = pretendardStyle.copy(
     fontWeight = FontWeight.Normal,
-    fontSize = 16.sp,
+    fontSize = 18.sp,
     lineHeight = 24.sp,
 )
 
 private val label1 = pretendardStyle.copy(
     fontWeight = FontWeight.SemiBold,
-    fontSize = 16.sp,
+    fontSize = 18.sp,
     lineHeight = 24.sp,
 )
 
 private val label2 = pretendardStyle.copy(
     fontWeight = FontWeight.SemiBold,
-    fontSize = 14.sp,
+    fontSize = 15.sp,
     lineHeight = 22.sp,
 )
 
 private val caption = pretendardStyle.copy(
     fontWeight = FontWeight.SemiBold,
-    fontSize = 12.sp,
+    fontSize = 13.sp,
     lineHeight = 18.sp,
 )
 
