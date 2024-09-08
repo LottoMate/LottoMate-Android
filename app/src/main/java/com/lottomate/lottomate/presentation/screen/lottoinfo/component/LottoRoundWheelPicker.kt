@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
+import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoRoundViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
@@ -132,7 +132,7 @@ private fun LottoRoundWheelPickerContent(
     Column(modifier = modifier.background(LottoMateWhite)) {
         Spacer(modifier = Modifier.height(32.dp))
 
-        Text(
+        LottoMateText(
             text = "회차 선택",
             style = LottoMateTheme.typography.headline1,
             modifier = Modifier.padding(start = 20.dp),
@@ -167,7 +167,7 @@ private fun LottoRoundWheelPickerContent(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                     ) {
-                        Text(
+                        LottoMateText(
                             text = if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회"),
                             textAlign = TextAlign.Center,
                             maxLines = 1,
@@ -178,7 +178,7 @@ private fun LottoRoundWheelPickerContent(
 
                         Spacer(modifier = Modifier.width(20.dp))
 
-                        Text(
+                        LottoMateText(
                             text = if (index == 0) "" else calLottoRoundDate(lastDate, index),
                             style = LottoMateTheme.typography.body1
                                 .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),

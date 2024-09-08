@@ -15,7 +15,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
@@ -90,12 +90,12 @@ private fun Lotto645WinNumber(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
+            LottoMateText(
                 text = "당첨 번호",
                 style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray70)
             )
-            Text(
+            LottoMateText(
                 text = "보너스",
                 style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray70)
@@ -134,7 +134,7 @@ private fun Lotto720WinNumber(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
-        Text(
+        LottoMateText(
             text = "1등",
             style = LottoMateTheme.typography.caption
                 .copy(LottoMateGray70),
@@ -159,7 +159,7 @@ private fun Lotto720WinNumber(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Text(
+                LottoMateText(
                     text = "조",
                     style = LottoMateTheme.typography.label2,
                 )
@@ -182,7 +182,7 @@ private fun Lotto720WinNumber(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
+        LottoMateText(
             text = "보너스",
             style = LottoMateTheme.typography.caption
                 .copy(LottoMateGray70),
@@ -199,14 +199,14 @@ private fun Lotto720WinNumber(
                 modifier = Modifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                LottoMateText(
                     text = "각",
                     style = LottoMateTheme.typography.body1,
                 )
 
                 Spacer(modifier = Modifier.width(24.dp))
 
-                Text(
+                LottoMateText(
                     text = "조",
                     style = LottoMateTheme.typography.label2,
                 )

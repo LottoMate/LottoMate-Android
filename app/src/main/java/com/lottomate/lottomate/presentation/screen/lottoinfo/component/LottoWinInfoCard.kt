@@ -17,12 +17,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +40,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
-import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateGreen50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed30
@@ -309,7 +306,7 @@ private fun LottoWinInfoBaseCard(
                 }
 
                 rank?.let {
-                    Text(
+                    LottoMateText(
                         text = LottoRank.getLottoRankLabel(it),
                         style = LottoMateTheme.typography.headline2
                             .copy(color = rankColor),
@@ -320,7 +317,7 @@ private fun LottoWinInfoBaseCard(
             Spacer(modifier = Modifier.height(2.dp))
 
             Row(verticalAlignment = Alignment.Bottom) {
-                Text(
+                LottoMateText(
                     text = prize,
                     style = LottoMateTheme.typography.title2,
                 )
@@ -359,13 +356,13 @@ private fun LottoWinInfoRow(
     Row(
         modifier = modifier,
     ) {
-        Text(
+        LottoMateText(
             text = title,
             style = LottoMateTheme.typography.body1
                 .copy(LottoMateGray90),
             modifier = Modifier.width(88.dp)
         )
-        Text(
+        LottoMateText(
             text = text,
             style = LottoMateTheme.typography.headline2,
         )

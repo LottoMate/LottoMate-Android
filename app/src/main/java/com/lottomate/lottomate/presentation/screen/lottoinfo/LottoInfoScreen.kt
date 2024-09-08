@@ -24,7 +24,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -263,7 +262,7 @@ private fun LottoInfoContent(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
+                LottoMateText(
                     text = if (currentTabIndex == 2) {
                         stringResource(id = R.string.lotto_info_bottom_notice_speetto)
                     } else {
@@ -471,14 +470,14 @@ private fun LottoRoundSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Text(
+            LottoMateText(
                 text = currentRound.toString().plus("회"),
                 style = LottoMateTheme.typography.headline1,
             )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            Text(
+            LottoMateText(
                 text = currentDate.replace("-", "."),
                 style = LottoMateTheme.typography.label2
                     .copy(LottoMateGray70),
@@ -514,7 +513,7 @@ private fun LottoWinNumberSection(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom,
         ) {
-            Text(
+            LottoMateText(
                 text = "당첨 번호 보기",
                 style = LottoMateTheme.typography.headline1,
             )
@@ -522,7 +521,7 @@ private fun LottoWinNumberSection(
             if (currentLottoType == LottoType.L645) {
                 val info = lottoInfo as Lotto645Info
 
-                Text(
+                LottoMateText(
                     text = "총 판매 금액 : ${info.totalSalesPrice}원",
                     style = LottoMateTheme.typography.caption
                         .copy(LottoMateGray80),
@@ -556,13 +555,13 @@ private fun LottoWinInfoSection(
                 .fillMaxWidth()
                 .padding(end = 8.dp),
         ) {
-            Text(
+            LottoMateText(
                 text = "등수별 당첨 정보",
                 style = LottoMateTheme.typography.headline1,
             )
 
             if (lottoType == LottoType.L645) {
-                Text(
+                LottoMateText(
                     text = "1인당 당첨 수령 금액",
                     style = LottoMateTheme.typography.caption
                         .copy(LottoMateGray80),
@@ -635,14 +634,14 @@ private fun BottomBannerSection(
                 .padding(top = 15.dp, start = 20.dp, end = 18.dp),
         ) {
             Column {
-                Text(
+                LottoMateText(
                     text = stringResource(id = R.string.banner_lotto_info_title),
                     style = LottoMateTheme.typography.headline2,
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
+                LottoMateText(
                     text = stringResource(id = R.string.banner_lotto_info_sub_title),
                     style = LottoMateTheme.typography.caption
                         .copy(LottoMateGray90),
