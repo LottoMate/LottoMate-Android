@@ -227,6 +227,8 @@ private fun LottoInfoContent(
                     .verticalScroll(rememberScrollState())
                     .padding(top = 80.dp)
             ) {
+                Spacer(modifier = Modifier.height(24.dp))
+
                 TopToggleButtons(
                     modifier = Modifier
                         .fillMaxWidth()
