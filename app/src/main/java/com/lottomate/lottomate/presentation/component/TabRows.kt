@@ -51,7 +51,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-private const val TAB_WIDTH = 40
 private const val TAB_CONTAINER_WIDTH = 72
 private const val TAB_HEIGHT = 44
 private const val TAB_INDICATOR_HEIGHT = 2
@@ -97,7 +96,6 @@ fun LottoMateScrollableTabRow(
                             } else {
                                 LottoMateTheme.typography.body1
                             },
-                            modifier = Modifier.width(TAB_WIDTH.dp),
                         )
                     }
                 }
