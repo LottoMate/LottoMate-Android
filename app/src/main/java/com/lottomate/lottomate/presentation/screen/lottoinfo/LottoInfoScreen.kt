@@ -42,6 +42,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -241,6 +242,10 @@ private fun LottoInfoContent(
                         lottoInfo = info,
                         currentTabIndex = currentTabIndex,
                         tabState = tabRowState,
+                        hasPreRound = hasPreRound,
+                        hasNextRound = hasNextRound,
+                        onClickPreRound = onClickPreRound,
+                        onClickNextRound = onClickNextRound,
                     )
                 } else {
                     val info = lottoInfo as LottoInfoWithBalls
@@ -356,6 +361,10 @@ private fun SpeettoInfoContent(
     lottoInfo: SpeettoInfo,
     currentTabIndex: Int,
     tabState: TabState,
+    hasPreRound: Boolean,
+    hasNextRound: Boolean,
+    onClickPreRound: (Int) -> Unit,
+    onClickNextRound: (Int) -> Unit,
 ) {
     val tabs = listOf(
         LottoType.S2000.num.toString(),
@@ -370,10 +379,6 @@ private fun SpeettoInfoContent(
         modifier = Modifier.fillMaxWidth(),
     )
 
-    Spacer(modifier = Modifier.height(36.dp))
-
-    LottoMateText(text = "페이지네이션 수정 예정")
-
     Spacer(modifier = Modifier.height(24.dp))
 
     LottoWinInfoSection(
@@ -381,7 +386,11 @@ private fun SpeettoInfoContent(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         lottoInfo = lottoInfo,
-        lottoType = LottoType.findLottoType(currentTabIndex)
+        lottoType = LottoType.findLottoType(currentTabIndex),
+        hasPreRound = hasPreRound,
+        hasNextRound = hasNextRound,
+        onClickPreRound = onClickPreRound,
+        onClickNextRound = onClickNextRound,
     )
 }
 
@@ -544,28 +553,89 @@ private fun LottoWinInfoSection(
     modifier: Modifier = Modifier,
     lottoInfo: LottoInfo,
     lottoType: LottoType,
+    hasPreRound: Boolean = false,
+    hasNextRound: Boolean = false,
+    onClickPreRound: (Int) -> Unit = {},
+    onClickNextRound: (Int) -> Unit = {},
 ) {
-    Column (
-        modifier = modifier,
-    ){
+    val titleEndPadding = when (lottoType) {
+        LottoType.L645 -> 8.dp
+        else -> 0.dp
+    }
+    val titleVerticalAlignment = when (lottoType) {
+        LottoType.L645 -> Alignment.Bottom
+        else -> Alignment.CenterVertically
+    }
+
+    Column (modifier = modifier){
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom,
+            verticalAlignment = titleVerticalAlignment,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(end = 8.dp),
+                .padding(end = titleEndPadding),
         ) {
             LottoMateText(
                 text = "등수별 당첨 정보",
                 style = LottoMateTheme.typography.headline1,
             )
 
-            if (lottoType == LottoType.L645) {
-                LottoMateText(
-                    text = "1인당 당첨 수령 금액",
-                    style = LottoMateTheme.typography.caption
-                        .copy(LottoMateGray80),
-                )
+            when (lottoType) {
+                LottoType.L645 -> {
+                    LottoMateText(
+                        text = "1인당 당첨 수령 금액",
+                        style = LottoMateTheme.typography.caption
+                            .copy(LottoMateGray80),
+                    )
+                }
+                LottoType.L720 -> { }
+                else -> {
+                    val speettoInfo = lottoInfo as SpeettoInfo
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_arrow_left_border_12),
+                            contentDescription = stringResource(id = R.string.desc_pre_page_icon_lotto_info_speetto),
+                            tint = LottoMateGray100.copy(if (hasPreRound) 1f else 0.4f),
+                            modifier = Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { if (hasPreRound) onClickPreRound(speettoInfo.currentPage) }
+                            )
+                        )
+                        
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        LottoMateText(
+                            text = "${speettoInfo.currentPage} / ${speettoInfo.lastPage}",
+                            textAlign = TextAlign.Center,
+                            style = LottoMateTheme.typography.label2
+                                .copy(color = LottoMateGray100),
+                            modifier = Modifier
+                                .padding(horizontal = 12.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = {
+
+                                    }
+                                ),
+                        )
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_arrow_right_border_12),
+                            contentDescription = stringResource(id = R.string.desc_next_page_icon_lotto_info_speetto),
+                            tint = LottoMateGray100.copy(if (hasNextRound) 1f else 0.4f),
+                            modifier = Modifier.clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null,
+                                onClick = { if (hasNextRound) onClickNextRound(speettoInfo.currentPage) }
+                            )
+                        )
+                    }
+                }
             }
         }
         
@@ -676,10 +746,12 @@ private fun BottomSheetDimBackground(
 @Composable
 private fun LottoWinInfoSectionPreview() {
     LottoMateTheme {
-        LottoWinInfoSection(
-            lottoInfo = SpeettoMockDatas[0],
-            lottoType = LottoType.S2000
-        )
+        Box(modifier = Modifier.padding(20.dp)) {
+            LottoWinInfoSection(
+                lottoInfo = SpeettoMockDatas,
+                lottoType = LottoType.S2000
+            )
+        }
     }
 }
 class PickerState {

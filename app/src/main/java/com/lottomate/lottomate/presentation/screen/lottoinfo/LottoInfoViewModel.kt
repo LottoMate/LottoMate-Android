@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoMockDatas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,19 +53,34 @@ class LottoInfoViewModel @Inject constructor(
     }
 
     fun getLottoInfo(lottoRndNum: Int) {
-        val lottoType = LottoType.findLottoType(currentTabMenu.intValue).num
+        val lottoType = LottoType.findLottoType(currentTabMenu.intValue)
 
-        viewModelScope.launch {
-            lottoInfoRepository.fetchLottoInfoByRound(lottoType, lottoRndNum)
-                .collectLatest { lottoInfo ->
-                    lottoInfo.lottoRound?.let { round ->
-                        judgePreOrNextLottoRound(round)
-                    }
+        when (lottoType) {
+            LottoType.L645, LottoType.L720 -> {
+                viewModelScope.launch {
+                    lottoInfoRepository.fetchLottoInfoByRound(lottoType.num, lottoRndNum)
+                        .collectLatest { lottoInfo ->
+                            lottoInfo.lottoRound?.let { round ->
+                                judgePreOrNextLottoRound(round)
+                            }
 
-                    _lottoInfo.update {
-                        LottoInfoUiState.Success(lottoInfo)
-                    }
+                            _lottoInfo.update {
+                                LottoInfoUiState.Success(lottoInfo)
+                            }
+                        }
                 }
+            }
+            else -> {
+                val updateSpeettoInfo = SpeettoMockDatas.copy(
+                    currentPage = lottoRndNum
+                )
+                _lottoInfo.update {
+                    LottoInfoUiState.Success(updateSpeettoInfo)
+                }
+
+                hasPreLottoRound.value = updateSpeettoInfo.currentPage != 1
+                hasNextLottoRound.value = updateSpeettoInfo.currentPage != updateSpeettoInfo.lastPage
+            }
         }
     }
 
@@ -73,6 +90,11 @@ class LottoInfoViewModel @Inject constructor(
                 .collectLatest { lottoInfo ->
                     lottoInfo.lottoRound?.let { round ->
                         judgePreOrNextLottoRound(round)
+                    } ?: run {
+                        val speettoInfo = lottoInfo as SpeettoInfo
+
+                        hasPreLottoRound.value = speettoInfo.currentPage != 1
+                        hasNextLottoRound.value = speettoInfo.currentPage != speettoInfo.lastPage
                     }
 
                     _lottoInfo.update {
