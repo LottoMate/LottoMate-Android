@@ -52,13 +52,13 @@ class LottoInfoViewModel @Inject constructor(
         }
     }
 
-    fun getLottoInfo(lottoRndNum: Int) {
+    fun getLottoInfoByLottoRoundOrPage(lottoRndOrPageNum: Int) {
         val lottoType = LottoType.findLottoType(currentTabMenu.intValue)
 
         when (lottoType) {
             LottoType.L645, LottoType.L720 -> {
                 viewModelScope.launch {
-                    lottoInfoRepository.fetchLottoInfoByRound(lottoType.num, lottoRndNum)
+                    lottoInfoRepository.fetchLottoInfoByRound(lottoType.num, lottoRndOrPageNum)
                         .collectLatest { lottoInfo ->
                             lottoInfo.lottoRound?.let { round ->
                                 judgePreOrNextLottoRound(round)
@@ -72,7 +72,7 @@ class LottoInfoViewModel @Inject constructor(
             }
             else -> {
                 val updateSpeettoInfo = SpeettoMockDatas.copy(
-                    currentPage = lottoRndNum
+                    currentPage = lottoRndOrPageNum
                 )
                 _lottoInfo.update {
                     LottoInfoUiState.Success(updateSpeettoInfo)

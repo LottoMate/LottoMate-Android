@@ -107,14 +107,14 @@ fun LottoInfoRoute(
         pickerState = pickerState,
         onBackPressed = onBackPressed,
         onChangeTabMenu = { vm.changeTabMenu(it) },
-        onChangeLottoRound = { vm.getLottoInfo(pickerState.selectedItem.toInt()) },
+        onChangeLottoRound = { vm.getLottoInfoByLottoRoundOrPage(pickerState.selectedItem.toInt()) },
         onClickPreRound = {
             val preLottoRound = it.minus(1)
-            vm.getLottoInfo(preLottoRound)
+            vm.getLottoInfoByLottoRoundOrPage(preLottoRound)
         },
         onClickNextRound = {
             val nextLottoRound = it.plus(1)
-            vm.getLottoInfo(nextLottoRound)
+            vm.getLottoInfoByLottoRoundOrPage(nextLottoRound)
         },
         onClickBottomBanner = onClickBottomBanner,
     )
