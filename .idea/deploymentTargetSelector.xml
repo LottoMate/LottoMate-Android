@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-09-07T17:33:07.144895Z">
+        <DropdownSelection timestamp="2024-09-13T23:20:28.158737Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/jiyoung/.android/avd/Galaxy_S23_API_24.avd" />
