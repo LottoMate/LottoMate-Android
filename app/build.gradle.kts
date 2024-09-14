@@ -92,6 +92,10 @@ dependencies {
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
     implementation(libs.squareup.retrofit2.converter.serialization)
 
+    // Glide
+    implementation(libs.github.bumptech.glide)
+    implementation(libs.github.bumptech.glide.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

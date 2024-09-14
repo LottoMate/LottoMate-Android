@@ -18,6 +18,8 @@ retrofit2 = "2.11.0"
 okhttp3 = "4.12.0"
 serialization = "2.0.0"
 serialization-json = "1.6.0"
+glide = "4.16.0"
+glide-compose = "1.0.0-beta01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +50,9 @@ squareup-retrofit2-converter-serialization = { group = "com.squareup.retrofit2",
 
 org-jetbrains-kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "serialization" }
 org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
+
+github-bumptech-glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide"}
+github-bumptech-glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glide-compose"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
