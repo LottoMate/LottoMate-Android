@@ -5,6 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.lottomate.lottomate.presentation.navigation.LottoRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
+import com.lottomate.lottomate.presentation.screen.review.InterviewRoute
 
 fun NavGraphBuilder.lottoNavGraph(
     padding: PaddingValues,
@@ -15,6 +16,13 @@ fun NavGraphBuilder.lottoNavGraph(
             onShowErrorSnackBar = onShowErrorSnackBar,
             onBackPressed = {},
             onClickBottomBanner = {}
+        )
+    }
+
+    composable(LottoRoute.Interview.name) {
+        InterviewRoute(
+            onShowErrorSnackBar = onShowErrorSnackBar,
+            onBackPressed = {},
         )
     }
 }

@@ -4,8 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
+import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
+import com.lottomate.lottomate.presentation.screen.review.navigation.navigateInterview
 
 class MainNavigator(
     val navController: NavHostController,
@@ -30,6 +31,10 @@ class MainNavigator(
 
     fun navigateLottoInfo() {
         navController.navigateLottoInfo()
+    }
+
+    fun navigateLottoInterview() {
+        navController.navigateInterview()
     }
 }
 

@@ -23,6 +23,7 @@ fun MainNavHost(
             homeNavGraph(
                 padding = padding,
                 onClickLottoInfo = { navigator.navigateLottoInfo() },
+                onClickLottoReview = { navigator.navigateLottoInterview() },
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 
