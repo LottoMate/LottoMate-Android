@@ -54,18 +54,18 @@ fun InterviewRoute(
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    LottoReviewContent(
+    InterviewContent(
         onClickBanner = {}
     )
 }
 
 @Composable
-private fun LottoReviewScreen() {
+private fun InterviewScreen() {
 
 }
 
 @Composable
-private fun LottoReviewContent(
+private fun InterviewContent(
     onClickBanner: () -> Unit,
 ) {
     Column(
@@ -366,7 +366,7 @@ private fun BottomInterviewListItem(
 @Composable
 private fun LottoReviewScreenPreview() {
     LottoMateTheme {
-        LottoReviewContent(
+        InterviewContent(
             onClickBanner = {}
         )
     }
