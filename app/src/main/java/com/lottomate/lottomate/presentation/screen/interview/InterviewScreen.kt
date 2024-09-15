@@ -23,15 +23,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateCard
@@ -169,12 +171,14 @@ private fun InterviewImageSection(
     modifier: Modifier = Modifier,
     imgs: List<String>,
 ) {
-    GlideImage(
-        model = R.drawable.img_review,
+    AsyncImage(
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(R.drawable.img_review)
+            .build(),
         contentDescription = "Lotto Interview Image",
-        loading = placeholder(painterResource(id = R.drawable.img_review)),
         contentScale = ContentScale.Crop,
-        modifier = modifier.height(280.dp),
+        placeholder = painterResource(id = R.drawable.img_review),
+        modifier = Modifier.fillMaxSize(),
     )
 }
 
@@ -363,10 +367,10 @@ private fun BottomInterviewListItem(
         onClick = onClick,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            GlideImage(
+            AsyncImage(
                 model = R.drawable.img_review,
                 contentDescription = "",
-                loading = placeholder(painterResource(id = R.drawable.img_review)),
+                placeholder = painterResource(id = R.drawable.img_review),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(101.dp),
@@ -394,5 +398,16 @@ private fun BottomInterviewListItem(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun InterviewImageSectionPreview() {
+    LottoMateTheme {
+        InterviewImageSection(
+            modifier = Modifier.fillMaxWidth(),
+            imgs = emptyList(),
+        )
     }
 }
