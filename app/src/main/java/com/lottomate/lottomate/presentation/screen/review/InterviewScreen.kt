@@ -113,6 +113,7 @@ private fun InterviewScreen(
                         titleRes = R.string.top_app_bar_empty_title,
                         backgroundColor = LottoMateTransparent,
                         hasNavigation = true,
+                        navigationColor = LottoMateWhite,
                         onBackPressed = onBackPressed,
                     )
                 }
