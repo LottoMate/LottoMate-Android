@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.interview
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -22,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -166,33 +171,66 @@ private fun InterviewScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun InterviewImageSection(
     modifier: Modifier = Modifier,
     imgs: List<String>,
 ) {
-    Box(modifier = modifier.height(280.dp)) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(R.drawable.img_review)
-                .build(),
-            contentDescription = "Lotto Interview Image",
-            contentScale = ContentScale.Crop,
-            placeholder = painterResource(id = R.drawable.img_review),
-            modifier = Modifier.fillMaxSize(),
-        )
+    val pagerState = rememberPagerState(
+        pageCount = { imgs.size }
+    )
 
-        Box(
+    Box(modifier = modifier.height(280.dp)) {
+        HorizontalPager(
+            state = pagerState,
             modifier = Modifier.fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            LottoMateTransparent,
-                            LottoMateBlack.copy(alpha = 0.4f)
-                        )
-                    )
+        ) { page ->
+            Box(modifier = Modifier.fillMaxSize()) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(imgs[page])
+                        .build(),
+                    contentDescription = "Lotto Interview Image",
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.img_review),
+                    modifier = Modifier.fillMaxSize(),
                 )
-        )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    LottoMateTransparent,
+                                    LottoMateBlack.copy(alpha = 0.4f)
+                                )
+                            )
+                        )
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        ) {
+            repeat(pagerState.pageCount) { page ->
+                val color = LottoMateWhite.copy(
+                    alpha = if (pagerState.currentPage == page) 1f else 0.2f
+                )
+
+                Box(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .size(8.dp)
+                )
+            }
+        }
     }
 }
 

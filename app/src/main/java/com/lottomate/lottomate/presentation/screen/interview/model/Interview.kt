@@ -31,7 +31,7 @@ val InterviewMockData = Interview(
     uploadDate = "2024.08.21",
     link = "https://dhlottery.co.kr/gameResult.do?method=highWinView",
     thumb = "",
-    imgs = emptyList(),
+    imgs = List(3) { "https://placehold.co/600x400.png" },
     contents = listOf(
         InterviewQnA(
             question = "당첨되신 걸 어떻게 알게 되셨고, 또 알았을 때 기분이 어떠셨나요?",
