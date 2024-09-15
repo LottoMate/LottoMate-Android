@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -40,6 +41,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.screen.interview.model.Interview
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
@@ -165,21 +167,34 @@ private fun InterviewScreen(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun InterviewImageSection(
     modifier: Modifier = Modifier,
     imgs: List<String>,
 ) {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(R.drawable.img_review)
-            .build(),
-        contentDescription = "Lotto Interview Image",
-        contentScale = ContentScale.Crop,
-        placeholder = painterResource(id = R.drawable.img_review),
-        modifier = Modifier.fillMaxSize(),
-    )
+    Box(modifier = modifier.height(280.dp)) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(R.drawable.img_review)
+                .build(),
+            contentDescription = "Lotto Interview Image",
+            contentScale = ContentScale.Crop,
+            placeholder = painterResource(id = R.drawable.img_review),
+            modifier = Modifier.fillMaxSize(),
+        )
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            LottoMateTransparent,
+                            LottoMateBlack.copy(alpha = 0.4f)
+                        )
+                    )
+                )
+        )
+    }
 }
 
 @Composable
