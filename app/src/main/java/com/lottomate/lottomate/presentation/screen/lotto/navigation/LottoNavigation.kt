@@ -21,6 +21,7 @@ fun NavGraphBuilder.lottoNavGraph(
 
     composable(LottoRoute.Interview.name) {
         InterviewRoute(
+            onClickBanner = {},
             onShowErrorSnackBar = onShowErrorSnackBar,
             onBackPressed = {},
         )

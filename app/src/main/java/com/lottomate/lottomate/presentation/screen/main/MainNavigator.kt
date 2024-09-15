@@ -33,7 +33,7 @@ class MainNavigator(
         navController.navigateLottoInfo()
     }
 
-    fun navigateLottoInterview() {
+    fun navigateInterview() {
         navController.navigateInterview()
     }
 }
