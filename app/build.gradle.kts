@@ -30,6 +30,7 @@ android {
 
         buildConfigField("String", "DATABASE_BASE_URL", localProperties.getProperty("DATABASE_BASE_URL"))
         buildConfigField("String", "MOCK_SERVER_URL", localProperties.getProperty("MOCK_SERVER_URL"))
+        manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = localProperties.getProperty("NAVER_MAP_CLIENT_ID")
     }
 
     buildTypes {
@@ -91,6 +92,10 @@ dependencies {
     implementation(libs.org.jetbrains.kotlin.serialization)
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
     implementation(libs.squareup.retrofit2.converter.serialization)
+
+    // Naver Maps
+    implementation(libs.com.naver.maps)
+    implementation(libs.io.github.fornewid.naver.map.compose)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
