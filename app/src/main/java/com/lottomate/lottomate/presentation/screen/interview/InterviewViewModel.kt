@@ -1,9 +1,9 @@
-package com.lottomate.lottomate.presentation.screen.review
+package com.lottomate.lottomate.presentation.screen.interview
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lottomate.lottomate.presentation.screen.review.model.Interview
-import com.lottomate.lottomate.presentation.screen.review.model.InterviewMockData
+import com.lottomate.lottomate.presentation.screen.interview.model.Interview
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewMockData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

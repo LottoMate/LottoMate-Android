@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.review
+package com.lottomate.lottomate.presentation.screen.interview
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -40,7 +40,7 @@ import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.review.model.Interview
+import com.lottomate.lottomate.presentation.screen.interview.model.Interview
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray120

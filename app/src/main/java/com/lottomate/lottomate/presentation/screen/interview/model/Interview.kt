@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.review.model
+package com.lottomate.lottomate.presentation.screen.interview.model
 
 import kotlinx.serialization.Serializable
 

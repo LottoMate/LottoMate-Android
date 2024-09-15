@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.lottomate.lottomate.presentation.navigation.LottoRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
-import com.lottomate.lottomate.presentation.screen.review.InterviewRoute
+import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
 
 fun NavGraphBuilder.lottoNavGraph(
     padding: PaddingValues,

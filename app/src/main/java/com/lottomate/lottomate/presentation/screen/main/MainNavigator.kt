@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
-import com.lottomate.lottomate.presentation.screen.review.navigation.navigateInterview
+import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
 
 class MainNavigator(
     val navController: NavHostController,
