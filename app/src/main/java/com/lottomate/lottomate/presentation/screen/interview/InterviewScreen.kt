@@ -14,10 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -37,11 +34,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.BannerCard
+import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
-import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.interview.model.Interview
-import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
@@ -49,7 +45,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.utils.dropShadow
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
 
@@ -363,21 +358,9 @@ private fun BottomInterviewListItem(
     interviewDate: String,
     onClick: () -> Unit,
 ) {
-    Card(
-        modifier = modifier
-            .size(width = 220.dp, height = 200.dp)
-            .dropShadow(
-                shape = RoundedCornerShape(Dimens.RadiusLarge),
-                color = LottoMateBlack.copy(alpha = 0.16f),
-                blur = 8.dp,
-                offsetX = 0.dp,
-                offsetY = 0.dp
-            )
-            .noInteractionClickable { onClick() },
-        colors = CardDefaults.cardColors(
-            containerColor = LottoMateWhite,
-        ),
-        shape = RoundedCornerShape(Dimens.RadiusLarge),
+    LottoMateCard(
+        modifier = modifier.size(width = 220.dp, height = 200.dp),
+        onClick = onClick,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
             GlideImage(
