@@ -1,10 +1,14 @@
 package com.lottomate.lottomate.presentation.ui
 
+import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalView
 
 // TODO : Color 선택 완료되면 다시 수정
 private val LightColorScheme = lightColorScheme(
@@ -30,6 +34,14 @@ fun LottoMateTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.navigationBarColor = LottoMateWhite.toArgb()
+        }
+    }
+
     CompositionLocalProvider(LocalLottoMateTypography provides Typography) {
         MaterialTheme(
             colorScheme = LightColorScheme,
