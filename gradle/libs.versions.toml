@@ -19,6 +19,8 @@ okhttp3 = "4.12.0"
 serialization = "2.0.0"
 serialization-json = "1.6.0"
 coil = "2.7.0"
+naver-map = "3.19.1"
+naver-map-compose = "1.7.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +51,9 @@ squareup-retrofit2-converter-serialization = { group = "com.squareup.retrofit2",
 
 org-jetbrains-kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "serialization" }
 org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }
+
+com-naver-maps = { group = "com.naver.maps", name = "map-sdk", version.ref = "naver-map"}
+io-github-fornewid-naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", version.ref = "naver-map-compose" }
 
 io-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 
