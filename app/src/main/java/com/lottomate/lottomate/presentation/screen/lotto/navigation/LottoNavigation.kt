@@ -19,7 +19,7 @@ fun NavGraphBuilder.lottoNavGraph(
         )
     }
 
-    composable(LottoRoute.Interview.name) {
+    composable(Route.INTERVIEW.name) {
         InterviewRoute(
             onClickBanner = {},
             onShowErrorSnackBar = onShowErrorSnackBar,
