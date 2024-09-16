@@ -1,8 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.navigation
 
 import androidx.navigation.NavController
-import com.lottomate.lottomate.presentation.navigation.LottoRoute
+import com.lottomate.lottomate.presentation.navigation.Route
 
 fun NavController.navigateLottoInfo() {
-    navigate(LottoRoute.INFO.name)
+    navigate(Route.INFO.name)
 }

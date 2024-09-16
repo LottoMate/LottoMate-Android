@@ -1,31 +1,21 @@
-package com.lottomate.lottomate.presentation.screen.home.navigation
+package com.lottomate.lottomate.presentation.screen.map.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.lottomate.lottomate.presentation.screen.home.HomeRoute
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
 import com.lottomate.lottomate.presentation.screen.map.MapRoute
 
-fun NavController.navigateHome(navOptions: NavOptions) {
-    navigate(BottomNavigationRoute.HOME.name, navOptions)
+fun NavController.navigateMap(navOptions: NavOptions) {
+    navigate(route = BottomNavigationRoute.MAP.name, navOptions)
 }
 
-fun NavGraphBuilder.homeNavGraph(
+fun NavGraphBuilder.mapNavGraph(
     padding: PaddingValues,
-    onClickLottoInfo: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
-    composable(BottomNavigationRoute.HOME.name) {
-        HomeRoute(
-            padding = padding,
-            onClickLottoInfo = onClickLottoInfo,
-            onShowErrorSnackBar = onShowErrorSnackBar
-        )
-    }
-
     composable(BottomNavigationRoute.MAP.name) {
         MapRoute(
             padding = padding,
