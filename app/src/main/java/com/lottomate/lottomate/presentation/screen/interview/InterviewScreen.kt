@@ -191,6 +191,7 @@ private fun InterviewImageSection(
     imgs: List<String>,
     onClickInterviewImage: (String) -> Unit,
 ) {
+    val interviewImageHeight = if (imgs.size == 1) 250.dp else 230.dp
     val pagerState = rememberPagerState(
         pageCount = { imgs.size }
     )
@@ -205,7 +206,7 @@ private fun InterviewImageSection(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(230.dp)
+                    .height(interviewImageHeight)
                     .noInteractionClickable { onClickInterviewImage(imgs[page]) },
                 shape = RoundedCornerShape(Dimens.RadiusLarge)
             ) {
