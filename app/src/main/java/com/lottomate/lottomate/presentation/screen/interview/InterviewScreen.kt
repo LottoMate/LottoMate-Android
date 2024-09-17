@@ -28,6 +28,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,67 +101,87 @@ private fun InterviewScreen(
     onClickWinnerInterview: () -> Unit,
     onClickOriginArticle: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(LottoMateWhite)
-    ) {
-        when (interviewUiState) {
-            InterviewUiState.Loading -> {
-                // TODO : Interview Screen loading
-            }
-            is InterviewUiState.Success -> {
-                val interview = interviewUiState.data
+    var showInterviewImage by remember { mutableStateOf(false) }
+    var showInterviewImageUri: String? by remember { mutableStateOf(null) }
 
-                LottoMateTopAppBar(
-                    titleRes = R.string.top_app_bar_empty_title,
-                    backgroundColor = LottoMateTransparent,
-                    hasNavigation = true,
-                    onBackPressed = onBackPressed,
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                InterviewContentDetail(
-                    modifier = Modifier.fillMaxWidth(),
-                    interview = interview,
-                    onClickOriginArticle = onClickOriginArticle,
-                )
-            }
-        }
-
-        Divider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 10.dp,
-            color = LottoMateGray20
-        )
-
-        when (winnerInterviewsUiState) {
-            InterviewUiState.Loading -> {
-                // TODO : Interview Screen loading
-            }
-            is InterviewUiState.Success -> {
-                val interviews = winnerInterviewsUiState.data
-
-                BottomInterviewListContent(
-                    modifier = Modifier.fillMaxWidth(),
-                    interviewList = interviews,
-                    onClickInterviewItem = onClickWinnerInterview,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        BannerCard(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            onClickBanner = onClickBanner
-        )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(LottoMateWhite)
+        ) {
+            when (interviewUiState) {
+                InterviewUiState.Loading -> {
+                    // TODO : Interview Screen loading
+                }
+                is InterviewUiState.Success -> {
+                    val interview = interviewUiState.data
 
-        Spacer(modifier = Modifier.height(60.dp))
+                    LottoMateTopAppBar(
+                        titleRes = R.string.top_app_bar_empty_title,
+                        backgroundColor = LottoMateTransparent,
+                        hasNavigation = true,
+                        onBackPressed = onBackPressed,
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    InterviewContentDetail(
+                        modifier = Modifier.fillMaxWidth(),
+                        interview = interview,
+                        onClickOriginArticle = onClickOriginArticle,
+                        onClickInterviewImage = {
+                            showInterviewImageUri = it
+                            showInterviewImage = true
+                        },
+                    )
+                }
+            }
+
+            Divider(
+                modifier = Modifier.fillMaxWidth(),
+                thickness = 10.dp,
+                color = LottoMateGray20
+            )
+
+            when (winnerInterviewsUiState) {
+                InterviewUiState.Loading -> {
+                    // TODO : Interview Screen loading
+                }
+                is InterviewUiState.Success -> {
+                    val interviews = winnerInterviewsUiState.data
+
+                    BottomInterviewListContent(
+                        modifier = Modifier.fillMaxWidth(),
+                        interviewList = interviews,
+                        onClickInterviewItem = onClickWinnerInterview,
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            BannerCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                onClickBanner = onClickBanner
+            )
+
+            Spacer(modifier = Modifier.height(60.dp))
+        }
+        
+        if (showInterviewImage) {
+            InterviewImageView(
+                image = showInterviewImageUri!!,
+                onDismiss = {
+                    showInterviewImageUri = null
+                    showInterviewImage = false
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
 
@@ -166,6 +189,7 @@ private fun InterviewScreen(
 private fun InterviewImageSection(
     modifier: Modifier = Modifier,
     imgs: List<String>,
+    onClickInterviewImage: (String) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         pageCount = { imgs.size }
@@ -181,7 +205,8 @@ private fun InterviewImageSection(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(230.dp),
+                    .height(230.dp)
+                    .noInteractionClickable { onClickInterviewImage(imgs[page]) },
                 shape = RoundedCornerShape(Dimens.RadiusLarge)
             ) {
                 AsyncImage(
@@ -220,10 +245,31 @@ private fun InterviewImageSection(
 }
 
 @Composable
+private fun InterviewImageView(
+    modifier: Modifier = Modifier,
+    image: String,
+    onDismiss: () -> Unit,
+) {
+    Box(
+        modifier = modifier
+            .background(color = LottoMateBlack.copy(alpha = 0.8f))
+            .noInteractionClickable { onDismiss() },
+        contentAlignment = Alignment.Center,
+    ) {
+        AsyncImage(
+            model = image,
+            contentDescription = "",
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
 private fun InterviewContentDetail(
     modifier: Modifier = Modifier,
     interview: Interview,
     onClickOriginArticle: () -> Unit,
+    onClickInterviewImage: (String) -> Unit,
 ) {
     Column(modifier = modifier) {
         InterviewTitle(
@@ -239,6 +285,7 @@ private fun InterviewContentDetail(
             InterviewImageSection(
                 modifier = Modifier.fillMaxWidth(),
                 imgs = interview.imgs,
+                onClickInterviewImage = onClickInterviewImage
             )
         }
 
