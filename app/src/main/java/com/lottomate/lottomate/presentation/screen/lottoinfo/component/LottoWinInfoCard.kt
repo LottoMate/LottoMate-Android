@@ -213,7 +213,7 @@ private fun SpeettoStoreInfo(
                 ){
                     LottoMateText(
                         text = "당첨자 인터뷰",
-                        style = LottoMateTheme.typography.caption,
+                        style = LottoMateTheme.typography.caption1,
                         color = LottoMateGray100,
                     )
 

@@ -104,7 +104,7 @@ fun BannerCard(
 
                 LottoMateText(
                     text = stringResource(id = R.string.banner_lotto_info_sub_title),
-                    style = LottoMateTheme.typography.caption
+                    style = LottoMateTheme.typography.caption1
                         .copy(LottoMateGray90),
                 )
             }

@@ -147,7 +147,8 @@ private fun lottoMateTextStyle(style: TextStyle = LocalTextStyle.current): Lotto
         equals(LottoMateTheme.typography.body2, style) -> LottoMateTextStyle.BODY2
         equals(LottoMateTheme.typography.label1, style) -> LottoMateTextStyle.LABEL1
         equals(LottoMateTheme.typography.label2, style) -> LottoMateTextStyle.LABEL2
-        equals(LottoMateTheme.typography.caption, style) -> LottoMateTextStyle.CAPTION
+        equals(LottoMateTheme.typography.caption1, style) -> LottoMateTextStyle.CAPTION1
+        equals(LottoMateTheme.typography.caption2, style) -> LottoMateTextStyle.CAPTION2
         else -> LottoMateTextStyle.UNSPECIFIED
     }
 }
@@ -168,5 +169,6 @@ enum class LottoMateTextStyle(
     BODY2(18.sp, 6.sp),
     LABEL1(18.sp, 6.sp),
     LABEL2(16.sp, 6.sp),
-    CAPTION(13.sp, 5.sp),
+    CAPTION1(13.sp, 5.sp),
+    CAPTION2(12.sp, 4.sp),
 }

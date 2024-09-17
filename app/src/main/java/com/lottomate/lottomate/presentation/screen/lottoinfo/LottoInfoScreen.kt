@@ -268,7 +268,7 @@ private fun LottoInfoContent(
                     } else {
                         stringResource(id = R.string.lotto_info_bottom_notice)
                     },
-                    style = LottoMateTheme.typography.caption
+                    style = LottoMateTheme.typography.caption1
                         .copy(LottoMateGray80),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -523,7 +523,7 @@ private fun LottoWinNumberSection(
 
                 LottoMateText(
                     text = "총 판매 금액 : ${info.totalSalesPrice}원",
-                    style = LottoMateTheme.typography.caption
+                    style = LottoMateTheme.typography.caption1
                         .copy(LottoMateGray80),
                 )
             }
@@ -563,7 +563,7 @@ private fun LottoWinInfoSection(
             if (lottoType == LottoType.L645) {
                 LottoMateText(
                     text = "1인당 당첨 수령 금액",
-                    style = LottoMateTheme.typography.caption
+                    style = LottoMateTheme.typography.caption1
                         .copy(LottoMateGray80),
                 )
             }
@@ -643,7 +643,7 @@ private fun BottomBannerSection(
 
                 LottoMateText(
                     text = stringResource(id = R.string.banner_lotto_info_sub_title),
-                    style = LottoMateTheme.typography.caption
+                    style = LottoMateTheme.typography.caption1
                         .copy(LottoMateGray90),
                 )
             }
