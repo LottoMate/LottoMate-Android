@@ -59,7 +59,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
@@ -107,23 +106,16 @@ private fun InterviewScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .background(LottoMateWhite)
         ) {
+            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
             when (interviewUiState) {
                 InterviewUiState.Loading -> {
                     // TODO : Interview Screen loading
                 }
                 is InterviewUiState.Success -> {
                     val interview = interviewUiState.data
-
-                    LottoMateTopAppBar(
-                        titleRes = R.string.top_app_bar_empty_title,
-                        backgroundColor = LottoMateTransparent,
-                        hasNavigation = true,
-                        onBackPressed = onBackPressed,
-                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -171,7 +163,13 @@ private fun InterviewScreen(
 
             Spacer(modifier = Modifier.height(60.dp))
         }
-        
+
+        LottoMateTopAppBar(
+            titleRes = R.string.top_app_bar_empty_title,
+            hasNavigation = true,
+            onBackPressed = onBackPressed,
+        )
+
         if (showInterviewImage) {
             InterviewImageView(
                 image = showInterviewImageUri!!,

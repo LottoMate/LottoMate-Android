@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.main
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -55,14 +54,11 @@ private fun MainScreenContent(
             }
         },
         content = { innerPadding ->
-            Column {
-                MainNavHost(
-                    navigator = navigator,
-                    padding = innerPadding,
-                    onShowErrorSnackBar = onShowErrorSnackBar
-                )
-            }
-
+            MainNavHost(
+                navigator = navigator,
+                padding = innerPadding,
+                onShowErrorSnackBar = onShowErrorSnackBar
+            )
         },
         snackbarHost = { SnackbarHost(snackBarHostState) },
         containerColor = LottoMateWhite,

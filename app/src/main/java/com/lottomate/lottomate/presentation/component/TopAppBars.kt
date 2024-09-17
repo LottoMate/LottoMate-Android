@@ -45,12 +45,6 @@ fun LottoMateTopAppBar(
     onBackPressed: () -> Unit = {},
     actionButtons: @Composable () -> Unit = {},
 ) {
-    val statusHeight = LocalContext.current.resources.getDimensionPixelSize(
-        LocalContext.current.resources.getIdentifier("status_bar_height", "dimen", "android")
-    ).run {
-        pixelsToDp(pixels = this)
-    }
-
     Column(
         modifier = Modifier.fillMaxWidth()
             .background(backgroundColor),
@@ -58,7 +52,7 @@ fun LottoMateTopAppBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(statusHeight)
+                .height(Dimens.StatusBarHeight)
         )
 
         Box(
