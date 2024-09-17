@@ -385,7 +385,7 @@ private fun BottomInterviewListContent(
         Column(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
-                .padding(top = 44.dp)
+                .padding(top = 24.dp)
         ) {
             LottoMateText(
                 text = "로또 당첨자 후기",
