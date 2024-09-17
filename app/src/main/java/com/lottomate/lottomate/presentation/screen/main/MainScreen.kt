@@ -45,12 +45,14 @@ private fun MainScreenContent(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            LottoMateBottomBar(
-                modifier = Modifier.navigationBarsPadding(),
-                tabs = MainBottomTab.entries.toList(),
-                currentTab = navigator.currentTab,
-                onTabSelected = { navigator.navigate(it) }
-            )
+            if (navigator.isInMainBottomTab) {
+                LottoMateBottomBar(
+                    modifier = Modifier.navigationBarsPadding(),
+                    tabs = MainBottomTab.entries.toList(),
+                    currentTab = navigator.currentTab,
+                    onTabSelected = { navigator.navigate(it) }
+                )
+            }
         },
         content = { innerPadding ->
             Column {

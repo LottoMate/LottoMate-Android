@@ -22,6 +22,9 @@ class MainNavigator(
 
     val startDestination = MainBottomTab.HOME.route
 
+    val isInMainBottomTab
+        @Composable get() = currentTab != null
+
     val currentTab: MainBottomTab?
         @Composable get() = MainBottomTab.find {
             currentDestination?.route == it.name
