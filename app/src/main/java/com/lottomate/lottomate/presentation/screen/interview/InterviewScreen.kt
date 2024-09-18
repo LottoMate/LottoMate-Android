@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -495,20 +496,30 @@ private fun BottomInterviewListItem(
                 contentScale = ContentScale.Crop
             )
 
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp) ){
-                LottoMateText(
-                    text = subTitle,
-                    style = LottoMateTheme.typography.caption1
-                        .copy(color = LottoMateGray80)
-                )
-                LottoMateText(
-                    text = title,
-                    style = LottoMateTheme.typography.label2,
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 12.dp)
+            ) {
+                Column {
+                    LottoMateText(
+                        text = subTitle,
+                        style = LottoMateTheme.typography.caption1
+                            .copy(color = LottoMateGray80)
+                    )
+                    LottoMateText(
+                        text = title,
+                        style = LottoMateTheme.typography.label2,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+
                 LottoMateText(
                     text = interviewDate,
                     style = LottoMateTheme.typography.caption2
-                        .copy(color = LottoMateGray80)
+                        .copy(color = LottoMateGray80),
+                    modifier = Modifier.align(Alignment.BottomStart)
                 )
             }
         }
