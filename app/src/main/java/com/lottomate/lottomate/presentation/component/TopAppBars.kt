@@ -34,7 +34,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
-private val topAppBarHorizontalPadding = 12.dp
+private val topAppBarHorizontalPadding = 13.dp
 
 @Composable
 fun LottoMateTopAppBar(
