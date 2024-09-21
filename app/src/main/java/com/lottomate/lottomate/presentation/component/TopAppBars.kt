@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,32 +30,29 @@ import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
-private val topAppBarHorizontalPadding = 12.dp
+private val topAppBarHorizontalPadding = 13.dp
 
 @Composable
 fun LottoMateTopAppBar(
     @StringRes titleRes: Int,
     hasNavigation: Boolean,
+    navigationColor: Color = LottoMateBlack,
+    backgroundColor: Color = LottoMateWhite.copy(alpha = 0.8f),
     onBackPressed: () -> Unit = {},
     actionButtons: @Composable () -> Unit = {},
 ) {
-    val statusHeight = LocalContext.current.resources.getDimensionPixelSize(
-        LocalContext.current.resources.getIdentifier("status_bar_height", "dimen", "android")
-    ).run {
-        pixelsToDp(pixels = this)
-    }
-
     Column(
         modifier = Modifier.fillMaxWidth()
-            .background(LottoMateWhite.copy(alpha = 0.8f)),
+            .background(backgroundColor),
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(statusHeight)
+                .height(Dimens.StatusBarHeight)
         )
 
         Box(
@@ -65,6 +64,7 @@ fun LottoMateTopAppBar(
             if (hasNavigation) {
                 LottoMateIconButton(
                     iconRes = R.drawable.icon_arrow_left,
+                    color = navigationColor,
                     contentDescription = "Navigation Back Button",
                     onClick = onBackPressed,
                     modifier = Modifier
@@ -95,12 +95,14 @@ fun LottoMateTopAppBar(
 fun LottoMateIconButton(
     modifier: Modifier = Modifier,
     @DrawableRes iconRes: Int,
+    color: Color = LocalContentColor.current,
     contentDescription: String,
     onClick: () -> Unit,
 ) {
     Icon(
         painter = painterResource(id = iconRes),
         contentDescription = contentDescription,
+        tint = color,
         modifier = modifier
             .clip(CircleShape)
             .clickable { onClick() }

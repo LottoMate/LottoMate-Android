@@ -16,12 +16,14 @@ fun NavController.navigateHome(navOptions: NavOptions) {
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     onClickLottoInfo: () -> Unit,
+    onClickInterview: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     composable(BottomNavigationRoute.HOME.name) {
         HomeRoute(
             padding = padding,
             onClickLottoInfo = onClickLottoInfo,
+            onClickInterview = onClickInterview,
             onShowErrorSnackBar = onShowErrorSnackBar
         )
     }

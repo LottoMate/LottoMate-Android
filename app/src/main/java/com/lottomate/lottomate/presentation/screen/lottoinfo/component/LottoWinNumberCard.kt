@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -23,14 +20,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateText
-import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.utils.dropShadow
 
 @Composable
 fun LottoWinNumberCard(
@@ -39,22 +34,13 @@ fun LottoWinNumberCard(
     winNumbers: List<Int>,
     bonusNumbers: List<Int>,
 ) {
-    Card(
-        modifier = modifier.dropShadow(
-            shape = RoundedCornerShape(Dimens.RadiusLarge),
-            color = LottoMateBlack.copy(alpha = 0.1f),
-            blur = 8.dp,
-            offsetX = 0.dp,
-            offsetY = 0.dp
-        ),
+    LottoMateCard(
+        modifier = modifier,
         border = BorderStroke(
             width = 1.dp,
             color = LottoMateGray20
         ),
-        shape = RoundedCornerShape(Dimens.RadiusLarge),
-        colors = CardDefaults.cardColors(
-            containerColor = LottoMateWhite,
-        ),
+        shadowColor = LottoMateBlack.copy(alpha = 0.1f),
     ) {
         when (lottoType) {
             LottoType.L645 -> {
@@ -92,12 +78,12 @@ private fun Lotto645WinNumber(
         ) {
             LottoMateText(
                 text = "당첨 번호",
-                style = LottoMateTheme.typography.caption
+                style = LottoMateTheme.typography.caption1
                     .copy(color = LottoMateGray70)
             )
             LottoMateText(
                 text = "보너스",
-                style = LottoMateTheme.typography.caption
+                style = LottoMateTheme.typography.caption1
                     .copy(color = LottoMateGray70)
             )
         }
@@ -136,7 +122,7 @@ private fun Lotto720WinNumber(
     ) {
         LottoMateText(
             text = "1등",
-            style = LottoMateTheme.typography.caption
+            style = LottoMateTheme.typography.caption1
                 .copy(LottoMateGray70),
         )
 
@@ -184,7 +170,7 @@ private fun Lotto720WinNumber(
 
         LottoMateText(
             text = "보너스",
-            style = LottoMateTheme.typography.caption
+            style = LottoMateTheme.typography.caption1
                 .copy(LottoMateGray70),
         )
 

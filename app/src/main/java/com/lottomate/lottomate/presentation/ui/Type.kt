@@ -96,10 +96,16 @@ private val label2 = pretendardStyle.copy(
     lineHeight = 22.sp,
 )
 
-private val caption = pretendardStyle.copy(
+private val caption1 = pretendardStyle.copy(
     fontWeight = FontWeight.SemiBold,
     fontSize = 13.sp,
     lineHeight = 18.sp,
+)
+
+private val caption2 = pretendardStyle.copy(
+    fontWeight = FontWeight.Medium,
+    fontSize = 10.sp,
+    lineHeight = 16.sp,
 )
 
 @Immutable
@@ -115,7 +121,8 @@ data class LottoMateTypography(
     val body2: TextStyle,
     val label1: TextStyle,
     val label2: TextStyle,
-    val caption: TextStyle
+    val caption1: TextStyle,
+    val caption2: TextStyle,
 )
 
 val Typography = LottoMateTypography(
@@ -130,7 +137,8 @@ val Typography = LottoMateTypography(
     body2 = body2,
     label1 = label1,
     label2 = label2,
-    caption = caption,
+    caption1 = caption1,
+    caption2 = caption2,
 )
 
 val LocalLottoMateTypography = staticCompositionLocalOf {
@@ -146,6 +154,7 @@ val LocalLottoMateTypography = staticCompositionLocalOf {
         body2 = body2,
         label1 = label1,
         label2 = label2,
-        caption = caption,
+        caption1 = caption1,
+        caption2 = caption2,
     )
 }

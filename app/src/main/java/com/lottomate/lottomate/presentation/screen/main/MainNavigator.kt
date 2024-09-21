@@ -7,9 +7,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
+import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
 import androidx.navigation.navOptions
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateHome
-import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateMap
 
 class MainNavigator(
@@ -20,6 +21,9 @@ class MainNavigator(
             .currentBackStackEntryAsState().value?.destination
 
     val startDestination = MainBottomTab.HOME.route
+
+    val isInMainBottomTab
+        @Composable get() = currentTab != null
 
     val currentTab: MainBottomTab?
         @Composable get() = MainBottomTab.find {
@@ -45,6 +49,10 @@ class MainNavigator(
 
     fun navigateLottoInfo() {
         navController.navigateLottoInfo()
+    }
+
+    fun navigateInterview() {
+        navController.navigateInterview()
     }
 }
 

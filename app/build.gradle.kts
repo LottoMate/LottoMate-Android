@@ -93,6 +93,9 @@ dependencies {
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
     implementation(libs.squareup.retrofit2.converter.serialization)
 
+    // Coil
+    implementation(libs.io.coil.compose)
+
     // Naver Maps
     implementation(libs.com.naver.maps)
     implementation(libs.io.github.fornewid.naver.map.compose)

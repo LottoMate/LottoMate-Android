@@ -24,6 +24,7 @@ fun MainNavHost(
             homeNavGraph(
                 padding = padding,
                 onClickLottoInfo = { navigator.navigateLottoInfo() },
+                onClickInterview = { navigator.navigateInterview() },
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 

@@ -1,6 +1,8 @@
 package com.lottomate.lottomate.utils
 
 import android.graphics.BlurMaskFilter
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Size
@@ -40,3 +42,9 @@ fun Modifier.dropShadow(
         canvas.restore()
     }
 }
+
+fun Modifier.noInteractionClickable(onClick: () -> Unit) = this.clickable(
+    interactionSource = MutableInteractionSource(),
+    indication = null,
+    onClick = onClick
+)

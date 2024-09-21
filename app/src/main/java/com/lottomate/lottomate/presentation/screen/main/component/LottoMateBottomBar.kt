@@ -87,7 +87,7 @@ private fun LottoMateBottomBarItem(
 
         LottoMateText(
             text = tab.contentDescription,
-            style = LottoMateTheme.typography.caption,
+            style = LottoMateTheme.typography.caption1,
             color = if (selected) LottoMateRed50 else LottoMateGray100,
         )
     }
