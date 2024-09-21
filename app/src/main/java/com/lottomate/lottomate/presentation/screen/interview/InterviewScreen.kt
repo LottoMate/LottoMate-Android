@@ -49,6 +49,7 @@ import coil.request.ImageRequest
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateCard
+import com.lottomate.lottomate.presentation.component.LottoMateIconButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -60,6 +61,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
@@ -254,12 +256,29 @@ private fun InterviewImageView(
         modifier = modifier
             .background(color = LottoMateBlack.copy(alpha = 0.8f))
             .noInteractionClickable { onDismiss() },
-        contentAlignment = Alignment.Center,
     ) {
         AsyncImage(
             model = image,
             contentDescription = "",
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
+        )
+
+        LottoMateTopAppBar(
+            titleRes = R.string.top_app_bar_empty_title,
+            hasNavigation = false,
+            actionButtons = {
+                LottoMateIconButton(
+                    iconRes = R.drawable.icon_close,
+                    contentDescription = "Interview Image Close Button",
+                    color = LottoMateWhite.copy(alpha = 0.6f),
+                    onClick = onDismiss
+                )
+
+                Spacer(modifier = Modifier.width(7.dp))
+            },
+            backgroundColor = LottoMateTransparent
         )
     }
 }
