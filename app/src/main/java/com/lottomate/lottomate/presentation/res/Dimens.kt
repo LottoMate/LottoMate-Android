@@ -1,9 +1,11 @@
 package com.lottomate.lottomate.presentation.res
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.Dp
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 
 object Dimens {
     val RadiusExtraSmall: Dp
@@ -23,4 +25,14 @@ object Dimens {
     
     val TopAppBarHeight: Dp
         @Composable get() = dimensionResource(id = R.dimen.top_app_bar_height)
+
+    val StatusBarHeight
+        @Composable get() = LocalContext.current.resources.getDimensionPixelSize(
+        LocalContext.current.resources.getIdentifier("status_bar_height", "dimen", "android")
+    ).run {
+        pixelsToDp(pixels = this)
+    }
+
+    val BaseTopPadding
+        @Composable get() = TopAppBarHeight.plus(StatusBarHeight)
 }

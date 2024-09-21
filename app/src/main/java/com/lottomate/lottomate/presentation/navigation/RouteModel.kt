@@ -1,9 +1,9 @@
 package com.lottomate.lottomate.presentation.navigation
 
-enum class LottoRoute {
-    INFO,
+enum class Route {
+    INFO, INTERVIEW,
 }
 
 enum class BottomNavigationRoute {
-    HOME, MAP, MYPAGE,
+    HOME, MAP, POCKET, LOUNGE,
 }

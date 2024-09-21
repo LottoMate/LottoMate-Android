@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.res.StringArrays.Lotto645WinConditions
@@ -36,7 +35,6 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoInfoDetail
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoMockDatas
-import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
@@ -45,9 +43,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGreen50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed30
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow60
-import com.lottomate.lottomate.utils.dropShadow
 
 enum class LottoRank(val rank: Int) {
     FIRST(1), SECOND(2), THIRD(3), FOURTH(4), FIFTH(5), SIXTH(6), SEVENTH(7), BONUS(8);
@@ -217,7 +213,7 @@ private fun SpeettoStoreInfo(
                 ){
                     LottoMateText(
                         text = "당첨자 인터뷰",
-                        style = LottoMateTheme.typography.caption,
+                        style = LottoMateTheme.typography.caption1,
                         color = LottoMateGray100,
                     )
 
@@ -271,19 +267,7 @@ private fun LottoWinInfoBaseCard(
         else -> LottoMateGray100
     }
 
-    Card(
-        modifier = modifier.dropShadow(
-            shape = RoundedCornerShape(Dimens.RadiusLarge),
-            color = LottoMateBlack.copy(alpha = 0.16f),
-            blur = 8.dp,
-            offsetX = 0.dp,
-            offsetY = 0.dp
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = LottoMateWhite,
-        ),
-        shape = RoundedCornerShape(Dimens.RadiusLarge),
-    ) {
+    LottoMateCard(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()

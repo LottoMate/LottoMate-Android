@@ -15,11 +15,13 @@ import androidx.compose.ui.unit.dp
 fun HomeRoute(
     padding: PaddingValues,
     onClickLottoInfo: () -> Unit,
+    onClickInterview: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     HomeScreen(
         modifier = Modifier.fillMaxSize(),
-        onClickLottoInfo = onClickLottoInfo
+        onClickLottoInfo = onClickLottoInfo,
+        onClickInterview = onClickInterview,
     )
 }
 
@@ -27,6 +29,7 @@ fun HomeRoute(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     onClickLottoInfo: () -> Unit,
+    onClickInterview: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -37,6 +40,10 @@ private fun HomeScreen(
 
         Button(onClick = onClickLottoInfo) {
             Text(text = "Move Lotto Info View")
+        }
+
+        Button(onClick = onClickInterview) {
+            Text(text = "Move Lotto Review")
         }
     }
 }
