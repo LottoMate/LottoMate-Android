@@ -34,7 +34,7 @@ object LottoInfoMapper {
 
         return Lotto645Info(
             lottoRound = lottoInfoEntity.drwNum,
-            lottoDate = lottoInfoEntity.drwDate,
+            lottoDate = lottoInfoEntity.drwDate.replace("-", "."),
             lottoNum = lottoInfoEntity.lottoNum,
             lottoBonusNum = lottoInfoEntity.lottoBonusNum,
             lottoWinnerNum = lottoWinnerCntList.map { formatNumberWithCommas(it) },
@@ -57,7 +57,7 @@ object LottoInfoMapper {
         }
         return Lotto720Info(
             lottoRound = lottoInfoEntity.drwNum,
-            lottoDate = lottoInfoEntity.drwDate,
+            lottoDate = lottoInfoEntity.drwDate.replace("-", "."),
             lottoNum = lottoInfoEntity.lottoNum,
             lottoBonusNum = lottoInfoEntity.lottoBonusNum,
             lottoWinnerNum = lottoWinnerCntList.map { formatNumberWithCommas(it) },
