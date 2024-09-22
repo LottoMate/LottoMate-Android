@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -39,10 +38,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
+import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoBottomWheelUiState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoRoundViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
@@ -55,8 +56,9 @@ import com.lottomate.lottomate.utils.DateUtils.calLottoRoundDate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LottoRoundWheelPicker(
     vm: LottoRoundViewModel = hiltViewModel(),
@@ -70,54 +72,66 @@ fun LottoRoundWheelPicker(
         vm.getLatestLottoInfo(currentTabIndex)
     }
 
-    val lastRound by vm.latestLottoRound.collectAsStateWithLifecycle()
-    val lastDate by vm.latestLottoDate.collectAsStateWithLifecycle()
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
     val lottoRoundRange by vm.lottoRoundRange
 
-    val visibleItemCount = 3
-    val visibleItemsMiddle = visibleItemCount / 2
+    when (uiState) {
+        LottoBottomWheelUiState.Loading -> { }
+        is LottoBottomWheelUiState.Success -> {
+            val latestRoundOrPage = (uiState as LottoBottomWheelUiState.Success).round
+            val latestLottoDate = (uiState as LottoBottomWheelUiState.Success).date
 
-    val scrollState = rememberLazyListState(
-        initialFirstVisibleItemIndex = maxOf(0, lastRound - currentLottoRound)
-    )
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
+            val visibleItemCount = 3
+            val visibleItemsMiddle = visibleItemCount / 2
 
-    LaunchedEffect(key1 = currentLottoRound, key2 = lastRound) {
-        val targetIndex = maxOf(0, lastRound - currentLottoRound)
-        scrollState.scrollToItem(targetIndex)
-        pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: ""
-    }
+            val scrollState = rememberLazyListState(
+                initialFirstVisibleItemIndex = maxOf(0, latestRoundOrPage - currentLottoRound)
+            )
+            val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
 
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemIndex }
-            .map { index -> lottoRoundRange.getOrNull(index + visibleItemsMiddle) ?: "" }
-            .distinctUntilChanged()
-            .collect { item ->
-                pickerState.selectedItem = item
+            LaunchedEffect(key1 = currentLottoRound, key2 = latestRoundOrPage, key3 = scaffoldState.bottomSheetState.currentValue) {
+                val targetIndex = when (currentTabIndex) {
+                    LottoType.S2000.ordinal -> maxOf(0, abs(latestRoundOrPage - currentLottoRound))
+                    else -> maxOf(0, latestRoundOrPage - currentLottoRound)
+                }
+                scrollState.scrollToItem(targetIndex)
+                pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: ""
             }
-    }
 
-    LottoRoundWheelPickerContent(
-        modifier = Modifier.fillMaxWidth(),
-        lastDate = lastDate,
-        visibleItemCount = visibleItemCount,
-        lottoRoundRange = lottoRoundRange,
-        currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
-        scaffoldState = scaffoldState,
-        scrollState = scrollState,
-        flingBehavior = flingBehavior,
-        onClickSelect = onClickSelect
-    )
+            LaunchedEffect(scrollState) {
+                snapshotFlow { scrollState.firstVisibleItemIndex }
+                    .map { index -> lottoRoundRange.getOrNull(index + visibleItemsMiddle) ?: "" }
+                    .distinctUntilChanged()
+                    .collect { item ->
+                        pickerState.selectedItem = item
+                    }
+            }
+
+            LottoRoundWheelPickerContent(
+                modifier = Modifier.fillMaxWidth(),
+                lastDate = latestLottoDate,
+                visibleItemCount = visibleItemCount,
+                lottoRoundRange = lottoRoundRange,
+                currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
+                currentLottoType = LottoType.findLottoType(currentTabIndex),
+                scaffoldState = scaffoldState,
+                scrollState = scrollState,
+                flingBehavior = flingBehavior,
+                onClickSelect = onClickSelect
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LottoRoundWheelPickerContent(
     modifier: Modifier = Modifier,
-    lastDate: String,
+    lastDate: String?,
     visibleItemCount: Int,
     lottoRoundRange: List<String>,
     currentIndex: Int,
+    currentLottoType: LottoType,
     pickerMaxHeight: Dp = 116.dp,
     scaffoldState: BottomSheetScaffoldState,
     scrollState: LazyListState,
@@ -133,7 +147,10 @@ private fun LottoRoundWheelPickerContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         LottoMateText(
-            text = "회차 선택",
+            text = when (currentLottoType) {
+                LottoType.L645, LottoType.L720 -> "회차 선택"
+                else -> "페이지 선택"
+            },
             style = LottoMateTheme.typography.headline1,
             modifier = Modifier.padding(start = 20.dp),
         )
@@ -168,7 +185,10 @@ private fun LottoRoundWheelPickerContent(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         LottoMateText(
-                            text = if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회"),
+                            text = when (currentLottoType) {
+                                LottoType.S2000, LottoType.S1000, LottoType.S500 -> lottoRoundRange[index]
+                                else -> { if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회") }
+                            },
                             textAlign = TextAlign.Center,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -176,13 +196,15 @@ private fun LottoRoundWheelPickerContent(
                                 .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
                         )
 
-                        Spacer(modifier = Modifier.width(20.dp))
+                        lastDate?.let { date ->
+                            Spacer(modifier = Modifier.width(20.dp))
 
-                        LottoMateText(
-                            text = if (index == 0) "" else calLottoRoundDate(lastDate, index),
-                            style = LottoMateTheme.typography.body1
-                                .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
-                        )
+                            LottoMateText(
+                                text = if (index == 0) "" else calLottoRoundDate(date, index),
+                                style = LottoMateTheme.typography.body1
+                                    .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
+                            )
+                        }
                     }
                 }
             }
@@ -229,7 +251,7 @@ private fun LottoRoundWheelPickerContent(
 @Composable
 fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 private fun LottoRoundWheelPickerContentPreview() {
@@ -245,6 +267,7 @@ private fun LottoRoundWheelPickerContentPreview() {
             scaffoldState = rememberBottomSheetScaffoldState(),
             scrollState = scrollState,
             currentIndex = ranges.indexOf(pickerState.selectedItem),
+            currentLottoType = LottoType.L645,
             flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState),
             onClickSelect = {}
         )

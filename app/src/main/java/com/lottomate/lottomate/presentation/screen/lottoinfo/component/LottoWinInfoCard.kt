@@ -362,7 +362,7 @@ private fun LottoWinnerInfoCardPreview() {
             .verticalScroll(rememberScrollState())
         ) {
             SpeettoWinInfoCard(
-                speettoWinStoreInfo = SpeettoMockDatas
+                speettoWinStoreInfo = SpeettoMockDatas.details
             )
             LottoWinInfoBaseCard(
                 modifier = Modifier.fillMaxWidth(),

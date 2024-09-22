@@ -7,13 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoMockDatas
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
@@ -41,38 +42,60 @@ class LottoInfoViewModel @Inject constructor(
     }
 
     fun changeTabMenu(index: Int) {
-        currentTabMenu.intValue = index
-
         when (index) {
             LottoType.L645.ordinal -> getLatestLottoInfoByLottoType(LottoType.L645)
             LottoType.L720.ordinal -> getLatestLottoInfoByLottoType(LottoType.L720)
             else -> getLatestLottoInfoByLottoType(LottoType.S2000)
         }
+
+        currentTabMenu.intValue = index
     }
 
-    fun getLottoInfo(lottoRndNum: Int) {
-        val lottoType = LottoType.findLottoType(currentTabMenu.intValue).num
+    fun getLottoInfoByRoundOrPage(lottoRndOrPageNum: Int) {
+        val lottoType = LottoType.findLottoType(currentTabMenu.intValue)
 
-        viewModelScope.launch {
-            lottoInfoRepository.fetchLottoInfoByRound(lottoType, lottoRndNum)
-                .collectLatest { lottoInfo ->
-                    lottoInfo.lottoRound?.let { round ->
-                        judgePreOrNextLottoRound(round)
-                    }
+        when (lottoType) {
+            LottoType.L645, LottoType.L720 -> {
+                viewModelScope.launch {
+                    lottoInfoRepository.fetchLottoInfo(lottoType.num, lottoRndOrPageNum)
+                        .collectLatest { lottoInfo ->
+                            lottoInfo.lottoRound?.let { round ->
+                                judgePreOrNextLottoRound(round)
+                            }
 
-                    _lottoInfo.update {
-                        LottoInfoUiState.Success(lottoInfo)
-                    }
+                            _lottoInfo.update {
+                                LottoInfoUiState.Success(lottoInfo)
+                            }
+                        }
                 }
+            }
+            else -> {
+                val updateSpeettoInfo = SpeettoMockDatas.copy(
+                    currentPage = lottoRndOrPageNum
+                )
+                _lottoInfo.update {
+                    LottoInfoUiState.Success(updateSpeettoInfo)
+                }
+
+                hasPreLottoRound.value = updateSpeettoInfo.currentPage != 1
+                hasNextLottoRound.value = updateSpeettoInfo.currentPage != updateSpeettoInfo.lastPage
+            }
         }
     }
 
     private fun getLatestLottoInfoByLottoType(lottoType: LottoType) {
         viewModelScope.launch {
-            lottoInfoRepository.getLatestLottoInfoByLottoType(lottoType)
+            lottoInfoRepository.fetchLottoInfo(lottoType.num)
+                .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
+                .catch { throwable -> _errorFlow.emit(throwable) }
                 .collectLatest { lottoInfo ->
                     lottoInfo.lottoRound?.let { round ->
                         judgePreOrNextLottoRound(round)
+                    } ?: run {
+                        val speettoInfo = lottoInfo as SpeettoInfo
+
+                        hasPreLottoRound.value = speettoInfo.currentPage != 1
+                        hasNextLottoRound.value = speettoInfo.currentPage != speettoInfo.lastPage
                     }
 
                     _lottoInfo.update {
@@ -84,24 +107,29 @@ class LottoInfoViewModel @Inject constructor(
 
     private fun judgePreOrNextLottoRound(lottoRndNum: Int) {
         val currentLottoType = LottoType.findLottoType(currentTabMenu.intValue).num
-        val latestLottoRound = lottoInfoRepository.latestLottoInfo.getValue(currentLottoType)
+        val latestLottoRound = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType)
 
-        hasNextLottoRound.value = lottoRndNum != latestLottoRound.lottoRound
+        hasNextLottoRound.value = lottoRndNum != latestLottoRound
         hasPreLottoRound.value = lottoRndNum != LOTTO_FIRST_ROUND
     }
 
     private fun loadLatestLottoInfo() {
         viewModelScope.launch {
-            lottoInfoRepository.fetchLatestLottoInfo()
-                .onStart {
-                    _lottoInfo.update { LottoInfoUiState.Loading }
-                }
-                .catch { throwable ->
-                    _errorFlow.emit(throwable)
-                }
-                .collect()
+            lottoInfoRepository.fetchAllLatestLottoInfo()
 
-            getLatestLottoInfoByLottoType(LottoType.L645)
+            val currentLottoType = LottoType.findLottoType(currentTabMenu.value)
+
+            if (lottoInfoRepository.allLatestLottoRound.isNotEmpty()) {
+                lottoInfoRepository.fetchLottoInfo(
+                    lottoType = currentLottoType.num,
+                    lottoRndNum = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType.num)
+                )
+                    .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
+                    .catch { throwable -> _errorFlow.emit(throwable) }
+                    .collectLatest { info ->
+                        _lottoInfo.update { LottoInfoUiState.Success(info) }
+                    }
+            }
         }
     }
 

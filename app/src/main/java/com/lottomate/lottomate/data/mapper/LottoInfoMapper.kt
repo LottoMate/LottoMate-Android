@@ -13,32 +13,33 @@ object LottoInfoMapper {
     fun toLotto645Info(lottoInfoEntity: Lotto645InfoEntity): Lotto645Info {
         val lottoWinnerCntList = MutableList(LOTTO_645_TOTAL_RANK_COUNT) { 0 }
         val lottoPrizes = MutableList(LOTTO_645_TOTAL_RANK_COUNT) { 0L }
+        val prizePerPerson = MutableList(LOTTO_645_TOTAL_RANK_COUNT) { 0L }
         with(lottoInfoEntity) {
             lottoWinnerCntList[0] = p1WinnrCnt
             lottoPrizes[0] = p1Jackpot
+            prizePerPerson[0] = p1PerJackpot
             lottoWinnerCntList[1] = p2WinnrCnt
             lottoPrizes[1] = p2Jackpot
+            prizePerPerson[1] = p2JPerJackpot
             lottoWinnerCntList[2] = p3WinnrCnt
             lottoPrizes[2] = p3Jackpot
+            prizePerPerson[2] = p3PerJackpot
             lottoWinnerCntList[3] = p4WinnrCnt
             lottoPrizes[3] = p4Jackpot
+            prizePerPerson[3] = p4PerJackpot
             lottoWinnerCntList[4] = p5WinnrCnt
             lottoPrizes[4] = p5Jackpot
-        }
-
-        val prizePerPerson = List(LOTTO_645_TOTAL_RANK_COUNT) {
-            val prize = lottoPrizes[it].div(lottoWinnerCntList[it])
-            formatNumberWithCommas(prize)
+            prizePerPerson[4] = p5PerJackpot
         }
 
         return Lotto645Info(
             lottoRound = lottoInfoEntity.drwNum,
-            lottoDate = lottoInfoEntity.drwDate,
+            lottoDate = lottoInfoEntity.drwDate.replace("-", "."),
             lottoNum = lottoInfoEntity.lottoNum,
             lottoBonusNum = lottoInfoEntity.lottoBonusNum,
             lottoWinnerNum = lottoWinnerCntList.map { formatNumberWithCommas(it) },
             lottoPrize = lottoPrizes.map { formatNumberWithCommas(it) },
-            lottoPrizePerPerson = prizePerPerson,
+            lottoPrizePerPerson = prizePerPerson.map { formatNumberWithCommas(it) },
             totalSalesPrice = formatNumberWithCommas(lottoInfoEntity.totalSalesPrice),
         )
     }
@@ -53,11 +54,10 @@ object LottoInfoMapper {
             lottoWinnerCntList[4] = p5WinnrCnt
             lottoWinnerCntList[5] = p6WinnrCnt
             lottoWinnerCntList[6] = p7WinnrCnt
-            lottoWinnerCntList[7] = p8WinnrCnt
         }
         return Lotto720Info(
             lottoRound = lottoInfoEntity.drwNum,
-            lottoDate = lottoInfoEntity.drwDate,
+            lottoDate = lottoInfoEntity.drwDate.replace("-", "."),
             lottoNum = lottoInfoEntity.lottoNum,
             lottoBonusNum = lottoInfoEntity.lottoBonusNum,
             lottoWinnerNum = lottoWinnerCntList.map { formatNumberWithCommas(it) },

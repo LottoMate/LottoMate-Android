@@ -6,7 +6,7 @@ import retrofit2.http.Path
 
 interface LottoInfoApi {
     @GET("lottoInfo/home")
-    suspend fun getLatestLottoInfo(): LottoInfoResponse
+    suspend fun getAllLatestLottoInfo(): LottoInfoResponse
 
     @GET("lottoInfo/{lottoType}/{lottoRndNum}")
     suspend fun fetchLottoInfo(

@@ -15,7 +15,7 @@ object DateUtils {
      * @return 계산 완료한 날짜
      */
     fun calLottoRoundDate(lastRoundDate: String, index: Int): String {
-        val (year, month, day) = lastRoundDate.split("-").map { it.toInt() }
+        val (year, month, day) = lastRoundDate.split(".").map { it.toInt() }
         val date = Calendar.getInstance().apply {
             set(Calendar.YEAR, year)
             set(Calendar.MONTH, month.minus(1))
