@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -43,6 +42,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
+import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoBottomWheelUiState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoRoundViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
@@ -56,7 +56,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LottoRoundWheelPicker(
     vm: LottoRoundViewModel = hiltViewModel(),
@@ -70,44 +70,51 @@ fun LottoRoundWheelPicker(
         vm.getLatestLottoInfo(currentTabIndex)
     }
 
-    val lastRound by vm.latestLottoRound.collectAsStateWithLifecycle()
-    val lastDate by vm.latestLottoDate.collectAsStateWithLifecycle()
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
     val lottoRoundRange by vm.lottoRoundRange
 
-    val visibleItemCount = 3
-    val visibleItemsMiddle = visibleItemCount / 2
+    when (uiState) {
+        LottoBottomWheelUiState.Loading -> { }
+        is LottoBottomWheelUiState.Success -> {
+            val latestLottoRound = (uiState as LottoBottomWheelUiState.Success).round
+            val latestLottoDate = (uiState as LottoBottomWheelUiState.Success).date
 
-    val scrollState = rememberLazyListState(
-        initialFirstVisibleItemIndex = maxOf(0, lastRound - currentLottoRound)
-    )
-    val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
+            val visibleItemCount = 3
+            val visibleItemsMiddle = visibleItemCount / 2
 
-    LaunchedEffect(key1 = currentLottoRound, key2 = lastRound) {
-        val targetIndex = maxOf(0, lastRound - currentLottoRound)
-        scrollState.scrollToItem(targetIndex)
-        pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: ""
-    }
+            val scrollState = rememberLazyListState(
+                initialFirstVisibleItemIndex = maxOf(0, latestLottoRound - currentLottoRound)
+            )
+            val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
 
-    LaunchedEffect(scrollState) {
-        snapshotFlow { scrollState.firstVisibleItemIndex }
-            .map { index -> lottoRoundRange.getOrNull(index + visibleItemsMiddle) ?: "" }
-            .distinctUntilChanged()
-            .collect { item ->
-                pickerState.selectedItem = item
+            LaunchedEffect(key1 = currentLottoRound, key2 = latestLottoRound, key3 = scaffoldState.bottomSheetState.currentValue) {
+                val targetIndex = maxOf(0, latestLottoRound - currentLottoRound)
+                scrollState.scrollToItem(targetIndex)
+                pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: ""
             }
-    }
 
-    LottoRoundWheelPickerContent(
-        modifier = Modifier.fillMaxWidth(),
-        lastDate = lastDate,
-        visibleItemCount = visibleItemCount,
-        lottoRoundRange = lottoRoundRange,
-        currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
-        scaffoldState = scaffoldState,
-        scrollState = scrollState,
-        flingBehavior = flingBehavior,
-        onClickSelect = onClickSelect
-    )
+            LaunchedEffect(scrollState) {
+                snapshotFlow { scrollState.firstVisibleItemIndex }
+                    .map { index -> lottoRoundRange.getOrNull(index + visibleItemsMiddle) ?: "" }
+                    .distinctUntilChanged()
+                    .collect { item ->
+                        pickerState.selectedItem = item
+                    }
+            }
+
+            LottoRoundWheelPickerContent(
+                modifier = Modifier.fillMaxWidth(),
+                lastDate = latestLottoDate,
+                visibleItemCount = visibleItemCount,
+                lottoRoundRange = lottoRoundRange,
+                currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
+                scaffoldState = scaffoldState,
+                scrollState = scrollState,
+                flingBehavior = flingBehavior,
+                onClickSelect = onClickSelect
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -229,7 +236,7 @@ private fun LottoRoundWheelPickerContent(
 @Composable
 fun pixelsToDp(pixels: Int) = with(LocalDensity.current) { pixels.toDp() }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 private fun LottoRoundWheelPickerContentPreview() {
