@@ -33,10 +33,9 @@ class LottoInfoRepositoryImpl @Inject constructor(
     }
 
     override fun fetchLottoInfo(lottoType: Int, lottoRndNum: Int?): Flow<LottoInfo> = flow {
-        val lottoRound = lottoRndNum ?: allLatestLottoRound.getValue(lottoType)
-
         when (lottoType) {
             LottoType.L645.num, LottoType.L720.num -> {
+                val lottoRound = lottoRndNum ?: allLatestLottoRound.getValue(lottoType)
                 val result = lottoInfoApi.fetchLottoInfo(lottoType, lottoRound)
 
                 if (result.code == 200) {
