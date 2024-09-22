@@ -18,7 +18,7 @@ class LottoInfoRepositoryImpl @Inject constructor(
         get() = _latestLottoInfo.toMap()
 
     override fun fetchLatestLottoInfo(): Flow<Map<Int, LottoInfo>> = flow {
-        val result = lottoInfoApi.getLatestLottoInfo()
+        val result = lottoInfoApi.getAllLatestLottoInfo()
 
         if (result.code == 200) {
             val lottoEntity = mutableMapOf<Int, LottoInfo>()
