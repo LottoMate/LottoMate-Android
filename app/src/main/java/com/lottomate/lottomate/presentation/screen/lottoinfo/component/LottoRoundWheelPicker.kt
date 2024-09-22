@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
@@ -55,6 +56,7 @@ import com.lottomate.lottomate.utils.DateUtils.calLottoRoundDate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,19 +78,22 @@ fun LottoRoundWheelPicker(
     when (uiState) {
         LottoBottomWheelUiState.Loading -> { }
         is LottoBottomWheelUiState.Success -> {
-            val latestLottoRound = (uiState as LottoBottomWheelUiState.Success).round
+            val latestRoundOrPage = (uiState as LottoBottomWheelUiState.Success).round
             val latestLottoDate = (uiState as LottoBottomWheelUiState.Success).date
 
             val visibleItemCount = 3
             val visibleItemsMiddle = visibleItemCount / 2
 
             val scrollState = rememberLazyListState(
-                initialFirstVisibleItemIndex = maxOf(0, latestLottoRound - currentLottoRound)
+                initialFirstVisibleItemIndex = maxOf(0, latestRoundOrPage - currentLottoRound)
             )
             val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
 
-            LaunchedEffect(key1 = currentLottoRound, key2 = latestLottoRound, key3 = scaffoldState.bottomSheetState.currentValue) {
-                val targetIndex = maxOf(0, latestLottoRound - currentLottoRound)
+            LaunchedEffect(key1 = currentLottoRound, key2 = latestRoundOrPage, key3 = scaffoldState.bottomSheetState.currentValue) {
+                val targetIndex = when (currentTabIndex) {
+                    LottoType.S2000.ordinal -> maxOf(0, abs(latestRoundOrPage - currentLottoRound))
+                    else -> maxOf(0, latestRoundOrPage - currentLottoRound)
+                }
                 scrollState.scrollToItem(targetIndex)
                 pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: ""
             }
@@ -108,6 +113,7 @@ fun LottoRoundWheelPicker(
                 visibleItemCount = visibleItemCount,
                 lottoRoundRange = lottoRoundRange,
                 currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
+                currentLottoType = LottoType.findLottoType(currentTabIndex),
                 scaffoldState = scaffoldState,
                 scrollState = scrollState,
                 flingBehavior = flingBehavior,
@@ -121,10 +127,11 @@ fun LottoRoundWheelPicker(
 @Composable
 private fun LottoRoundWheelPickerContent(
     modifier: Modifier = Modifier,
-    lastDate: String,
+    lastDate: String?,
     visibleItemCount: Int,
     lottoRoundRange: List<String>,
     currentIndex: Int,
+    currentLottoType: LottoType,
     pickerMaxHeight: Dp = 116.dp,
     scaffoldState: BottomSheetScaffoldState,
     scrollState: LazyListState,
@@ -140,7 +147,10 @@ private fun LottoRoundWheelPickerContent(
         Spacer(modifier = Modifier.height(32.dp))
 
         LottoMateText(
-            text = "회차 선택",
+            text = when (currentLottoType) {
+                LottoType.L645, LottoType.L720 -> "회차 선택"
+                else -> "페이지 선택"
+            },
             style = LottoMateTheme.typography.headline1,
             modifier = Modifier.padding(start = 20.dp),
         )
@@ -175,7 +185,10 @@ private fun LottoRoundWheelPickerContent(
                         horizontalArrangement = Arrangement.Center,
                     ) {
                         LottoMateText(
-                            text = if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회"),
+                            text = when (currentLottoType) {
+                                LottoType.S2000, LottoType.S1000, LottoType.S500 -> lottoRoundRange[index]
+                                else -> { if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회") }
+                            },
                             textAlign = TextAlign.Center,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -183,13 +196,15 @@ private fun LottoRoundWheelPickerContent(
                                 .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
                         )
 
-                        Spacer(modifier = Modifier.width(20.dp))
+                        lastDate?.let { date ->
+                            Spacer(modifier = Modifier.width(20.dp))
 
-                        LottoMateText(
-                            text = if (index == 0) "" else calLottoRoundDate(lastDate, index),
-                            style = LottoMateTheme.typography.body1
-                                .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
-                        )
+                            LottoMateText(
+                                text = if (index == 0) "" else calLottoRoundDate(date, index),
+                                style = LottoMateTheme.typography.body1
+                                    .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
+                            )
+                        }
                     }
                 }
             }
@@ -252,6 +267,7 @@ private fun LottoRoundWheelPickerContentPreview() {
             scaffoldState = rememberBottomSheetScaffoldState(),
             scrollState = scrollState,
             currentIndex = ranges.indexOf(pickerState.selectedItem),
+            currentLottoType = LottoType.L645,
             flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState),
             onClickSelect = {}
         )

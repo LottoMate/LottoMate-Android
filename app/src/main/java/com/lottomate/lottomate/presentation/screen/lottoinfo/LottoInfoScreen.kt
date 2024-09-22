@@ -193,16 +193,29 @@ private fun LottoInfoContent(
         sheetContainerColor = LottoMateWhite,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-            if (currentTabIndex != 2) {
-                val info = lottoInfo as LottoInfoWithBalls
+            when (currentTabIndex) {
+                LottoType.S2000.ordinal -> {
+                    val info = lottoInfo as SpeettoInfo
 
-                LottoRoundWheelPicker(
-                    currentLottoRound = info.lottoRound,
-                    currentTabIndex = currentTabIndex,
-                    scaffoldState = scaffoldState,
-                    pickerState = pickerState,
-                    onClickSelect = onChangeLottoRound,
-                )
+                    LottoRoundWheelPicker(
+                        currentLottoRound = info.currentPage,
+                        currentTabIndex = currentTabIndex,
+                        scaffoldState = scaffoldState,
+                        pickerState = pickerState,
+                        onClickSelect = onChangeLottoRound,
+                    )
+                }
+                else -> {
+                    val info = lottoInfo as LottoInfoWithBalls
+
+                    LottoRoundWheelPicker(
+                        currentLottoRound = info.lottoRound,
+                        currentTabIndex = currentTabIndex,
+                        scaffoldState = scaffoldState,
+                        pickerState = pickerState,
+                        onClickSelect = onChangeLottoRound,
+                    )
+                }
             }
         },
         sheetDragHandle = null,
@@ -246,6 +259,11 @@ private fun LottoInfoContent(
                         hasNextRound = hasNextRound,
                         onClickPreRound = onClickPreRound,
                         onClickNextRound = onClickNextRound,
+                        onClickSpeettoPagination = {
+                            coroutineScope.launch {
+                                scaffoldState.bottomSheetState.expand()
+                            }
+                        }
                     )
                 } else {
                     val info = lottoInfo as LottoInfoWithBalls
@@ -365,6 +383,7 @@ private fun SpeettoInfoContent(
     hasNextRound: Boolean,
     onClickPreRound: (Int) -> Unit,
     onClickNextRound: (Int) -> Unit,
+    onClickSpeettoPagination: () -> Unit,
 ) {
     val tabs = listOf(
         LottoType.S2000.num.toString(),
@@ -391,6 +410,7 @@ private fun SpeettoInfoContent(
         hasNextRound = hasNextRound,
         onClickPreRound = onClickPreRound,
         onClickNextRound = onClickNextRound,
+        onClickSpeettoPagination = onClickSpeettoPagination,
     )
 }
 
@@ -557,6 +577,7 @@ private fun LottoWinInfoSection(
     hasNextRound: Boolean = false,
     onClickPreRound: (Int) -> Unit = {},
     onClickNextRound: (Int) -> Unit = {},
+    onClickSpeettoPagination: () -> Unit = {},
 ) {
     val titleEndPadding = when (lottoType) {
         LottoType.L645 -> 8.dp
@@ -619,9 +640,7 @@ private fun LottoWinInfoSection(
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null,
-                                    onClick = {
-
-                                    }
+                                    onClick = onClickSpeettoPagination
                                 ),
                         )
 
