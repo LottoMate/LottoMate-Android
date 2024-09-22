@@ -32,33 +32,27 @@ class LottoInfoRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun fetchLottoInfoByRound(lottoType: Int, lottoRndNum: Int): Flow<LottoInfo> = flow {
-        val result = lottoInfoApi.fetchLottoInfo(lottoType, lottoRndNum)
+    override fun fetchLottoInfo(lottoType: Int, lottoRndNum: Int?): Flow<LottoInfo> = flow {
         val lottoRound = lottoRndNum ?: allLatestLottoRound.getValue(lottoType)
 
-        if (result.code == 200) {
-            result.lotto645?.let {
-                emit(LottoInfoMapper.toLotto645Info(it))
+        when (lottoType) {
+            LottoType.L645.num, LottoType.L720.num -> {
+                val result = lottoInfoApi.fetchLottoInfo(lottoType, lottoRound)
+
+                if (result.code == 200) {
+                    result.lotto645?.let {
+                        emit(LottoInfoMapper.toLotto645Info(it))
+                    }
+
+                    result.lotto720?.let {
+                        emit(LottoInfoMapper.toLotto720Info(it))
+                    }
+                }
             }
-
-            result.lotto720?.let {
-                emit(LottoInfoMapper.toLotto720Info(it))
-            }
-        }
-    }
-
-    override fun getLatestLottoInfoByLottoType(lottoType: LottoType): Flow<LottoInfo> = flow {
-        if (latestLottoInfo.isEmpty()) fetchLatestLottoInfo()
-
-        val latestLottoInfo = when (lottoType) {
-            LottoType.L645 -> latestLottoInfo.getValue(LottoType.L645.num)
-            LottoType.L720 -> latestLottoInfo.getValue(LottoType.L720.num)
             else -> {
                 // TODO : Mock Data 사용 (추후 변경 예정)
-                SpeettoMockDatas
+                emit(SpeettoMockDatas)
             }
         }
-
-        emit(latestLottoInfo)
     }
 }
