@@ -224,8 +224,10 @@ private fun LottoInfoContent(
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(top = 80.dp)
+                    .padding(top = Dimens.BaseTopPadding)
             ) {
+                Spacer(modifier = Modifier.height(24.dp))
+
                 TopToggleButtons(
                     modifier = Modifier
                         .fillMaxWidth()
