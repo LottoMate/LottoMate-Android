@@ -43,13 +43,13 @@ class LottoInfoViewModel @Inject constructor(
     }
 
     fun changeTabMenu(index: Int) {
-        currentTabMenu.intValue = index
-
         when (index) {
             LottoType.L645.ordinal -> getLatestLottoInfoByLottoType(LottoType.L645)
             LottoType.L720.ordinal -> getLatestLottoInfoByLottoType(LottoType.L720)
             else -> getLatestLottoInfoByLottoType(LottoType.S2000)
         }
+
+        currentTabMenu.intValue = index
     }
 
     fun getLottoInfoByRoundOrPage(lottoRndOrPageNum: Int) {
