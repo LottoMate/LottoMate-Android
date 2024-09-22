@@ -22,8 +22,14 @@
     <!-- 지도 -->
     <string name="map_loading_text">행운을 불러오는 중...</string>
     <string name="map_loading_sub_text">잠시만 기다려주세요</string>
+    <string name="map_lotto_type_selection_title">복권 선택</string>
+    <string name="map_lotto_type_selection_button">적용하기</string>
+    <string name="map_win_store_filter_button">당첨 판매점</string>
+    <string name="map_favorite_store_filter_button">찜</string>
 
     <!-- Description -->
     <string name="desc_pre_page_icon_lotto_info_speetto">Previous Button Icon for Speetto Detail View Pagenation</string>
     <string name="desc_next_page_icon_lotto_info_speetto">Next Button Icon for Speetto Detail View Pagenation</string>
+    <string name="desc_selection_icon_map">The Selection Icon for the Lotto Type Filter on the Map</string>
+    <string name="desc_filter_icon_map">The Filter Icon for LottoType on the Map</string>
 </resources>
