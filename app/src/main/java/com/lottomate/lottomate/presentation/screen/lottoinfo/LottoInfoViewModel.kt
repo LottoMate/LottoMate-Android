@@ -52,7 +52,7 @@ class LottoInfoViewModel @Inject constructor(
         }
     }
 
-    fun getLottoInfo(lottoRndOrPageNum: Int) {
+    fun getLottoInfoByRoundOrPage(lottoRndOrPageNum: Int) {
         val lottoType = LottoType.findLottoType(currentTabMenu.intValue)
 
         when (lottoType) {
