@@ -19,6 +19,10 @@
     <string name="banner_lotto_info_title">행운의 1등 로또\n어디서 샀을까?</string>
     <string name="banner_lotto_info_sub_title">터치해서 당첨 판매점 보기</string>
 
+    <!-- 지도 -->
+    <string name="map_loading_text">행운을 불러오는 중...</string>
+    <string name="map_loading_sub_text">잠시만 기다려주세요</string>
+
     <!-- Description -->
     <string name="desc_pre_page_icon_lotto_info_speetto">Previous Button Icon for Speetto Detail View Pagenation</string>
     <string name="desc_next_page_icon_lotto_info_speetto">Next Button Icon for Speetto Detail View Pagenation</string>

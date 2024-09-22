@@ -13,6 +13,7 @@ val Pink40 = Color(0xFF7D5260)
 val LottoMateWhite = Color(0xFFFFFFFF)
 val LottoMateBlack = Color(0xFF000000)
 val LottoMateTransparent = Color(0x00000000)
+val LottoMateDim = Color(0x66000000)
 
 val LottoMateBlue5 = Color(0xFFF1F1FE)
 val LottoMateBlue10 = Color(0xFFDDDFFF)
