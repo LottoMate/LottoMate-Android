@@ -25,6 +25,9 @@ object Dimens {
     
     val TopAppBarHeight: Dp
         @Composable get() = dimensionResource(id = R.dimen.top_app_bar_height)
+    
+    val BottomTabHeight: Dp
+        @Composable get() = dimensionResource(id = R.dimen.bottom_tab_height)
 
     val StatusBarHeight
         @Composable get() = LocalContext.current.resources.getDimensionPixelSize(
