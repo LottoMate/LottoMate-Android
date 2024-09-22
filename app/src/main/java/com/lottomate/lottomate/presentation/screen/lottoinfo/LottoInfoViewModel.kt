@@ -106,24 +106,29 @@ class LottoInfoViewModel @Inject constructor(
 
     private fun judgePreOrNextLottoRound(lottoRndNum: Int) {
         val currentLottoType = LottoType.findLottoType(currentTabMenu.intValue).num
-        val latestLottoRound = lottoInfoRepository.latestLottoInfo.getValue(currentLottoType)
+        val latestLottoRound = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType)
 
-        hasNextLottoRound.value = lottoRndNum != latestLottoRound.lottoRound
+        hasNextLottoRound.value = lottoRndNum != latestLottoRound
         hasPreLottoRound.value = lottoRndNum != LOTTO_FIRST_ROUND
     }
 
     private fun loadLatestLottoInfo() {
         viewModelScope.launch {
-            lottoInfoRepository.fetchLatestLottoInfo()
-                .onStart {
-                    _lottoInfo.update { LottoInfoUiState.Loading }
-                }
-                .catch { throwable ->
-                    _errorFlow.emit(throwable)
-                }
-                .collect()
+            lottoInfoRepository.fetchAllLatestLottoInfo()
 
-            getLatestLottoInfoByLottoType(LottoType.L645)
+            val currentLottoType = LottoType.findLottoType(currentTabMenu.value)
+
+            if (lottoInfoRepository.allLatestLottoRound.isNotEmpty()) {
+                lottoInfoRepository.fetchLottoInfo(
+                    lottoType = currentLottoType.num,
+                    lottoRndNum = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType.num)
+                )
+                    .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
+                    .catch { throwable -> _errorFlow.emit(throwable) }
+                    .collectLatest { info ->
+                        _lottoInfo.update { LottoInfoUiState.Success(info) }
+                    }
+            }
         }
     }
 

@@ -13,25 +13,20 @@ import javax.inject.Inject
 class LottoInfoRepositoryImpl @Inject constructor(
     private val lottoInfoApi: LottoInfoApi,
 ) : LottoInfoRepository {
-    private val _latestLottoInfo = mutableMapOf<Int, LottoInfo>()
-    override val latestLottoInfo: Map<Int, LottoInfo>
-        get() = _latestLottoInfo.toMap()
+    private val _allLatestLottoRound = mutableMapOf<Int, Int>()
+    override val allLatestLottoRound: Map<Int, Int>
+        get() = _allLatestLottoRound.toMap()
 
-    override fun fetchLatestLottoInfo(): Flow<Map<Int, LottoInfo>> = flow {
+    override suspend fun fetchAllLatestLottoInfo() {
         val result = lottoInfoApi.getAllLatestLottoInfo()
 
         if (result.code == 200) {
-            val lottoEntity = mutableMapOf<Int, LottoInfo>()
+            val lottoRound = mutableMapOf<Int, Int>()
 
-            result.lotto645?.let {
-                lottoEntity[LottoType.L645.num] = LottoInfoMapper.toLotto645Info(it)
-            }
-            result.lotto720?.let {
-                lottoEntity[LottoType.L720.num] = LottoInfoMapper.toLotto720Info(it)
-            }
+            result.lotto645?.let { lottoRound[LottoType.L645.num] = it.drwNum }
+            result.lotto720?.let { lottoRound[LottoType.L720.num] = it.drwNum }
 
-            _latestLottoInfo.putAll(lottoEntity)
-            emit(lottoEntity.toMap())
+            _allLatestLottoRound.putAll(lottoRound)
         } else {
             // TODO : 예외 처리
         }
@@ -39,6 +34,7 @@ class LottoInfoRepositoryImpl @Inject constructor(
 
     override fun fetchLottoInfoByRound(lottoType: Int, lottoRndNum: Int): Flow<LottoInfo> = flow {
         val result = lottoInfoApi.fetchLottoInfo(lottoType, lottoRndNum)
+        val lottoRound = lottoRndNum ?: allLatestLottoRound.getValue(lottoType)
 
         if (result.code == 200) {
             result.lotto645?.let {
