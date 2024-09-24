@@ -129,6 +129,10 @@ private fun MapScreen(
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         sheetPeekHeight = 24.dp,
     ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            NaverMap()
+        }
+
         Box(
             modifier = modifier
                 .fillMaxSize()
