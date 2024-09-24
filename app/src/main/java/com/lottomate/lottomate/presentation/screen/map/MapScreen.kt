@@ -126,6 +126,7 @@ private fun MapScreen(
                 bottomSheetTopPadding = bottomSheetTopPadding,
             )
         },
+        sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         sheetPeekHeight = 24.dp,
     ) {
         Box(
