@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,7 +22,6 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -129,13 +127,10 @@ private fun MapScreen(
             )
         },
         sheetPeekHeight = 24.dp,
-        sheetDragHandle = null,
-        containerColor = LottoMateWhite,
     ) {
         Box(
             modifier = modifier
                 .fillMaxSize()
-                .padding(it)
         ) {
             when (uiState) {
                 MapUiState.Loading -> {
@@ -180,8 +175,6 @@ private fun MapContent(
 ) {
 
     Box(modifier = modifier) {
-        NaverMap()
-
         TopFilterButtons(
             modifier = Modifier.fillMaxWidth(),
             lottoTypeState = lottoTypeState,
@@ -254,7 +247,6 @@ private fun BottomButtons(
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
-            .navigationBarsPadding()
             .padding(bottom = Dimens.BottomTabHeight.plus(78.dp)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
