@@ -15,13 +15,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -29,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +46,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
+import com.lottomate.lottomate.presentation.screen.map.component.StoreInfoBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
@@ -78,6 +85,7 @@ fun MapRoute(
     }
 
     MapScreen(
+        padding = padding,
         uiState = uiState,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
@@ -90,10 +98,11 @@ fun MapRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class)
 @Composable
 private fun MapScreen(
     modifier: Modifier = Modifier,
+    padding: PaddingValues,
     uiState: MapUiState,
     lottoTypeState: String,
     winStoreState: Boolean,
@@ -104,12 +113,20 @@ private fun MapScreen(
     onClickRefresh: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
+    )
+    var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
 
     BottomSheetScaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(bottom = padding.calculateBottomPadding()),
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
-            // TODO : 로또 판매점 목록
+            StoreInfoBottomSheet(
+                bottomSheetTopPadding = bottomSheetTopPadding,
+            )
         },
         sheetPeekHeight = 24.dp,
         sheetDragHandle = null,
@@ -135,6 +152,7 @@ private fun MapScreen(
                 lottoTypeState = lottoTypeState,
                 winStoreState = winStoreState,
                 favoriteStoreState = favoriteStoreState,
+                onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
                 onClickLottoType = onClickLottoType,
                 onClickWinLottoStore = onClickWinLottoStore,
                 onClickFavoriteStore = onClickFavoriteStore,
@@ -153,6 +171,7 @@ private fun MapContent(
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
+    onSizeBottomSheetHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
@@ -168,6 +187,7 @@ private fun MapContent(
             lottoTypeState = lottoTypeState,
             winStoreState = winStoreState,
             favoriteStoreState = favoriteStoreState,
+            onSizeBottomSheetHeight = onSizeBottomSheetHeight,
             onClickLottoType = onClickLottoType,
             onClickWinLottoStore = onClickWinLottoStore,
             onClickFavoriteStore = onClickFavoriteStore,
@@ -187,6 +207,7 @@ private fun TopFilterButtons(
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
+    onSizeBottomSheetHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
@@ -195,6 +216,7 @@ private fun TopFilterButtons(
         modifier = modifier
             .padding(horizontal = 20.dp)
             .padding(top = Dimens.StatusBarHeight.plus(9.dp)),
+            .onSizeChanged { onSizeBottomSheetHeight(it.height) },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         FilterButton(
@@ -345,6 +367,7 @@ private fun MapScreenPreview() {
             onClickFavoriteStore = {},
             onClickRefresh = {},
             onClickLocationFocus = {},
+            padding = PaddingValues(32.dp)
         )
     }
 }

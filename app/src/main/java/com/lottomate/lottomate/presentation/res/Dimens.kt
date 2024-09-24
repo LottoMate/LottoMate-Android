@@ -36,6 +36,13 @@ object Dimens {
         pixelsToDp(pixels = this)
     }
 
+    val NavigationBarHeight
+        @Composable get() = LocalContext.current.resources.getDimensionPixelSize(
+            LocalContext.current.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        ).run {
+            pixelsToDp(pixels = this)
+        }
+
     val BaseTopPadding
         @Composable get() = TopAppBarHeight.plus(StatusBarHeight)
 }
