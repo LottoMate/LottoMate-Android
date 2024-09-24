@@ -209,7 +209,7 @@ private fun TopFilterButtons(
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
-            .padding(top = Dimens.StatusBarHeight.plus(9.dp)),
+            .padding(top = Dimens.StatusBarHeight.plus(8.dp))
             .onSizeChanged { onSizeBottomSheetHeight(it.height) },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
