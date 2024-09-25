@@ -182,9 +182,8 @@ private fun MapScreen(
                 }
             }
 
-            MapContent(
+            MapButtons(
                 modifier = Modifier.fillMaxSize(),
-                uiState = uiState,
                 lottoTypeState = lottoTypeState,
                 winStoreState = winStoreState,
                 favoriteStoreState = favoriteStoreState,
@@ -199,11 +198,9 @@ private fun MapScreen(
     }
 }
 
-@OptIn(ExperimentalNaverMapApi::class)
 @Composable
-private fun MapContent(
+private fun MapButtons(
     modifier: Modifier = Modifier,
-    uiState: MapUiState,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
