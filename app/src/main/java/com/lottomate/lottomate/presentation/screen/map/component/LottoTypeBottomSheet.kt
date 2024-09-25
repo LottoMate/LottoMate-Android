@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -22,8 +23,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
@@ -107,17 +110,41 @@ fun LottoTypeSelectorBottomSheet(
                 if (index != allLottoType.lastIndex) Spacer(modifier = Modifier.height(16.dp))
             }
             
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            LottoMateSolidButton(
-                text = stringResource(id = R.string.map_lotto_type_selection_button),
-                buttonSize = LottoMateButtonProperty.Size.LARGE,
-                buttonShape = LottoMateButtonProperty.Shape.NORMAL,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { onSelectLottoTypes(selectLottoTypeState.map { it.value }) }
-            )
+            Spacer(modifier = Modifier.height(20.dp))
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                LottoMateAssistiveButton(
+                    text = stringResource(id = R.string.map_lotto_type_selection_button_cancel),
+                    buttonSize = LottoMateButtonProperty.Size.LARGE,
+                    buttonShape = LottoMateButtonProperty.Shape.NORMAL,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    onClick = onDismiss,
+                )
+
+                Spacer(modifier = Modifier.width(15.dp))
+
+                LottoMateSolidButton(
+                    text = stringResource(id = R.string.map_lotto_type_selection_button_save),
+                    buttonSize = LottoMateButtonProperty.Size.LARGE,
+                    buttonShape = LottoMateButtonProperty.Shape.NORMAL,
+                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    onClick = { onSelectLottoTypes(selectLottoTypeState.map { it.value }) }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LottoTypeSelectorBottomSheetPreview() {
+    LottoMateTheme {
+        LottoTypeSelectorBottomSheet(
+            selectedLottoTypes = listOf(LottoTypeFilter.All.kr),
+            onDismiss = {},
+            onSelectLottoTypes = {}
+        )
     }
 }
