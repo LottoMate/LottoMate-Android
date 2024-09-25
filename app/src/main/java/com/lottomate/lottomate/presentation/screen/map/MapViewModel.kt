@@ -23,6 +23,9 @@ class MapViewModel @Inject constructor(
         private set
     var favoriteStoreState = mutableStateOf(false)
         private set
+    var selectedStore = mutableStateOf<StoreInfo?>(null)
+        private set
+
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
 
@@ -30,6 +33,14 @@ class MapViewModel @Inject constructor(
         _uiState.update {
             MapUiState.Success(StoreInfoMocks)
         }
+    }
+
+    fun selectStoreMarker(store: StoreInfo) {
+        selectedStore.value = store
+    }
+
+    fun unselectStoreMarker() {
+        selectedStore.value = null
     }
 
     fun changeLottoTypeState(selectedLottoTypes: List<Boolean>) {
