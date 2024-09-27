@@ -135,6 +135,8 @@ private fun MapScreen(
         sheetContent = {
             StoreInfoBottomSheet(
                 bottomSheetTopPadding = bottomSheetTopPadding,
+                uiState = uiState,
+                selectedStore = selectedStore,
             )
         },
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),

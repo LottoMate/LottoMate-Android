@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.map.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -19,18 +24,33 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
+import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTextButton
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
+import com.lottomate.lottomate.presentation.screen.map.MapUiState
+import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
+import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
+import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
+import com.lottomate.lottomate.presentation.ui.LottoMateBlue5
+import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
+import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray30
 import com.lottomate.lottomate.presentation.ui.LottoMateGray60
+import com.lottomate.lottomate.presentation.ui.LottoMateGray80
+import com.lottomate.lottomate.presentation.ui.LottoMateGreen5
+import com.lottomate.lottomate.presentation.ui.LottoMateGreen70
+import com.lottomate.lottomate.presentation.ui.LottoMatePeach5
+import com.lottomate.lottomate.presentation.ui.LottoMatePeach50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 
@@ -38,6 +58,8 @@ private const val BOTTOM_SHEET_TOP_SPACER = 78
 
 @Composable
 fun StoreInfoBottomSheet(
+    uiState: MapUiState,
+    selectedStore: StoreInfo?,
     bottomSheetTopPadding: Int,
 ) {
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
@@ -48,18 +70,30 @@ fun StoreInfoBottomSheet(
 
     var selectFilterIndex by remember { mutableIntStateOf(0) }
 
-    StoreInfoBottomSheetContent(
-        modifier = Modifier.fillMaxWidth(),
-        bottomSheetHeight = bottomSheetHeight,
-        selectFilterIndex = selectFilterIndex,
-        onClickFilter = { selectFilterIndex = it }
-    )
+    when (uiState) {
+        MapUiState.Loading -> {
+
+        }
+        is MapUiState.Success -> {
+            val stores = uiState.storeInfo
+
+            StoreInfoBottomSheetContent(
+                modifier = Modifier.fillMaxWidth(),
+                stores = stores,
+                selectedStore = selectedStore,
+                selectFilterIndex = selectFilterIndex,
+                bottomSheetHeight = bottomSheetHeight,
+                onClickFilter = { selectFilterIndex = it }
+            )
+        }
+    }
 }
 
 @Composable
 private fun StoreInfoBottomSheetContent(
     modifier: Modifier = Modifier,
-    bottomSheetHeight: Float,
+    stores: List<StoreInfo>,
+    selectedStore: StoreInfo?,
     selectFilterIndex: Int,
     onClickFilter: (Int) -> Unit,
 ) {
@@ -76,6 +110,45 @@ private fun StoreInfoBottomSheetContent(
                 .align(Alignment.CenterHorizontally)
         )
 
+        selectedStore?.let { store ->
+            SelectStoreInfoContent(
+                modifier = Modifier.fillMaxWidth(),
+                selectedStore = store,
+            )
+        } ?: run {
+            StoreInfoListContent(
+                modifier = Modifier.fillMaxWidth(),
+                stores = stores,
+                selectFilterIndex = selectFilterIndex,
+                onClickStore = {},
+                onClickFilter = onClickFilter,
+            )
+        }
+
+    }
+}
+
+@Composable
+private fun SelectStoreInfoContent(
+    modifier: Modifier = Modifier,
+    selectedStore: StoreInfo?,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+private fun StoreInfoListContent(
+    modifier: Modifier = Modifier,
+    stores: List<StoreInfo>,
+    selectFilterIndex: Int,
+    onClickStore: () -> Unit,
+    onClickFilter: (Int) -> Unit
+) {
+    Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(28.dp))
 
         FilterRow(
@@ -84,6 +157,179 @@ private fun StoreInfoBottomSheetContent(
             selectFilterIndex = selectFilterIndex,
             onClickFilter = onClickFilter,
         )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        stores.forEachIndexed { index, store ->
+            if (index != 0) Spacer(modifier = Modifier.height(20.dp))
+
+            StoreInfoListItem(store = store)
+
+            if (index != stores.lastIndex) {
+                Divider(
+                    color = LottoMateGray20,
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun StoreInfoListItem(
+    modifier: Modifier = Modifier,
+    store: StoreInfo,
+) {
+    var storeNameLineCount by remember { mutableIntStateOf(1) }
+
+    Column(
+        modifier = modifier
+            .padding(bottom = 24.dp)
+            .padding(horizontal = 20.dp)
+    ) {
+        Row {
+            store.hasLottoType.forEach { type ->
+                val containerColor = when (type) {
+                    LottoTypeFilter.Lotto645.kr -> LottoMateGreen5
+                    LottoTypeFilter.Lotto720.kr -> LottoMateBlue5
+                    LottoTypeFilter.Speetto.kr -> LottoMatePeach5
+                    else -> Color.Unspecified
+                }
+
+                val textColor = when (type) {
+                    LottoTypeFilter.Lotto645.kr -> LottoMateGreen70
+                    LottoTypeFilter.Lotto720.kr -> LottoMateBlue50
+                    LottoTypeFilter.Speetto.kr -> LottoMatePeach50
+                    else -> Color.Unspecified
+                }
+                
+                Box(
+                    modifier = modifier
+                        .background(containerColor, RoundedCornerShape(Dimens.RadiusExtraSmall))
+                ) {
+                    LottoMateText(
+                        text = type,
+                        style = LottoMateTheme.typography.caption1
+                            .copy(color = textColor),
+                        modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp)
+                    )
+                }
+                
+                Spacer(modifier = Modifier.width(4.dp))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Row(
+                modifier = Modifier.wrapContentHeight()
+            ) {
+                LottoMateText(
+                    text = store.storeName,
+                    style = LottoMateTheme.typography.headline1,
+                    modifier = Modifier.alignByBaseline(),
+                    onTextLayout = {
+                        storeNameLineCount = it.lineCount
+                    }
+                )
+                
+                Spacer(modifier = Modifier.width(8.dp))
+
+                LottoMateText(
+                    text = "${store.distance}km",
+                    style = LottoMateTheme.typography.caption1
+                        .copy(color = LottoMateGray80),
+                    modifier = Modifier.alignByBaseline(),
+                )
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Icon(
+                    painter = if (store.isLike) painterResource(id = R.drawable.icon_like)
+                    else painterResource(id = R.drawable.icon_unlike),
+                    contentDescription = "",
+                    tint = LottoMateGray80,
+                )
+                
+                LottoMateText(
+                    text = store.countLike.toString(),
+                    style = LottoMateTheme.typography.caption2
+                        .copy(color = LottoMateGray80),
+                )
+            }
+        }
+
+        if (storeNameLineCount == 2) {
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_place),
+                contentDescription = "",
+                tint = LottoMateGray100,
+                modifier = Modifier.size(12.dp),
+            )
+            
+            Spacer(modifier = Modifier.width(4.dp))
+            
+            LottoMateText(
+                text = store.address,
+                style = LottoMateTheme.typography.label2
+                    .copy(color = LottoMateGray100)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_call),
+                contentDescription = "",
+                tint = LottoMateGray100,
+                modifier = Modifier.size(12.dp),
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            LottoMateText(
+                text = store.phone,
+                style = LottoMateTheme.typography.label2
+                    .copy(color = LottoMateGray100)
+            )
+        }
+
+        if (store.hasWinLotto645 || store.hasWinLotto720 || store.hasWinSpeetto) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WinLottoTypeChipGroup(store = store)
+
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_arrow_down),
+                    contentDescription = "Win Lotto History More Button Icon",
+                    tint = LottoMateGray80,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+        }
     }
 }
 
@@ -139,6 +385,8 @@ private fun FilterItem(
 private fun StoreInfoBottomSheetPreview() {
     LottoMateTheme {
         StoreInfoBottomSheet(
+            uiState = MapUiState.Success(StoreInfoMocks),
+            selectedStore = null,
             bottomSheetTopPadding = 720,
         )
     }
