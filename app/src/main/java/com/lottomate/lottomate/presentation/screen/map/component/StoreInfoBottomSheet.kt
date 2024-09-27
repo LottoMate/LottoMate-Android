@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -64,7 +65,7 @@ fun StoreInfoBottomSheet(
 ) {
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
     val bottomSheetHeight = LocalConfiguration.current.screenHeightDp
-        .minus(Dimens.NavigationBarHeight.value)
+        .minus(Dimens.StatusBarHeight.value)
         .minus(BOTTOM_SHEET_TOP_SPACER)
         .minus(bottomSheetTopPaddingToDp.value)
 
@@ -100,7 +101,7 @@ private fun StoreInfoBottomSheetContent(
     Column(
         modifier = modifier
             .requiredHeight(bottomSheetHeight.dp)
-            .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState()),
     ) {
         Box(
             modifier = Modifier
@@ -341,7 +342,7 @@ private fun FilterRow(
     onClickFilter: (Int) -> Unit,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         filters.forEachIndexed { index, filter ->
