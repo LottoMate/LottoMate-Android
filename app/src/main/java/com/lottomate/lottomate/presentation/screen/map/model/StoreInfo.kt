@@ -14,7 +14,7 @@ data class StoreInfo(
     val phone: String = "-",
     val winCountOfLottoType: List<StoreWinCount>,
     val isLike: Boolean = false,
-    val countLike: Int = 0,
+    val countLike: String = "0",
 ) {
     val hasWinLotto645 = getCountLotto645() != 0
     val hasWinLotto720 = getCountLotto720() != 0
@@ -33,7 +33,9 @@ data class StoreWinCount(
 )
 
 data class WinningDetail(
-    val content: String,
+    val lottoType: String,
+    val rank: String = "1등",
+    val prize: String,
     val round: String,
 )
 val StoreInfoMock = StoreInfo(
@@ -46,59 +48,38 @@ val StoreInfoMock = StoreInfo(
     winCountOfLottoType = listOf(
         StoreWinCount(
             lottoType = LottoType.L645,
-            count = 111,
-            winningDetails = listOf(
+            count = 11,
+            winningDetails = List(11) {
                 WinningDetail(
-                    content = "로또 1등 25억원 당첨",
-                    round = "5016회"
-                ),
-                WinningDetail(
-                    content = "로또 1등 25억원 당첨",
-                    round = "5016회"
-                ),
-                WinningDetail(
-                    content = "로또 1등 25억원 당첨",
-                    round = "5016회"
-                ),
-                WinningDetail(
-                    content = "로또 1등 25억원 당첨",
-                    round = "5016회"
-                ),
-            )
+                    lottoType = "로또",
+                    prize = "25억원",
+                    round = "6102회"
+                )
+            },
         ),
         StoreWinCount(
             lottoType = LottoType.L720,
             count = 9,
-            winningDetails = listOf(
+            winningDetails = List(9) {
                 WinningDetail(
-                    content = "연금복권 1등 25억원 당첨",
+                    lottoType = "연금복권",
+                    prize = "25억원",
                     round = "6102회"
-                ),
-                WinningDetail(
-                    content = "연금복권 1등 25억원 당첨",
-                    round = "6102"
-                ),
-                WinningDetail(
-                    content = "연금복권 1등 25억원 당첨",
-                    round = "6102"
-                ),
-            )
+                )
+            },
         ),
         StoreWinCount(
             lottoType = LottoType.S2000,
             count = 4,
-            winningDetails = listOf(
+            winningDetails = List(4) {
                 WinningDetail(
-                    content = "스피또 2000 25억원 당첨",
-                    round = "52회"
-                ),
-                WinningDetail(
-                    content = "스피또 2000 25억원 당첨",
-                    round = "52회"
-                ),
-            )
+                    lottoType = "스피또 2000",
+                    prize = "25억원",
+                    round = "6102회"
+                )
+            },
         ),
-    )
+    ).shuffled()
 )
 
 val StoreInfoMocks = listOf(
@@ -108,7 +89,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 강남대로 620",
         latLng = LatLng(37.5171459798091, 127.01969555607),
         isLike = true,
-        countLike = 123,
+        countLike = "123",
     ),
     StoreInfoMock.copy(
         storeName = "버스표판매소",
@@ -123,7 +104,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 선릉로 519",
         latLng = LatLng(37.5058724287544, 127.048007701663),
         winCountOfLottoType = emptyList(),
-        countLike = 1234,
+        countLike = "1,234",
     ),
     StoreInfoMock.copy(
         storeName = "버스표판매소",
@@ -136,7 +117,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 압구정로 201",
         latLng = LatLng(37.5315341736395, 127.029273123095),
         isLike = true,
-        countLike = 1,
+        countLike = "1",
     ),
     StoreInfoMock.copy(
         storeName = "삼성대박복권방",
@@ -148,7 +129,7 @@ val StoreInfoMocks = listOf(
         storeName = "포이로또방",
         address = "서울 강남구 개포로22길 19 1층",
         latLng = LatLng(37.477752673752, 127.048542099489),
-        countLike = 999999,
+        countLike = "9,999+",
     ),
     StoreInfoMock.copy(
         storeName = "버스카드충전소",
@@ -160,7 +141,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 선릉로 309",
         latLng = LatLng(37.4971857834581, 127.052159610697),
         winCountOfLottoType = emptyList(),
-        countLike = 23,
+        countLike = "23",
     ),
     StoreInfoMock.copy(
         storeName = "LOTTO복권",
@@ -173,7 +154,7 @@ val StoreInfoMocks = listOf(
         storeName = "새날",
         address = "서울 강남구 강남대로84길 23 115호",
         latLng = LatLng(37.4971298698887, 127.0303844347),
-        countLike = 19,
+        countLike = "19",
     ),
     StoreInfoMock.copy(
         storeName = "로또",
