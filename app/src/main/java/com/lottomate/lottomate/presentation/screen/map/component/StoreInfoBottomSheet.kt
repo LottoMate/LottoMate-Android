@@ -158,7 +158,7 @@ private fun StoreInfoListContent(
     onClickFilter: (Int) -> Unit
 ) {
     Column(modifier = modifier) {
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         FilterRow(
             modifier = Modifier.fillMaxWidth(),
