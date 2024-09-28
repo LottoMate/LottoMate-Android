@@ -194,7 +194,7 @@ private fun StoreInfoListItem(
     onClickStore: (StoreInfo) -> Unit = {},
 ) {
     var storeNameLineCount by remember { mutableIntStateOf(1) }
-    var expendStoreWinHistory by remember { mutableStateOf(true) }
+    var expendStoreWinHistory by remember { mutableStateOf(false) }
 
     Column(modifier = modifier.padding(bottom = 20.dp)) {
         Column(
