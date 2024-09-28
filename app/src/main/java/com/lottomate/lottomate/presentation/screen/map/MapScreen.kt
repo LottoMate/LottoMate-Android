@@ -54,6 +54,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
@@ -122,6 +123,14 @@ private fun MapScreen(
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
     onClickUnSelectStoreMarker: () -> Unit,
 ) {
+    var mapUiSettings by remember {
+        mutableStateOf(
+            MapUiSettings(
+                isZoomControlEnabled = false,
+            )
+        )
+    }
+
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
     )
@@ -143,7 +152,10 @@ private fun MapScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             val stores = uiState as MapUiState.Success
 
-            NaverMap(modifier = Modifier.fillMaxSize()) {
+            NaverMap(
+                modifier = Modifier.fillMaxSize(),
+                uiSettings = mapUiSettings,
+            ) {
                 selectedStore?.let { store ->
                     Marker(
                         state = MarkerState(position = store.latLng),
