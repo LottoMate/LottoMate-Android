@@ -297,7 +297,7 @@ private fun BottomButtons(
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
-            .padding(bottom = Dimens.BottomTabHeight.plus(78.dp)),
+            .padding(bottom = 76.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
     ) {
