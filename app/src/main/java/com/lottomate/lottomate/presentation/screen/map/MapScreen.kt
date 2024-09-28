@@ -44,7 +44,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
-import com.lottomate.lottomate.presentation.screen.map.component.StoreInfoBottomSheet
+import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
@@ -142,7 +142,7 @@ private fun MapScreen(
             .padding(bottom = padding.calculateBottomPadding()),
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
-            StoreInfoBottomSheet(
+            StoreBottomSheet(
                 bottomSheetTopPadding = bottomSheetTopPadding,
             )
         },

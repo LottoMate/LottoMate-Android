@@ -66,7 +66,7 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 private const val BOTTOM_SHEET_TOP_SPACER = 78
 
 @Composable
-fun StoreInfoBottomSheet(
+fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
     bottomSheetTopPadding: Int,
 ) {
