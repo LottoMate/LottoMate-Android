@@ -59,8 +59,7 @@ private const val BOTTOM_SHEET_TOP_SPACER = 78
 
 @Composable
 fun StoreInfoBottomSheet(
-    uiState: MapUiState,
-    selectedStore: StoreInfo?,
+    vm: StoreBottomSheetViewModel = hiltViewModel(),
     bottomSheetTopPadding: Int,
 ) {
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
