@@ -74,12 +74,6 @@ fun StoreBottomSheet(
     bottomSheetState: BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
 ) {
-    val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
-    val bottomSheetHeight = LocalConfiguration.current.screenHeightDp
-        .minus(Dimens.StatusBarHeight.value)
-        .minus(BOTTOM_SHEET_TOP_SPACER)
-        .minus(bottomSheetTopPaddingToDp.value)
-
     val stores by vm.stores.collectAsStateWithLifecycle()
     val store by vm.store.collectAsStateWithLifecycle()
 
@@ -92,7 +86,7 @@ fun StoreBottomSheet(
         stores = stores,
         selectedStore = store,
         selectFilterIndex = selectFilterIndex,
-        bottomSheetHeight = bottomSheetHeight,
+        bottomSheetTopPadding = bottomSheetTopPadding,
         onClickStore = { vm.selectStore(it) },
         onClickStoreLike = { vm.setFavoriteStore(it) },
         onClickFilter = { selectFilterIndex = it }
@@ -105,11 +99,17 @@ private fun StoreInfoBottomSheetContent(
     stores: List<StoreInfo>,
     selectedStore: StoreInfo?,
     selectFilterIndex: Int,
-    bottomSheetHeight: Float,
+    bottomSheetTopPadding: Int,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (Int) -> Unit,
 ) {
+    val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
+    val bottomSheetHeight = LocalConfiguration.current.screenHeightDp
+        .minus(Dimens.StatusBarHeight.value)
+        .minus(BOTTOM_SHEET_TOP_SPACER)
+        .minus(bottomSheetTopPaddingToDp.value)
+
     Column(
         modifier = modifier
             .requiredHeight(bottomSheetHeight.dp)
