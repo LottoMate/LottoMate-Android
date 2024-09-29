@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.map.model
 
+import android.icu.text.DecimalFormat
 import com.lottomate.lottomate.data.model.LottoType
 import com.naver.maps.geometry.LatLng
 
@@ -9,7 +10,7 @@ data class StoreInfo(
     val key: Int,
     val storeName: String,
     val hasLottoType: List<String>,
-    val distance: Double,
+    val distance: Int,
     val latLng: LatLng,
     val address: String,
     val phone: String = "-",
@@ -25,6 +26,21 @@ data class StoreInfo(
     fun getCountLotto720(): Int = winCountOfLottoType.count { it.lottoType == LottoType.L720 }
     fun getCountSpeetto(): Int =
         winCountOfLottoType.count { it.lottoType == LottoType.S2000 || it.lottoType == LottoType.S1000 || it.lottoType == LottoType.S500 }
+    fun getCountLike(): String {
+        val formatter = DecimalFormat("#,###")
+        return buildString {
+            if (countLike > MAX_COUNT_LIKE) {
+                val formatted = formatter.format(MAX_COUNT_LIKE)
+                append(formatted.plus("+"))
+            } else {
+                append(formatter.format(countLike))
+            }
+        }
+    }
+
+    companion object {
+        private const val MAX_COUNT_LIKE = 9_999
+    }
 }
 
 data class StoreWinCount(

@@ -291,7 +291,7 @@ private fun StoreInfoListItem(
                     )
 
                     LottoMateText(
-                        text = store.countLike.toString(),
+                        text = store.getCountLike(),
                         style = LottoMateTheme.typography.caption2
                             .copy(color = if (store.isLike) LottoMateRed50 else LottoMateGray80),
                     )
