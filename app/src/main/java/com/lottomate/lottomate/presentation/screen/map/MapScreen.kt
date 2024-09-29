@@ -143,6 +143,7 @@ private fun MapScreen(
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
             StoreBottomSheet(
+                bottomSheetState = bottomSheetScaffoldState,
                 bottomSheetTopPadding = bottomSheetTopPadding,
             )
         },

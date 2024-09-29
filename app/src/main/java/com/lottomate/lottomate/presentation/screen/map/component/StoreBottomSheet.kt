@@ -19,6 +19,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -65,9 +67,11 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 
 private const val BOTTOM_SHEET_TOP_SPACER = 78
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
+    bottomSheetState: BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
 ) {
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
@@ -80,6 +84,8 @@ fun StoreBottomSheet(
     val store by vm.store.collectAsStateWithLifecycle()
 
     var selectFilterIndex by remember { mutableIntStateOf(0) }
+
+    if (bottomSheetState.bottomSheetState.isCollapsed) vm.unselectStore()
 
     StoreInfoBottomSheetContent(
         modifier = Modifier.fillMaxWidth(),
