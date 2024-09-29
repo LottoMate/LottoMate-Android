@@ -173,6 +173,7 @@ private fun MapScreen(
                    Marker(
                        state = MarkerState(position = store.latLng),
                        icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(R.drawable.marker_default)
+                       else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
                        else OverlayImage.fromResource(R.drawable.marker_win),
                        onClick = {
                            onClickSelectStoreMarker(store)
