@@ -6,6 +6,7 @@ import com.naver.maps.geometry.LatLng
 // TODO : 전달되는 데이터 형식이 아직 정해지지 않아서 추후 수정할 예정
 
 data class StoreInfo(
+    val key: Int,
     val storeName: String,
     val hasLottoType: List<String>,
     val distance: Double,
@@ -14,7 +15,7 @@ data class StoreInfo(
     val phone: String = "-",
     val winCountOfLottoType: List<StoreWinCount>,
     val isLike: Boolean = false,
-    val countLike: String = "0",
+    val countLike: Int = 0,
 ) {
     val hasWinLotto645 = getCountLotto645() != 0
     val hasWinLotto720 = getCountLotto720() != 0
@@ -39,6 +40,7 @@ data class WinningDetail(
     val round: String,
 )
 val StoreInfoMock = StoreInfo(
+    key = 1,
     storeName = "도곡 행운로또방",
     hasLottoType = listOf("로또", "연금복권", "스피또"),
     distance = 1.6,
@@ -85,78 +87,89 @@ val StoreInfoMock = StoreInfo(
 val StoreInfoMocks = listOf(
     StoreInfoMock,
     StoreInfoMock.copy(
+        key = 2,
         storeName = "신사우리가판",
         address = "서울 강남구 강남대로 620",
         latLng = LatLng(37.5171459798091, 127.01969555607),
         isLike = true,
-        countLike = "123",
+        countLike = 123,
     ),
     StoreInfoMock.copy(
+        key = 3,
         storeName = "버스표판매소",
         address = "서울 강남구 압구정로 151-2 신현대9차 상가1동 출입구 앞",
         latLng = LatLng(37.5252805267207, 127.02440030268),
         winCountOfLottoType = emptyList(),
-        isLike = true,
         phone = "-",
     ),
     StoreInfoMock.copy(
+        key = 4,
         storeName = "선릉가판점",
         address = "서울 강남구 선릉로 519",
         latLng = LatLng(37.5058724287544, 127.048007701663),
         winCountOfLottoType = emptyList(),
-        countLike = "1,234",
+        isLike = true,
+        countLike = 1234,
     ),
     StoreInfoMock.copy(
+        key = 5,
         storeName = "버스표판매소",
         address = "서울 강남구 논현로 837",
         latLng = LatLng(37.5233390681827,127.027961858387),
         winCountOfLottoType = emptyList(),
     ),
     StoreInfoMock.copy(
+        key = 6,
         storeName = "가로판매대(구)-3",
         address = "서울 강남구 압구정로 201",
         latLng = LatLng(37.5315341736395, 127.029273123095),
         isLike = true,
-        countLike = "1",
+        countLike = 1,
     ),
     StoreInfoMock.copy(
+        key = 7,
         storeName = "삼성대박복권방",
         address = "서울 강남구 봉은사로74길 13 101호",
         latLng = LatLng(37.5116699286081, 127.051878663467),
-        isLike = true,
     ),
     StoreInfoMock.copy(
+        key = 8,
         storeName = "포이로또방",
         address = "서울 강남구 개포로22길 19 1층",
         latLng = LatLng(37.477752673752, 127.048542099489),
-        countLike = "9,999+",
+        isLike = true,
+        countLike = 99999,
     ),
     StoreInfoMock.copy(
+        key = 9,
         storeName = "버스카드충전소",
         address = "서울 강남구 테헤란로 625 삼성동 덕명빌딩 앞",
         latLng = LatLng(37.5101503390692, 127.066048979299)
     ),
     StoreInfoMock.copy(
+        key = 10,
         storeName = "교통카드충전소",
         address = "서울 강남구 선릉로 309",
         latLng = LatLng(37.4971857834581, 127.052159610697),
         winCountOfLottoType = emptyList(),
-        countLike = "23",
+        countLike = 23,
     ),
     StoreInfoMock.copy(
+        key = 11,
         storeName = "LOTTO복권",
         address = "서울 강남구 언주로70길 10",
         latLng = LatLng(37.4969537535198, 127.046376168482),
-        isLike = true,
         phone = "-",
     ),
     StoreInfoMock.copy(
+        key = 12,
         storeName = "새날",
         address = "서울 강남구 강남대로84길 23 115호",
         latLng = LatLng(37.4971298698887, 127.0303844347),
-        countLike = "19",
+        countLike = 19,
     ),
     StoreInfoMock.copy(
+        key = 13,
         storeName = "로또",
         address = "서울 강남구 일원로3길 66 1층",
         latLng = LatLng(37.4926942568508, 127.085063146495),
