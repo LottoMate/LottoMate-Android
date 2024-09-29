@@ -77,7 +77,7 @@ fun StoreBottomSheet(
         .minus(bottomSheetTopPaddingToDp.value)
 
     val stores by vm.stores.collectAsStateWithLifecycle()
-    val store = vm.store.value
+    val store by vm.store.collectAsStateWithLifecycle()
 
     var selectFilterIndex by remember { mutableIntStateOf(0) }
 
@@ -88,6 +88,7 @@ fun StoreBottomSheet(
         selectFilterIndex = selectFilterIndex,
         bottomSheetHeight = bottomSheetHeight,
         onClickStore = { vm.selectStore(it) },
+        onClickStoreLike = { vm.setFavoriteStore(it) },
         onClickFilter = { selectFilterIndex = it }
     )
 }
@@ -99,7 +100,8 @@ private fun StoreInfoBottomSheetContent(
     selectedStore: StoreInfo?,
     selectFilterIndex: Int,
     bottomSheetHeight: Float,
-    onClickStore: (StoreInfo) -> Unit,
+    onClickStore: (Int) -> Unit,
+    onClickStoreLike: (Int) -> Unit,
     onClickFilter: (Int) -> Unit,
 ) {
     Column(
@@ -119,6 +121,7 @@ private fun StoreInfoBottomSheetContent(
             SelectStoreInfoContent(
                 modifier = Modifier.fillMaxWidth(),
                 store = store,
+                onClickStoreLike = onClickStoreLike,
             )
         } ?: run {
             StoreInfoListContent(
@@ -126,6 +129,7 @@ private fun StoreInfoBottomSheetContent(
                 stores = stores,
                 selectFilterIndex = selectFilterIndex,
                 onClickStore = onClickStore,
+                onClickStoreLike = onClickStoreLike,
                 onClickFilter = onClickFilter,
             )
         }
@@ -137,6 +141,7 @@ private fun StoreInfoBottomSheetContent(
 private fun SelectStoreInfoContent(
     modifier: Modifier = Modifier,
     store: StoreInfo,
+    onClickStoreLike: (Int) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -145,6 +150,7 @@ private fun SelectStoreInfoContent(
 
         StoreInfoListItem(
             store = store,
+            onClickStoreLike = { onClickStoreLike(store.key) },
         )
     }
 }
@@ -154,7 +160,8 @@ private fun StoreInfoListContent(
     modifier: Modifier = Modifier,
     stores: List<StoreInfo>,
     selectFilterIndex: Int,
-    onClickStore: (StoreInfo) -> Unit,
+    onClickStore: (Int) -> Unit,
+    onClickStoreLike: (Int) -> Unit,
     onClickFilter: (Int) -> Unit
 ) {
     Column(modifier = modifier) {
@@ -175,6 +182,7 @@ private fun StoreInfoListContent(
             StoreInfoListItem(
                 store = store,
                 onClickStore = onClickStore,
+                onClickStoreLike = { onClickStoreLike(store.key) }
             )
 
             if (index != stores.lastIndex) {
@@ -191,7 +199,8 @@ private fun StoreInfoListContent(
 private fun StoreInfoListItem(
     modifier: Modifier = Modifier,
     store: StoreInfo,
-    onClickStore: (StoreInfo) -> Unit = {},
+    onClickStore: (Int) -> Unit = {},
+    onClickStoreLike: () -> Unit,
 ) {
     var storeNameLineCount by remember { mutableIntStateOf(1) }
     var expendStoreWinHistory by remember { mutableStateOf(false) }
@@ -251,7 +260,7 @@ private fun StoreInfoListItem(
                         },
                         modifier = Modifier
                             .alignByBaseline()
-                            .noInteractionClickable { onClickStore(store) },
+                            .noInteractionClickable { onClickStore(store.key) },
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -271,13 +280,14 @@ private fun StoreInfoListItem(
                         painter = if (store.isLike) painterResource(id = R.drawable.icon_like)
                         else painterResource(id = R.drawable.icon_unlike),
                         contentDescription = "The Favorite Store Icon",
-                        tint = LottoMateGray80,
+                        tint = if (store.isLike) LottoMateRed50 else LottoMateGray80,
+                        modifier = Modifier.noInteractionClickable { onClickStoreLike() },
                     )
 
                     LottoMateText(
                         text = store.countLike.toString(),
                         style = LottoMateTheme.typography.caption2
-                            .copy(color = LottoMateGray80),
+                            .copy(color = if (store.isLike) LottoMateRed50 else LottoMateGray80),
                     )
                 }
             }
@@ -437,6 +447,7 @@ private fun StoreInfoBottomSheetPreview() {
     LottoMateTheme {
         SelectStoreInfoContent(
             store = StoreInfoMock,
+            onClickStoreLike = {}
         )
     }
 }

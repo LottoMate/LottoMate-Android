@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.map
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.domain.repository.StoreRepository
@@ -16,23 +15,47 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreBottomSheetViewModel @Inject constructor(
-    storeRepository: StoreRepository,
+    private val storeRepository: StoreRepository,
 ) : ViewModel() {
     private var _stores = MutableStateFlow<List<StoreInfo>>(emptyList())
-    var store = mutableStateOf<StoreInfo?>(null)
-        private set
+    private var _store = MutableStateFlow<StoreInfo?>(null)
+
     val stores: StateFlow<List<StoreInfo>> get() = _stores.asStateFlow()
+    val store: StateFlow<StoreInfo?> get() = _store.asStateFlow()
 
     init {
+        loadAllStores()
+    }
+
+    fun selectStore(key: Int) {
+        storeRepository.selectStore(key)
+
+        loadAllStores()
+    }
+
+    fun setFavoriteStore(key: Int) {
+        storeRepository.setFavoriteStore(key)
+
+        loadAllStores()
+    }
+
+    fun unselectStore() {
+        storeRepository.unselectStore()
+
+        loadAllStores()
+    }
+
+    private fun loadAllStores() {
         viewModelScope.launch {
             storeRepository.fetchStores()
                 .collectLatest { collectStores ->
                     _stores.update { collectStores }
                 }
-        }
-    }
 
-    fun selectStore(selectedStore: StoreInfo) {
-        store.value = selectedStore
+            storeRepository.fetchStore()
+                .collectLatest { collectStore ->
+                    _store.update { collectStore }
+                }
+        }
     }
 }
