@@ -61,6 +61,7 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.overlay.OverlayImage
 
 private val LoadingBackgroundSize = 160.dp
+private val BottomSheetPeekHeight = 48.dp
 
 @Composable
 fun MapRoute(
@@ -148,7 +149,7 @@ private fun MapScreen(
             )
         },
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        sheetPeekHeight = 48.dp,
+        sheetPeekHeight = BottomSheetPeekHeight,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             val stores = uiState as MapUiState.Success
