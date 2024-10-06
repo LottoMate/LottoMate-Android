@@ -3,6 +3,7 @@ package com.lottomate.lottomate.presentation.screen.map
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
@@ -15,16 +16,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-
+    private val storeRepository: StoreRepository,
 ) : ViewModel() {
     var lottoTypeState = mutableStateListOf(LottoTypeFilter.All.kr)
         private set
     var winStoreState = mutableStateOf(false)
         private set
     var favoriteStoreState = mutableStateOf(false)
-        private set
-    var selectedStore = mutableStateOf<StoreInfo?>(null)
-        private set
 
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
@@ -35,13 +33,8 @@ class MapViewModel @Inject constructor(
         }
     }
 
-    fun selectStoreMarker(store: StoreInfo) {
-        selectedStore.value = store
-    }
-
-    fun unselectStoreMarker() {
-        selectedStore.value = null
-    }
+    fun selectStoreMarker(store: StoreInfo) = storeRepository.selectStore(store.key)
+    fun unselectStoreMarker() = storeRepository.unselectStore()
 
     fun changeLottoTypeState(selectedLottoTypes: List<Boolean>) {
         val tempLottoTypeState = mutableListOf<String>()

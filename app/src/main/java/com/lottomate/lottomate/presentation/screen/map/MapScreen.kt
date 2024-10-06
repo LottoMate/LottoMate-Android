@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
+import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,10 +61,12 @@ import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.overlay.OverlayImage
+import kotlinx.coroutines.launch
 
 private val LoadingBackgroundSize = 160.dp
 private val BottomSheetPeekHeight = 48.dp
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
@@ -70,12 +74,15 @@ fun MapRoute(
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-    val selectedStore = vm.selectedStore.value
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
     val favoriteStoreState by vm.favoriteStoreState
 
     var showLottoTypeSelectorBottomSheet by remember { mutableStateOf(false) }
+
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
+    )
 
     if (showLottoTypeSelectorBottomSheet) {
         LottoTypeSelectorBottomSheet(
@@ -92,10 +99,10 @@ fun MapRoute(
     MapScreen(
         padding = padding,
         uiState = uiState,
-        selectedStore = selectedStore,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
         favoriteStoreState = favoriteStoreState,
+        bottomSheetScaffoldState = bottomSheetScaffoldState,
         onClickLottoType = { showLottoTypeSelectorBottomSheet = true },
         onClickWinLottoStore = { vm.changeWinStoreState() },
         onClickFavoriteStore = { vm.changeFavoriteStoreState() },
@@ -112,10 +119,10 @@ private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     uiState: MapUiState,
-    selectedStore: StoreInfo?,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
+    bottomSheetScaffoldState: BottomSheetScaffoldState,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
@@ -132,10 +139,9 @@ private fun MapScreen(
         )
     }
 
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
-    )
+    val coroutineScope = rememberCoroutineScope()
     var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
+    var selectStore by remember { mutableStateOf<StoreInfo?>(null) }
 
     BottomSheetScaffold(
         modifier = modifier
@@ -158,12 +164,17 @@ private fun MapScreen(
                 modifier = Modifier.fillMaxSize(),
                 uiSettings = mapUiSettings,
             ) {
-                selectedStore?.let { store ->
+                selectStore?.let { store ->
                     Marker(
                         state = MarkerState(position = store.latLng),
                         icon = OverlayImage.fromResource(R.drawable.marker_select),
                         onClick = {
+                            selectStore = null
                             onClickUnSelectStoreMarker()
+
+                            coroutineScope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.collapse()
+                            }
                             true
                         }
                     )
@@ -176,6 +187,7 @@ private fun MapScreen(
                        else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
                        else OverlayImage.fromResource(R.drawable.marker_win),
                        onClick = {
+                           selectStore = store
                            onClickSelectStoreMarker(store)
                            true
                        }
@@ -398,10 +410,13 @@ private fun MapLoadingScreen(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Preview(showBackground = true)
 @Composable
 private fun MapScreenPreview() {
     LottoMateTheme {
+        val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+
         MapScreen(
             uiState = MapUiState.Success(StoreInfoMocks),
             lottoTypeState = "복권 전체",
@@ -414,8 +429,8 @@ private fun MapScreenPreview() {
             onClickLocationFocus = {},
             onClickSelectStoreMarker = {},
             onClickUnSelectStoreMarker = {},
-            selectedStore = null,
-            padding = PaddingValues(32.dp)
+            padding = PaddingValues(32.dp),
+            bottomSheetScaffoldState = bottomSheetScaffoldState,
         )
     }
 }

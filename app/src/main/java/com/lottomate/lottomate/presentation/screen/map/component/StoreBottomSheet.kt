@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMatePeach50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.utils.noInteractionClickable
+import kotlinx.coroutines.launch
 
 private const val BOTTOM_SHEET_TOP_SPACER = 78
 
@@ -79,20 +81,20 @@ fun StoreBottomSheet(
 
     var selectFilterIndex by remember { mutableIntStateOf(0) }
 
-    if (bottomSheetState.bottomSheetState.isCollapsed) vm.unselectStore()
-
     StoreInfoBottomSheetContent(
         modifier = Modifier.fillMaxWidth(),
         stores = stores,
         selectedStore = store,
         selectFilterIndex = selectFilterIndex,
         bottomSheetTopPadding = bottomSheetTopPadding,
+        bottomSheetState = bottomSheetState,
         onClickStore = { vm.selectStore(it) },
         onClickStoreLike = { vm.setFavoriteStore(it) },
         onClickFilter = { selectFilterIndex = it }
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun StoreInfoBottomSheetContent(
     modifier: Modifier = Modifier,
@@ -100,10 +102,12 @@ private fun StoreInfoBottomSheetContent(
     selectedStore: StoreInfo?,
     selectFilterIndex: Int,
     bottomSheetTopPadding: Int,
+    bottomSheetState: BottomSheetScaffoldState,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (Int) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
     val bottomSheetHeight = LocalConfiguration.current.screenHeightDp
         .minus(Dimens.StatusBarHeight.value)
@@ -124,6 +128,10 @@ private fun StoreInfoBottomSheetContent(
         )
 
         selectedStore?.let { store ->
+            coroutineScope.launch {
+                bottomSheetState.bottomSheetState.expand()
+            }
+
             SelectStoreInfoContent(
                 modifier = Modifier.fillMaxWidth(),
                 store = store,
