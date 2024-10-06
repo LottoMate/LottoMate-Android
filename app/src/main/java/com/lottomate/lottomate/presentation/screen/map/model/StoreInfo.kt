@@ -22,10 +22,12 @@ data class StoreInfo(
     val hasWinLotto720 = getCountLotto720() != 0
     val hasWinSpeetto = getCountSpeetto() != 0
 
-    fun getCountLotto645(): Int = winCountOfLottoType.count { it.lottoType == LottoType.L645 }
-    fun getCountLotto720(): Int = winCountOfLottoType.count { it.lottoType == LottoType.L720 }
-    fun getCountSpeetto(): Int =
-        winCountOfLottoType.count { it.lottoType == LottoType.S2000 || it.lottoType == LottoType.S1000 || it.lottoType == LottoType.S500 }
+    fun getCountLotto645(): Int = winCountOfLottoType.firstOrNull { it.lottoType == LottoType.L645 }?.count ?: 0
+    fun getCountLotto720(): Int = winCountOfLottoType.firstOrNull { it.lottoType == LottoType.L720 }?.count ?: 0
+    fun getCountSpeetto(): Int = winCountOfLottoType.firstOrNull {
+        it.lottoType == LottoType.S2000 || it.lottoType == LottoType.S1000 || it.lottoType == LottoType.S500
+    }?.count ?: 0
+
     fun getCountLike(): String {
         val formatter = DecimalFormat("#,###")
         return buildString {
