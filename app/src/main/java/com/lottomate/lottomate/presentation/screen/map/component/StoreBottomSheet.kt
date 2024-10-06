@@ -280,7 +280,10 @@ private fun StoreInfoListItem(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     LottoMateText(
-                        text = "${store.distance}km",
+                        text = if (store.distance >= 1000) {
+                            if (store.distance % 1000 == 0) { "${store.distance / 1000}km" }
+                            else { "${store.distance / 1000}.${(store.distance % 1000) / 100}km" }
+                        } else { "${store.distance}m" },
                         style = LottoMateTheme.typography.caption1
                             .copy(color = LottoMateGray80),
                         modifier = Modifier.alignByBaseline(),
@@ -366,7 +369,9 @@ private fun StoreInfoListItem(
                         tint = LottoMateGray80,
                         modifier = Modifier
                             .size(20.dp)
-                            .noInteractionClickable { expendStoreWinHistory = !expendStoreWinHistory },
+                            .noInteractionClickable {
+                                expendStoreWinHistory = !expendStoreWinHistory
+                            },
                     )
                 }
             }
