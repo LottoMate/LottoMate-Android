@@ -59,7 +59,7 @@ val StoreInfoMock = StoreInfo(
     key = 1,
     storeName = "도곡 행운로또방",
     hasLottoType = listOf("로또", "연금복권", "스피또"),
-    distance = 1.6,
+    distance = 1600,
     address = "서울 강남구 도곡로4길 11 102호",
     latLng = LatLng(37.4893124651714, 127.033694208578),
     phone = "02-123-4567",
@@ -109,6 +109,7 @@ val StoreInfoMocks = listOf(
         latLng = LatLng(37.5171459798091, 127.01969555607),
         isLike = true,
         countLike = 123,
+        distance = 1100,
     ),
     StoreInfoMock.copy(
         key = 3,
@@ -117,6 +118,7 @@ val StoreInfoMocks = listOf(
         latLng = LatLng(37.5252805267207, 127.02440030268),
         winCountOfLottoType = emptyList(),
         phone = "-",
+        distance = 100,
     ),
     StoreInfoMock.copy(
         key = 4,
@@ -126,6 +128,7 @@ val StoreInfoMocks = listOf(
         winCountOfLottoType = emptyList(),
         isLike = true,
         countLike = 1234,
+        distance = 9900,
     ),
     StoreInfoMock.copy(
         key = 5,
@@ -133,6 +136,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 논현로 837",
         latLng = LatLng(37.5233390681827,127.027961858387),
         winCountOfLottoType = emptyList(),
+        distance = 130,
     ),
     StoreInfoMock.copy(
         key = 6,
@@ -141,12 +145,14 @@ val StoreInfoMocks = listOf(
         latLng = LatLng(37.5315341736395, 127.029273123095),
         isLike = true,
         countLike = 1,
+        distance = 90,
     ),
     StoreInfoMock.copy(
         key = 7,
         storeName = "삼성대박복권방",
         address = "서울 강남구 봉은사로74길 13 101호",
         latLng = LatLng(37.5116699286081, 127.051878663467),
+        distance = 700,
     ),
     StoreInfoMock.copy(
         key = 8,
@@ -155,12 +161,14 @@ val StoreInfoMocks = listOf(
         latLng = LatLng(37.477752673752, 127.048542099489),
         isLike = true,
         countLike = 99999,
+        distance = 10,
     ),
     StoreInfoMock.copy(
         key = 9,
         storeName = "버스카드충전소",
         address = "서울 강남구 테헤란로 625 삼성동 덕명빌딩 앞",
-        latLng = LatLng(37.5101503390692, 127.066048979299)
+        latLng = LatLng(37.5101503390692, 127.066048979299),
+        distance = 400,
     ),
     StoreInfoMock.copy(
         key = 10,
@@ -169,6 +177,7 @@ val StoreInfoMocks = listOf(
         latLng = LatLng(37.4971857834581, 127.052159610697),
         winCountOfLottoType = emptyList(),
         countLike = 23,
+        distance = 2300,
     ),
     StoreInfoMock.copy(
         key = 11,
@@ -176,6 +185,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 언주로70길 10",
         latLng = LatLng(37.4969537535198, 127.046376168482),
         phone = "-",
+        distance = 3500,
     ),
     StoreInfoMock.copy(
         key = 12,
@@ -183,6 +193,7 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 강남대로84길 23 115호",
         latLng = LatLng(37.4971298698887, 127.0303844347),
         countLike = 19,
+        distance = 35000,
     ),
     StoreInfoMock.copy(
         key = 13,
@@ -190,5 +201,6 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 일원로3길 66 1층",
         latLng = LatLng(37.4926942568508, 127.085063146495),
         phone = "-",
+        distance = 9950,
     )
 )
