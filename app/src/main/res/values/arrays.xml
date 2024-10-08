@@ -35,4 +35,9 @@
         <item>1등번호 뒤 1자리 일치</item>
         <item>보너스 번호 6자리 일치</item>
     </string-array>
+
+    <string-array name="map_store_info_top_filters">
+        <item>랭킹순</item>
+        <item>가까운 순</item>
+    </string-array>
 </resources>

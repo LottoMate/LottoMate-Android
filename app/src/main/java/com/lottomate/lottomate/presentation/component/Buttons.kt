@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -161,9 +160,14 @@ fun LottoMateTextButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val isDisabled = buttonType == LottoMateButtonProperty.Type.DISABLED
+    val buttonHeight = when (buttonSize) {
+        LottoMateButtonProperty.Size.SMALL -> 22.dp
+        LottoMateButtonProperty.Size.LARGE -> 24.dp
+        else -> 0.dp
+    }
 
     Button(
-        modifier = modifier.defaultMinSize(minHeight = 1.dp, minWidth = 1.dp),
+        modifier = modifier.height(buttonHeight),
         onClick = { onClick() },
         shape = RoundedCornerShape(Dimens.RadiusExtraSmall),
         colors = ButtonDefaults.buttonColors(
@@ -200,8 +204,14 @@ private fun LottoMateBaseButton(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
+    val buttonHeight = when (buttonSize) {
+        LottoMateButtonProperty.Size.LARGE -> 48.dp
+        LottoMateButtonProperty.Size.MEDIUM -> 40.dp
+        LottoMateButtonProperty.Size.SMALL -> 34.dp
+    }
+
     Button(
-        modifier = modifier,
+        modifier = modifier.height(buttonHeight),
         contentPadding = PaddingValues(
             horizontal = when (buttonSize) {
                 LottoMateButtonProperty.Size.SMALL -> 16.dp
