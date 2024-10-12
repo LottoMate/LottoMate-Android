@@ -353,31 +353,29 @@ private fun StoreInfoListItem(
                 )
             }
 
-            if (store.hasWinLotto645 || store.hasWinLotto720 || store.hasWinSpeetto) {
-                Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    WinLottoTypeChipGroup(store = store)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                WinLottoTypeChipGroup(store = store)
 
-                    Icon(
-                        painter = painterResource(id = if (expendStoreWinHistory) R.drawable.icon_arrow_up else R.drawable.icon_arrow_down),
-                        contentDescription = "Win Lotto History More Button Icon",
-                        tint = LottoMateGray80,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .noInteractionClickable {
-                                expendStoreWinHistory = !expendStoreWinHistory
-                            },
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = if (expendStoreWinHistory) R.drawable.icon_arrow_up else R.drawable.icon_arrow_down),
+                    contentDescription = "Win Lotto History More Button Icon",
+                    tint = LottoMateGray80,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .noInteractionClickable {
+                            expendStoreWinHistory = !expendStoreWinHistory
+                        },
+                )
             }
         }
 
-        if (expendStoreWinHistory && store.winCountOfLottoType.isNotEmpty()) {
+        if (expendStoreWinHistory) {
             val winHistories = store.winCountOfLottoType.flatMap { it.winningDetails }
 
             StoreWinHistory(
@@ -393,20 +391,49 @@ private fun StoreWinHistory(
     modifier: Modifier = Modifier,
     histories: List<WinningDetail>,
 ) {
-    val groupHistories = histories.chunked(5)
-
-    Column(modifier = modifier) {
-        Divider(
-            color = LottoMateGray20,
-            modifier = Modifier.padding(20.dp),
-        )
-
-        LazyRow(contentPadding = PaddingValues(horizontal = 20.dp)) {
-            itemsIndexed(groupHistories) { index, history ->
-                StoreWinHistoryChipGroup(histories = history)
+    if (histories.isEmpty()) {
+        Box(
+            modifier = modifier
+                .padding(top = 20.dp)
+                .background(LottoMateGray10),
+            contentAlignment = Alignment.Center,
+        ) {
+            Column(
+                modifier = Modifier.padding(vertical = 57.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.pochi_6),
+                    contentDescription = "",
+                    colorFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) }),
+                    modifier = Modifier.size(100.dp),
+                )
                 
-                if (index != groupHistories.lastIndex) {
-                    Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                LottoMateText(
+                    text = "아직 당첨 이력이 없는 판매점입니다.",
+                    style = LottoMateTheme.typography.body2
+                        .copy(color = LottoMateGray100),
+                )
+            }
+        }
+    } else {
+        val groupHistories = histories.chunked(5)
+
+        Column(modifier = modifier) {
+            Divider(
+                color = LottoMateGray20,
+                modifier = Modifier.padding(20.dp),
+            )
+
+            LazyRow(contentPadding = PaddingValues(horizontal = 20.dp)) {
+                itemsIndexed(groupHistories) { index, history ->
+                    StoreWinHistoryChipGroup(histories = history)
+
+                    if (index != groupHistories.lastIndex) {
+                        Spacer(modifier = Modifier.width(16.dp))
+                    }
                 }
             }
         }
