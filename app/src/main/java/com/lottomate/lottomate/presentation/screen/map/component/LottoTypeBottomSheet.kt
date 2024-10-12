@@ -127,6 +127,8 @@ fun LottoTypeSelectorBottomSheet(
                     text = stringResource(id = R.string.map_lotto_type_selection_button_save),
                     buttonSize = LottoMateButtonProperty.Size.LARGE,
                     buttonShape = LottoMateButtonProperty.Shape.NORMAL,
+                    buttonType = if (selectLottoTypeState.all { !it.value }) LottoMateButtonProperty.Type.DISABLED
+                    else LottoMateButtonProperty.Type.ACTIVE ,
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     onClick = { onSelectLottoTypes(selectLottoTypeState.map { it.value }) }
                 )
