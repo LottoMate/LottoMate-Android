@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.map.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -53,6 +56,7 @@ import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMock
 import com.lottomate.lottomate.presentation.screen.map.model.WinningDetail
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue5
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
+import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray30
@@ -164,6 +168,7 @@ private fun SelectStoreInfoContent(
 
         StoreInfoListItem(
             store = store,
+            isSelect = true,
             onClickStoreLike = { onClickStoreLike(store.key) },
         )
     }
@@ -213,13 +218,14 @@ private fun StoreInfoListContent(
 private fun StoreInfoListItem(
     modifier: Modifier = Modifier,
     store: StoreInfo,
+    isSelect: Boolean = false,
     onClickStore: (Int) -> Unit = {},
     onClickStoreLike: () -> Unit,
 ) {
     var storeNameLineCount by remember { mutableIntStateOf(1) }
     var expendStoreWinHistory by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.padding(bottom = 20.dp)) {
+    Column(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -356,7 +362,9 @@ private fun StoreInfoListItem(
             Spacer(modifier = Modifier.height(12.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -379,7 +387,11 @@ private fun StoreInfoListItem(
             val winHistories = store.winCountOfLottoType.flatMap { it.winningDetails }
 
             StoreWinHistory(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(bottom = when {
+                        isSelect && store.winCountOfLottoType.isEmpty() -> 0.dp
+                        else -> 20.dp
+                    }),
                 histories = winHistories,
             )
         }
@@ -424,7 +436,9 @@ private fun StoreWinHistory(
         Column(modifier = modifier) {
             Divider(
                 color = LottoMateGray20,
-                modifier = Modifier.padding(20.dp),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 20.dp),
             )
 
             LazyRow(contentPadding = PaddingValues(horizontal = 20.dp)) {
