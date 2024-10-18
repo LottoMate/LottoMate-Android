@@ -15,6 +15,9 @@
     <string name="interview_exam_question">당첨되신 걸 어떻게 알게 되셨고, 또 알았을 때 기분이 어떠셨나요?</string>
     <string name="interview_exam_answer">복권 당첨 후기 이벤트 멘트 작성 예정입니다. 질문에 대한 답변입니다. 나도 당첨되고 싶다. 저희 모두 당첨되게 해주세요. 신축 빌라 갖고 싶당.</string>
 
+    <!-- 로또 보관소 -->
+    <string name="pocket_top_app_bar_title">로또 보관소</string>
+
     <!-- 바로가기 배너 -->
     <string name="banner_lotto_info_title">행운의 1등 로또\n어디서 샀을까?</string>
     <string name="banner_lotto_info_sub_title">터치해서 당첨 판매점 보기</string>
@@ -22,4 +25,6 @@
     <!-- Description -->
     <string name="desc_pre_page_icon_lotto_info_speetto">Previous Button Icon for Speetto Detail View Pagenation</string>
     <string name="desc_next_page_icon_lotto_info_speetto">Next Button Icon for Speetto Detail View Pagenation</string>
+
+    <string name="desc_setting_icon">Setting Icon</string>
 </resources>

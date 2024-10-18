@@ -12,6 +12,7 @@ import com.lottomate.lottomate.presentation.screen.interview.navigation.navigate
 import androidx.navigation.navOptions
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateHome
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateMap
+import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigatePocket
 
 class MainNavigator(
     val navController: NavHostController,
@@ -42,7 +43,7 @@ class MainNavigator(
         when (bottomTab) {
             MainBottomTab.HOME -> navController.navigateHome(navOptions)
             MainBottomTab.MAP -> navController.navigateMap(navOptions)
-            MainBottomTab.POCKET -> {}
+            MainBottomTab.POCKET -> navController.navigatePocket(navOptions)
             MainBottomTab.LOUNGE -> {}
         }
     }
