@@ -41,6 +41,7 @@ fun MainNavHost(
 
             pocketNavGraph(
                 padding = padding,
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
         }

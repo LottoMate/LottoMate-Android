@@ -1,7 +1,7 @@
 package com.lottomate.lottomate.presentation.navigation
 
 enum class Route {
-    INFO, INTERVIEW,
+    INFO, INTERVIEW, POCKET_STORAGE,
 }
 
 enum class BottomNavigationRoute {

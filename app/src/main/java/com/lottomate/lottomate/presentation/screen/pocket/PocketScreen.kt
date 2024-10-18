@@ -40,6 +40,7 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 fun PocketRoute(
     padding: PaddingValues,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onClickStorageOfRandomNumbers: () -> Unit,
 ) {
     var currentTabIndex by remember { mutableIntStateOf(0) }
 
@@ -48,7 +49,7 @@ fun PocketRoute(
         currentTabIndex = currentTabIndex,
         onClickTabMenu = { currentTabIndex = it },
         onClickDrawRandomNumbers = {},
-        onClickStorageOfRandomNumbers = {},
+        onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = {},
         onClickSaveRandomNumbers = {},
     )
@@ -170,7 +171,8 @@ private fun PocketScreenPreview() {
     LottoMateTheme {
         PocketRoute(
             padding = PaddingValues(0.dp),
-            onShowErrorSnackBar = {}
+            onShowErrorSnackBar = {},
+            onClickStorageOfRandomNumbers = {}
         )
     }
 }
