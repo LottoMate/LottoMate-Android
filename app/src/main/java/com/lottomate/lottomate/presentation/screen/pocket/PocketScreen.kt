@@ -68,7 +68,7 @@ fun PocketRoute(
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
-        onClickSaveRandomNumbers = { vm.saveRandomLotto(it) },
+        onClickSaveRandomNumbers = {  },
     )
 }
 

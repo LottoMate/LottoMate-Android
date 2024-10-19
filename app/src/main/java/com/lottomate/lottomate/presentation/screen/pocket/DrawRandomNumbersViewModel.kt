@@ -1,7 +1,9 @@
 package com.lottomate.lottomate.presentation.screen.pocket
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DrawRandomNumbersViewModel @Inject constructor(
-
+    private val randomLottoRepository: RandomLottoRepository,
 ) : ViewModel() {
     private var _randomNumbers = MutableStateFlow<DrawRandomNumbersUiState>(DrawRandomNumbersUiState.Loading)
     val randomNumbers: StateFlow<DrawRandomNumbersUiState> get() = _randomNumbers.asStateFlow()
@@ -33,15 +35,27 @@ class DrawRandomNumbersViewModel @Inject constructor(
             val number = (LOTTO_FIRST_NUMBER..LOTTO_LAST_NUMBER).random()
             if (!numbers.contains(number)) numbers.add(number)
         }
+        val sortedNumbers = numbers.sorted()
 
         viewModelScope.launch {
             delay(5_000)
 
+            saveRandomLotto(sortedNumbers)
             _randomNumbers.update {
-                DrawRandomNumbersUiState.Success(numbers.sorted())
+                DrawRandomNumbersUiState.Success(sortedNumbers)
             }
 
             _snackBarFlow.emit(SNACKBAR_MESSAGE)
+        }
+    }
+
+    private fun saveRandomLotto(numbers: List<Int>) {
+        viewModelScope.launch {
+            try {
+                randomLottoRepository.insertRandomLotto(numbers)
+            } catch (exception: Exception) {
+                Log.d("DrawRandomNumbersVM(saveRandomLotto)", exception.message.toString())
+            }
         }
     }
 

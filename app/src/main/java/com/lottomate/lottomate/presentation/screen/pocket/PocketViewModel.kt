@@ -45,16 +45,6 @@ class PocketViewModel @Inject constructor(
         }
     }
 
-    fun saveRandomLotto(numbers: List<Int>) {
-        viewModelScope.launch {
-            try {
-                randomLottoRepository.insertRandomLotto(numbers)
-            } catch (exception: Exception) {
-                Log.d("PocketVM(saveRandomLotto)", exception.message.toString())
-            }
-        }
-    }
-
     companion object {
         private const val SNACKBAR_MESSAGE = "로또 번호를 복사했어요!"
         private const val CLIPBOARD_LABEL = "RandomNumbers"
