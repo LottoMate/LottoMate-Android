@@ -119,7 +119,7 @@ private fun BottomDrawNumbers(
 ) {
     val numbers = List(20) {listOf(4, 5, 11, 21, 37, 40, 43) }
     var ballsToShow by remember { mutableIntStateOf(5) }
-    var isInitalShow by remember {
+    var isInitialShow by remember {
         mutableStateOf(true)
     }
     val visibleNumbers = numbers.take(ballsToShow)
@@ -141,7 +141,7 @@ private fun BottomDrawNumbers(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        visibleNumbers.chunked(if (isInitalShow) 5 else 10).forEachIndexed { index, chunk ->
+        visibleNumbers.chunked(if (isInitialShow) 5 else 10).forEachIndexed { index, chunk ->
             chunk.forEachIndexed { chunkIndex, it ->
                 DrawNumberRow(
                     numbers = it,
