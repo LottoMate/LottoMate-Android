@@ -41,6 +41,7 @@ fun PocketRoute(
     padding: PaddingValues,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
+    onClickDrawRandomNumbers: () -> Unit,
 ) {
     var currentTabIndex by remember { mutableIntStateOf(0) }
 
@@ -48,7 +49,7 @@ fun PocketRoute(
         padding = padding,
         currentTabIndex = currentTabIndex,
         onClickTabMenu = { currentTabIndex = it },
-        onClickDrawRandomNumbers = {},
+        onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = {},
         onClickSaveRandomNumbers = {},
@@ -172,6 +173,7 @@ private fun PocketScreenPreview() {
         PocketRoute(
             padding = PaddingValues(0.dp),
             onShowErrorSnackBar = {},
+            onClickDrawRandomNumbers = {},
             onClickStorageOfRandomNumbers = {}
         )
     }
