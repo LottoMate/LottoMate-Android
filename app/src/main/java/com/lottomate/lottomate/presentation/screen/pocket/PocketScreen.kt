@@ -38,20 +38,31 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 fun PocketRoute(
+    vm: PocketViewModel = hiltViewModel(),
     padding: PaddingValues,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
 ) {
-    var currentTabIndex by remember { mutableIntStateOf(0) }
+    var currentTabIndex by vm.currentTabIndex
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(true) {
+        vm.snackBarFlow.collectLatest { message ->
+            snackBarHostState.showSnackbar(
+                message = message,
+            )
+        }
+    }
 
     PocketScreen(
         padding = padding,
         currentTabIndex = currentTabIndex,
+        snackBarHostState = snackBarHostState,
         onClickTabMenu = { currentTabIndex = it },
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
-        onClickCopyRandomNumbers = {},
+        onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
         onClickSaveRandomNumbers = {},
     )
 }
@@ -60,15 +71,17 @@ fun PocketRoute(
 private fun PocketScreen(
     padding: PaddingValues,
     currentTabIndex: Int,
+    snackBarHostState: SnackbarHostState,
     onClickTabMenu: (Int) -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
-    onClickCopyRandomNumbers: (Int) -> Unit,
+    onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (Int) -> Unit,
 ) {
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(padding)
             .background(LottoMateWhite),
     ) {
         Column(
@@ -115,6 +128,18 @@ private fun PocketScreen(
                 )
             }
         )
+
+        // TODO : SnackBar 위치 수정 예정
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            snackBarHostState.currentSnackbarData?.let {
+                LottoMateSnackBarHost(snackBarHostState = snackBarHostState) {
+                    LottoMateSnackBar(message = it.visuals.message)
+                }
+            }
+        }
     }
 }
 

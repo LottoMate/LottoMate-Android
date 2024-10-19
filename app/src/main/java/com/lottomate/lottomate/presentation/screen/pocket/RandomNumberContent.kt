@@ -41,12 +41,15 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow50
 import com.lottomate.lottomate.utils.noInteractionClickable
 
+/**
+ * 사용자가 당일에 뽑은 랜덤 번호가 저장되어 표시되는 화면
+ */
 @Composable
 fun RandomNumberContent(
     modifier: Modifier = Modifier,
     onClickDrawRandomNumbers: () -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
-    onClickCopyRandomNumbers: (Int) -> Unit,
+    onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (Int) -> Unit,
 ) {
     Column(
@@ -111,7 +114,7 @@ fun RandomNumberContent(
 @Composable
 private fun BottomDrawNumbers(
     modifier: Modifier = Modifier,
-    onClickCopyRandomNumbers: (Int) -> Unit,
+    onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (Int) -> Unit,
 ) {
     val numbers = List(20) {listOf(4, 5, 11, 21, 37, 40, 43) }
@@ -142,7 +145,7 @@ private fun BottomDrawNumbers(
             chunk.forEachIndexed { chunkIndex, it ->
                 DrawNumberRow(
                     numbers = it,
-                    onClickCopyRandomNumbers = { onClickCopyRandomNumbers(index) },
+                    onClickCopyRandomNumbers = { onClickCopyRandomNumbers(it) },
                     onClickSaveRandomNumbers = { onClickSaveRandomNumbers(index) },
                 )
 
