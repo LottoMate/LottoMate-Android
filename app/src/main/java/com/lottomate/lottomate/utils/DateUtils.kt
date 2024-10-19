@@ -1,6 +1,8 @@
 package com.lottomate.lottomate.utils
 
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 object DateUtils {
@@ -30,5 +32,18 @@ object DateUtils {
             append(".")
             append(String.format(Locale.KOREA, "%02d", date.get(Calendar.DAY_OF_MONTH)))
         }
+    }
+
+    /**
+     * 현재 날짜 계산 함수
+     *
+     * @return yyyy-MM-dd 형식을 가진 현재 날짜
+     */
+    fun getCurrentDate(): String {
+        val current = System.currentTimeMillis()
+        val date = Date(current)
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+
+        return dateFormat.format(date)
     }
 }

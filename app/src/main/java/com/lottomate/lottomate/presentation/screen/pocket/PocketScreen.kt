@@ -68,7 +68,7 @@ fun PocketRoute(
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
-        onClickSaveRandomNumbers = {},
+        onClickSaveRandomNumbers = { vm.saveRandomLotto(it) },
     )
 }
 
@@ -81,7 +81,7 @@ private fun PocketScreen(
     onClickDrawRandomNumbers: () -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
-    onClickSaveRandomNumbers: (Int) -> Unit,
+    onClickSaveRandomNumbers: (List<Int>) -> Unit,
 ) {
     Box(
         modifier = Modifier

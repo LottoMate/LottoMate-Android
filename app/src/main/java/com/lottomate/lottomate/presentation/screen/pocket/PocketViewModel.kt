@@ -3,9 +3,11 @@ package com.lottomate.lottomate.presentation.screen.pocket
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PocketViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val randomLottoRepository: RandomLottoRepository,
 ) : ViewModel() {
     var currentTabIndex = mutableIntStateOf(0)
 
@@ -39,6 +42,16 @@ class PocketViewModel @Inject constructor(
 
         viewModelScope.launch {
             _snackBarFlow.emit(SNACKBAR_MESSAGE)
+        }
+    }
+
+    fun saveRandomLotto(numbers: List<Int>) {
+        viewModelScope.launch {
+            try {
+                randomLottoRepository.insertRandomLotto(numbers)
+            } catch (exception: Exception) {
+                Log.d("PocketVM(saveRandomLotto)", exception.message.toString())
+            }
         }
     }
 

@@ -50,7 +50,7 @@ fun RandomNumberContent(
     onClickDrawRandomNumbers: () -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
-    onClickSaveRandomNumbers: (Int) -> Unit,
+    onClickSaveRandomNumbers: (List<Int>) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -115,7 +115,7 @@ fun RandomNumberContent(
 private fun BottomDrawNumbers(
     modifier: Modifier = Modifier,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
-    onClickSaveRandomNumbers: (Int) -> Unit,
+    onClickSaveRandomNumbers: (List<Int>) -> Unit,
 ) {
     val numbers = List(20) {listOf(4, 5, 11, 21, 37, 40, 43) }
     var ballsToShow by remember { mutableIntStateOf(5) }
@@ -146,7 +146,7 @@ private fun BottomDrawNumbers(
                 DrawNumberRow(
                     numbers = it,
                     onClickCopyRandomNumbers = { onClickCopyRandomNumbers(it) },
-                    onClickSaveRandomNumbers = { onClickSaveRandomNumbers(index) },
+                    onClickSaveRandomNumbers = { onClickSaveRandomNumbers(it) },
                 )
 
                 if (chunkIndex != chunk.lastIndex) Spacer(modifier = Modifier.height(8.dp))
