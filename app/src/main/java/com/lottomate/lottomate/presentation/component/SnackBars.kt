@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,6 +23,21 @@ import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateRed40
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+
+@Composable
+fun LottoMateSnackBarHost(
+    modifier: Modifier = Modifier,
+    snackBarHostState: SnackbarHostState,
+    content: @Composable () -> Unit,
+) {
+    SnackbarHost(
+        hostState = snackBarHostState,
+        snackbar = {
+            content()
+        },
+        modifier = modifier.wrapContentHeight(Alignment.Bottom),
+    )
+}
 
 @Composable
 fun LottoMateSnackBarWithButton(
