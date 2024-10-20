@@ -61,7 +61,7 @@ class DrawRandomNumbersViewModel @Inject constructor(
 
     companion object {
         private const val SNACKBAR_MESSAGE = "뽑은 번호는 오늘 뽑은 번호에서 확인하세요"
-        private const val LOTTO_TOTAL_COUNT = 7
+        private const val LOTTO_TOTAL_COUNT = 6
         private const val LOTTO_FIRST_NUMBER = 1
         private const val LOTTO_LAST_NUMBER = 45
     }

@@ -29,6 +29,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
@@ -207,14 +208,11 @@ private fun DrawNumberRow(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            numbers.forEachIndexed { index, num ->
-                if (index == numbers.lastIndex) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_mini_plus),
-                        contentDescription = "",
-                    )
-                }
-                BallItem(number = num)
+            numbers.forEach { num ->
+                LottoBall645(
+                    number = num,
+                    size = 28.dp,
+                )
             }
         }
 
@@ -233,31 +231,6 @@ private fun DrawNumberRow(
             contentDescription = null,
             modifier = Modifier.noInteractionClickable { onClickSaveRandomNumbers() }
         )
-    }
-}
-
-@Composable
-private fun BallItem(
-    number: Int,
-) {
-    val backgroundColor = when (number) {
-        in 1..10 -> LottoMateYellow50
-        in 11..20 -> LottoMateBlue50
-        in 21..30 -> LottoMateRed50
-        in 31..40 -> LottoMateGray90
-        else -> LottoMateGreen50
-    }
-    Box(
-        modifier = Modifier
-            .size(28.dp)
-            .background(backgroundColor, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        LottoMateText(
-            text = number.toString(),
-            style = LottoMateTheme.typography.label2
-                .copy(color = LottoMateWhite),
-            )
     }
 }
 
