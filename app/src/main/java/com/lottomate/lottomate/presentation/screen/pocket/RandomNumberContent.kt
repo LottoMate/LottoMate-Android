@@ -47,6 +47,7 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 @Composable
 fun RandomNumberContent(
     modifier: Modifier = Modifier,
+    drewRandomNumbers: List<List<Int>>,
     onClickDrawRandomNumbers: () -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
@@ -105,6 +106,7 @@ fun RandomNumberContent(
 
         BottomDrawNumbers(
             modifier = Modifier.fillMaxWidth(),
+            numbers = drewRandomNumbers,
             onClickCopyRandomNumbers = onClickCopyRandomNumbers,
             onClickSaveRandomNumbers = onClickSaveRandomNumbers,
         )
@@ -114,10 +116,10 @@ fun RandomNumberContent(
 @Composable
 private fun BottomDrawNumbers(
     modifier: Modifier = Modifier,
+    numbers: List<List<Int>>,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
 ) {
-    val numbers = List(20) {listOf(4, 5, 11, 21, 37, 40, 43) }
     var ballsToShow by remember { mutableIntStateOf(5) }
     var isInitialShow by remember {
         mutableStateOf(true)
@@ -264,6 +266,7 @@ private fun BallItem(
 private fun RandomNumberContentPreview() {
     LottoMateTheme {
         RandomNumberContent(
+            drewRandomNumbers = emptyList(),
             onClickDrawRandomNumbers = {},
             onClickStorageOfRandomNumbers = {},
             onClickCopyRandomNumbers = {},

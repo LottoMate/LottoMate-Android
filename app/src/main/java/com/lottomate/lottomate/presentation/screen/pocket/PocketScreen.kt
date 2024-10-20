@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
@@ -50,6 +51,7 @@ fun PocketRoute(
     onClickDrawRandomNumbers: () -> Unit,
 ) {
     var currentTabIndex by vm.currentTabIndex
+    val drewRandomNumbers by vm.drewRandomNumbers.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(true) {
@@ -63,6 +65,7 @@ fun PocketRoute(
     PocketScreen(
         padding = padding,
         currentTabIndex = currentTabIndex,
+        drewRandomNumbers = drewRandomNumbers,
         snackBarHostState = snackBarHostState,
         onClickTabMenu = { currentTabIndex = it },
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
@@ -76,6 +79,7 @@ fun PocketRoute(
 private fun PocketScreen(
     padding: PaddingValues,
     currentTabIndex: Int,
+    drewRandomNumbers: List<List<Int>>,
     snackBarHostState: SnackbarHostState,
     onClickTabMenu: (Int) -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
@@ -157,7 +161,8 @@ private fun TopTabMenus(
     val tabMenus = stringArrayResource(id = R.array.pocket_tab_menu)
 
     Row(
-        modifier = modifier.padding(top = 24.dp)
+        modifier = modifier
+            .padding(top = 24.dp)
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

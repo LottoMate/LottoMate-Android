@@ -3,7 +3,6 @@ package com.lottomate.lottomate.presentation.screen.pocket
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +11,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +26,12 @@ class PocketViewModel @Inject constructor(
 
     private var _snackBarFlow = MutableSharedFlow<String>()
     val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
+    val drewRandomNumbers = randomLottoRepository.getAllRandomLotto()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList(),
+        )
 
     /**
      * 랜덤 뽑기에 대한 숫자 복사 기능
