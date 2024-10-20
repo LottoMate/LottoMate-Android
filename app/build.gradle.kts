@@ -100,6 +100,11 @@ dependencies {
     implementation(libs.com.naver.maps)
     implementation(libs.io.github.fornewid.naver.map.compose)
 
+    // Room
+    implementation(libs.androidx.room)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

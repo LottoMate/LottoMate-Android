@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue30
@@ -30,6 +31,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateYellow50
 fun LottoBall645(
     modifier: Modifier = Modifier,
     number: Int,
+    size: Dp = 30.dp,
 ) {
     val color = when (number) {
         in 1..10 -> LottoMateYellow50
@@ -43,7 +45,8 @@ fun LottoBall645(
     LottoBaseBall(
         modifier = modifier,
         number = number,
-        color = color
+        color = color,
+        size = size,
     )
 }
 
@@ -53,6 +56,7 @@ fun LottoBall720(
     index: Int,
     number: Int,
     isBonusNumber: Boolean,
+    size: Dp = 30.dp,
 ) {
     val color = when (if (isBonusNumber) index+1 else index) {
         0 -> LottoMateGray140
@@ -67,7 +71,8 @@ fun LottoBall720(
     LottoBaseBall(
         modifier = modifier,
         number = number,
-        color = color
+        color = color,
+        size = size,
     )
 }
 
@@ -76,6 +81,7 @@ private fun LottoBaseBall(
     modifier: Modifier = Modifier,
     number: Int,
     color: Color,
+    size: Dp,
 ) {
     Box(
         modifier = modifier
@@ -83,7 +89,7 @@ private fun LottoBaseBall(
                 color = color,
                 shape = CircleShape,
             )
-            .size(30.dp),
+            .size(size),
         contentAlignment = Alignment.Center,
     ) {
         LottoMateText(
