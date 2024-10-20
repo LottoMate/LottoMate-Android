@@ -27,6 +27,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
@@ -90,11 +91,11 @@ private fun RandomNumberStorageScreen(
                 modifier = Modifier.fillMaxWidth(),
                 savedDate = "2024.10.19",
                 savedRandomNumbers = listOf(
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
                 ),
                 onClickCopyRandomNumbers = {},
                 onClickDeleteRandomNumbers = {},
@@ -106,12 +107,12 @@ private fun RandomNumberStorageScreen(
                 modifier = Modifier.fillMaxWidth(),
                 savedDate = "2024.10.19",
                 savedRandomNumbers = listOf(
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
                 ),
                 onClickCopyRandomNumbers = {},
                 onClickDeleteRandomNumbers = {},
@@ -123,8 +124,8 @@ private fun RandomNumberStorageScreen(
                 modifier = Modifier.fillMaxWidth(),
                 savedDate = "2024.10.19",
                 savedRandomNumbers = listOf(
-                    listOf(4, 5, 11, 21, 37, 40, 43),
-                    listOf(4, 5, 11, 21, 37, 40, 43),
+                    listOf(4, 5, 11, 21, 37, 40),
+                    listOf(4, 5, 11, 21, 37, 40),
                 ),
                 onClickCopyRandomNumbers = {},
                 onClickDeleteRandomNumbers = {},
@@ -197,14 +198,11 @@ private fun DrawNumberRow(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            numbers.forEachIndexed { index, num ->
-                if (index == numbers.lastIndex) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_mini_plus),
-                        contentDescription = "",
-                    )
-                }
-                BallItem(number = num)
+            numbers.forEach { num ->
+                LottoBall645(
+                    number = num,
+                    size = 28.dp,
+                )
             }
         }
 
@@ -222,31 +220,6 @@ private fun DrawNumberRow(
             painter = painterResource(id = R.drawable.icon_trash),
             contentDescription = null,
             modifier = Modifier.noInteractionClickable { onClickDeleteRandomNumbers() }
-        )
-    }
-}
-
-@Composable
-private fun BallItem(
-    number: Int,
-) {
-    val backgroundColor = when (number) {
-        in 1..10 -> LottoMateYellow50
-        in 11..20 -> LottoMateBlue50
-        in 21..30 -> LottoMateRed50
-        in 31..40 -> LottoMateGray90
-        else -> LottoMateGreen50
-    }
-    Box(
-        modifier = Modifier
-            .size(28.dp)
-            .background(backgroundColor, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        LottoMateText(
-            text = number.toString(),
-            style = LottoMateTheme.typography.label2
-                .copy(color = LottoMateWhite),
         )
     }
 }
