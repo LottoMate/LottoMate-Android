@@ -6,6 +6,7 @@ import java.util.Date
 import java.util.Locale
 
 object DateUtils {
+    private const val DATE_FORMAT_YYYY_MM_DD = "yyyy-MM-dd"
     private const val DAYS_IN_WEEK = 7
 
     /**
@@ -42,8 +43,20 @@ object DateUtils {
     fun getCurrentDate(): String {
         val current = System.currentTimeMillis()
         val date = Date(current)
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        val dateFormat = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
 
         return dateFormat.format(date)
+    }
+
+    /**
+     * 오늘날짜로부터 과거인지 판별하는 함수
+     *
+     * @param pastDate
+     */
+    fun isDateInPast(date: String): Boolean {
+        val dateFormat = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
+        val today = dateFormat.parse(getCurrentDate())
+
+        return dateFormat.parse(date) < today
     }
 }

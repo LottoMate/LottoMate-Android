@@ -54,6 +54,10 @@ fun PocketRoute(
     val drewRandomNumbers by vm.drewRandomNumbers.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
+    LaunchedEffect(Unit) {
+        vm.resetDrewRandomLottoNumbers()
+    }
+
     LaunchedEffect(true) {
         vm.snackBarFlow.collectLatest { message ->
             snackBarHostState.showSnackbar(

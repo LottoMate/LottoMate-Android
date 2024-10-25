@@ -9,8 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RandomLottoDao {
     @Query("SELECT * FROM randomlotto")
-    fun getAllRandomLotto(): Flow<List<RandomLotto>>
+    suspend fun fetchAllRandomLotto(): List<RandomLotto>
 
     @Insert
-    fun insertRandomLotto(lotto: RandomLotto)
+    suspend fun insertRandomLotto(lotto: RandomLotto)
+
+    @Query("DELETE FROM randomlotto")
+    suspend fun deleteAllRandomLotto()
+
+    @Query("DELETE FROM randomlotto WHERE `key` = :key")
+    suspend fun deleteOneOfRandomLotto(key: Int)
 }
