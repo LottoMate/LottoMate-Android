@@ -35,4 +35,10 @@
         <item>1등번호 뒤 1자리 일치</item>
         <item>보너스 번호 6자리 일치</item>
     </string-array>
+
+    <!-- 로또 보관소 -->
+    <string-array name="pocket_tab_menu">
+        <item>내 번호</item>
+        <item>랜덤 번호</item>
+    </string-array>
 </resources>

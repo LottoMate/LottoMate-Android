@@ -6,7 +6,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,6 +29,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateRed70
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 fun LottoMateSolidButton(
@@ -151,9 +151,7 @@ fun LottoMateTextButton(
     modifier: Modifier = Modifier,
     buttonText: String,
     textColor: Color = MaterialTheme.colorScheme.primary,
-    buttonColor: Color = LottoMateTransparent,
     pressedTextColor: Color = LottoMateRed70,
-    pressedButtonColor: Color = LottoMateRed5,
     buttonSize: LottoMateButtonProperty.Size,
     buttonType: LottoMateButtonProperty.Type = LottoMateButtonProperty.Type.ACTIVE,
     onClick: () -> Unit,
@@ -162,29 +160,17 @@ fun LottoMateTextButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val isDisabled = buttonType == LottoMateButtonProperty.Type.DISABLED
 
-    Button(
-        modifier = modifier.defaultMinSize(minHeight = 1.dp, minWidth = 1.dp),
-        onClick = { onClick() },
-        shape = RoundedCornerShape(Dimens.RadiusExtraSmall),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isPressed) pressedButtonColor else buttonColor,
-            disabledContainerColor = buttonColor
-        ),
-        interactionSource = interactionSource,
-        contentPadding = PaddingValues(horizontal = 8.dp),
-        enabled = !isDisabled
-    ) {
-        LottoMateText(
-            text = buttonText,
-            style = when (buttonSize) {
-                LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
-                else -> LottoMateTheme.typography.label2
-            },
-            color = if (isPressed) pressedTextColor
-            else if (isDisabled) LottoMateGray40
-            else textColor,
-        )
-    }
+    LottoMateText(
+        text = buttonText,
+        style = when (buttonSize) {
+            LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
+            else -> LottoMateTheme.typography.label2
+        },
+        color = if (isPressed) pressedTextColor
+        else if (isDisabled) LottoMateGray40
+        else textColor,
+        modifier = modifier.noInteractionClickable { onClick() }
+    )
 }
 
 @Composable
