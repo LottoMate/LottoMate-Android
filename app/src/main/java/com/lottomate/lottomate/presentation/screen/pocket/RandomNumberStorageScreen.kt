@@ -15,13 +15,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
+import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -30,26 +36,43 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RandomNumbersStorageRoute(
+    vm: RandomNumbersStorageViewModel = hiltViewModel(),
     padding: PaddingValues,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onBackPressed: () -> Unit,
 ) {
+    val snackBarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(true) {
+        vm.snackBarFlow.collectLatest {
+            snackBarHostState.showSnackbar(it)
+        }
+    }
+
     RandomNumberStorageScreen(
+        padding = padding,
+        snackBarHostState = snackBarHostState,
         onBackPressed = onBackPressed,
+        onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) }
     )
 }
 
 @Composable
 private fun RandomNumberStorageScreen(
     modifier: Modifier = Modifier,
+    padding: PaddingValues,
+    snackBarHostState: SnackbarHostState,
     onBackPressed: () -> Unit,
+    onClickCopyRandomNumbers: (List<Int>) -> Unit,
 ) {
     Box(
         modifier = modifier
             .fillMaxSize()
+            .padding(padding)
             .background(LottoMateWhite)
     ) {
         Column(
@@ -90,7 +113,7 @@ private fun RandomNumberStorageScreen(
                     listOf(4, 5, 11, 21, 37, 40),
                     listOf(4, 5, 11, 21, 37, 40),
                 ),
-                onClickCopyRandomNumbers = {},
+                onClickCopyRandomNumbers = onClickCopyRandomNumbers,
                 onClickDeleteRandomNumbers = {},
             )
 
@@ -107,7 +130,7 @@ private fun RandomNumberStorageScreen(
                     listOf(4, 5, 11, 21, 37, 40),
                     listOf(4, 5, 11, 21, 37, 40),
                 ),
-                onClickCopyRandomNumbers = {},
+                onClickCopyRandomNumbers = onClickCopyRandomNumbers,
                 onClickDeleteRandomNumbers = {},
             )
 
@@ -120,7 +143,7 @@ private fun RandomNumberStorageScreen(
                     listOf(4, 5, 11, 21, 37, 40),
                     listOf(4, 5, 11, 21, 37, 40),
                 ),
-                onClickCopyRandomNumbers = {},
+                onClickCopyRandomNumbers = onClickCopyRandomNumbers,
                 onClickDeleteRandomNumbers = {},
             )
 
@@ -137,6 +160,17 @@ private fun RandomNumberStorageScreen(
                 )
             }
         )
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter,
+        ) {
+            snackBarHostState.currentSnackbarData?.let {
+                LottoMateSnackBarHost(snackBarHostState = snackBarHostState) {
+                    LottoMateSnackBar(message = it.visuals.message)
+                }
+            }
+        }
     }
 }
 
@@ -145,7 +179,7 @@ private fun SavedRandomNumbersSection(
     modifier: Modifier = Modifier,
     savedDate: String,
     savedRandomNumbers: List<List<Int>>,
-    onClickCopyRandomNumbers: (Int) -> Unit,
+    onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickDeleteRandomNumbers: (Int) -> Unit,
 ) {
     Column(
@@ -161,8 +195,9 @@ private fun SavedRandomNumbersSection(
 
         savedRandomNumbers.forEachIndexed { index, randomNumbers ->
             DrawNumberRow(
+                modifier = Modifier.fillMaxWidth(),
                 numbers = randomNumbers,
-                onClickCopyRandomNumbers = { onClickCopyRandomNumbers(index) },
+                onClickCopyRandomNumbers = { onClickCopyRandomNumbers(randomNumbers) },
                 onClickDeleteRandomNumbers = { onClickDeleteRandomNumbers(index) },
             )
 
@@ -183,12 +218,10 @@ private fun DrawNumberRow(
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(
-            modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             numbers.forEach { num ->
@@ -196,24 +229,28 @@ private fun DrawNumberRow(
                     number = num,
                     size = 28.dp,
                 )
+
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
 
         Spacer(modifier = Modifier.width(19.dp))
 
-        Icon(
-            painter = painterResource(id = R.drawable.icon_copy),
-            contentDescription = null,
-            modifier = Modifier.noInteractionClickable { onClickCopyRandomNumbers() }
-        )
+        Row {
+            Icon(
+                painter = painterResource(id = R.drawable.icon_copy),
+                contentDescription = null,
+                modifier = Modifier.noInteractionClickable { onClickCopyRandomNumbers() }
+            )
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
 
-        Icon(
-            painter = painterResource(id = R.drawable.icon_trash),
-            contentDescription = null,
-            modifier = Modifier.noInteractionClickable { onClickDeleteRandomNumbers() }
-        )
+            Icon(
+                painter = painterResource(id = R.drawable.icon_trash),
+                contentDescription = null,
+                modifier = Modifier.noInteractionClickable { onClickDeleteRandomNumbers() }
+            )
+        }
     }
 }
 
@@ -222,7 +259,10 @@ private fun DrawNumberRow(
 private fun RandomNumberStorageScreenPreview() {
     LottoMateTheme {
         RandomNumberStorageScreen(
+            snackBarHostState = SnackbarHostState(),
+            padding = PaddingValues(0.dp),
             onBackPressed = {},
+            onClickCopyRandomNumbers = {}
         )
     }
 }
