@@ -53,7 +53,7 @@ class RandomNumbersStorageViewModel @Inject constructor(
     }
 
     companion object {
-        private const val SNACKBAR_MESSAGE = "로또 번호를 복사했어요!"
+        private const val SNACKBAR_MESSAGE = "로또 번호를 복사했어요."
         private const val SNACKBAR_MESSAGE_DELETE = "로또 번호를 삭제했어요."
         private const val CLIPBOARD_LABEL = "RandomNumbers"
     }
