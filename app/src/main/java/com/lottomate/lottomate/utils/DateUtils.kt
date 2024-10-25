@@ -4,9 +4,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object DateUtils {
     private const val DATE_FORMAT_YYYY_MM_DD = "yyyy-MM-dd"
+    private const val DEFAULT_TIME_ZONE = "Asia/Seoul"
     private const val DAYS_IN_WEEK = 7
 
     /**
@@ -43,7 +45,9 @@ object DateUtils {
     fun getCurrentDate(): String {
         val current = System.currentTimeMillis()
         val date = Date(current)
-        val dateFormat = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
+        val dateFormat = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA).apply {
+            timeZone = TimeZone.getTimeZone(DEFAULT_TIME_ZONE)
+        }
 
         return dateFormat.format(date)
     }
@@ -54,9 +58,25 @@ object DateUtils {
      * @param pastDate
      */
     fun isDateInPast(date: String): Boolean {
-        val dateFormat = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
-        val today = dateFormat.parse(getCurrentDate())
+        val (currentYear, currentMonth, currentDay) = getCurrentDate().split("-").map { it.toInt() }
+        val (pastYear, pastMonth, pastDay) = date.split("-").map { it.toInt() }
+        val calendar = Calendar.getInstance(TimeZone.getTimeZone(DEFAULT_TIME_ZONE))
 
-        return dateFormat.parse(date) < today
+        calendar.set(currentYear, currentMonth, currentDay)
+        val today = getIgnoredTimeDays(calendar)
+
+        calendar.set(pastYear, pastMonth, pastDay)
+        val pastDate = getIgnoredTimeDays(calendar)
+
+        return pastDate < today
+    }
+
+    private fun getIgnoredTimeDays(calendar: Calendar): Long {
+        return calendar.apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
     }
 }

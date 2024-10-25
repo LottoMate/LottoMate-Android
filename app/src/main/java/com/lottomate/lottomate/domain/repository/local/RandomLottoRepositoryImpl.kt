@@ -42,6 +42,14 @@ class RandomLottoRepositoryImpl @Inject constructor(
         _dataChanged.emit(Unit)
     }
 
-    override suspend fun deleteAllRandomLotto() = randomLottoDao.deleteAllRandomLotto()
-    override suspend fun deleteOneOfRandomLotto(key: Int) = randomLottoDao.deleteOneOfRandomLotto(key)
+    override suspend fun deleteAllRandomLotto() {
+        randomLottoDao.deleteAllRandomLotto()
+
+        _dataChanged.emit(Unit)
+    }
+    override suspend fun deleteOneOfRandomLotto(key: Int) {
+        randomLottoDao.deleteOneOfRandomLotto(key)
+
+        _dataChanged.emit(Unit)
+    }
 }
