@@ -192,7 +192,7 @@ private fun DrawRandomNumbersScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
-                        bottom = bottomCompleteBtnHeightDp.plus(51.dp),
+                        bottom = bottomCompleteBtnHeightDp.plus(14.dp),
                     ),
                 contentAlignment = Alignment.BottomCenter
             ) {
