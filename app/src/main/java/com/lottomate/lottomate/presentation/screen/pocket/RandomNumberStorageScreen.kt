@@ -57,7 +57,8 @@ fun RandomNumbersStorageRoute(
         padding = padding,
         snackBarHostState = snackBarHostState,
         onBackPressed = onBackPressed,
-        onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) }
+        onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
+        onClickDeleteRandomNumbers = { vm.deleteLottoNumbers(it) },
     )
 }
 
@@ -68,6 +69,7 @@ private fun RandomNumberStorageScreen(
     snackBarHostState: SnackbarHostState,
     onBackPressed: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
+    onClickDeleteRandomNumbers: (Int) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -114,7 +116,7 @@ private fun RandomNumberStorageScreen(
                     listOf(4, 5, 11, 21, 37, 40),
                 ),
                 onClickCopyRandomNumbers = onClickCopyRandomNumbers,
-                onClickDeleteRandomNumbers = {},
+                onClickDeleteRandomNumbers = onClickDeleteRandomNumbers,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -131,7 +133,7 @@ private fun RandomNumberStorageScreen(
                     listOf(4, 5, 11, 21, 37, 40),
                 ),
                 onClickCopyRandomNumbers = onClickCopyRandomNumbers,
-                onClickDeleteRandomNumbers = {},
+                onClickDeleteRandomNumbers = onClickDeleteRandomNumbers,
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -144,7 +146,7 @@ private fun RandomNumberStorageScreen(
                     listOf(4, 5, 11, 21, 37, 40),
                 ),
                 onClickCopyRandomNumbers = onClickCopyRandomNumbers,
-                onClickDeleteRandomNumbers = {},
+                onClickDeleteRandomNumbers = onClickDeleteRandomNumbers,
             )
 
             Spacer(modifier = Modifier.height(Dimens.DefaultPadding20))
@@ -162,7 +164,9 @@ private fun RandomNumberStorageScreen(
         )
 
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 50.dp),
             contentAlignment = Alignment.BottomCenter,
         ) {
             snackBarHostState.currentSnackbarData?.let {
@@ -262,7 +266,8 @@ private fun RandomNumberStorageScreenPreview() {
             snackBarHostState = SnackbarHostState(),
             padding = PaddingValues(0.dp),
             onBackPressed = {},
-            onClickCopyRandomNumbers = {}
+            onClickCopyRandomNumbers = {},
+            onClickDeleteRandomNumbers = {},
         )
     }
 }

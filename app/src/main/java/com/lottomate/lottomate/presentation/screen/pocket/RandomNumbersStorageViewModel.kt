@@ -39,8 +39,22 @@ class RandomNumbersStorageViewModel @Inject constructor(
         }
     }
 
+    /**
+     * 저장한 번호를 삭제하는 함수
+     *
+     * @param key 해당 model을 가리키는 key 값
+     */
+    fun deleteLottoNumbers(key: Int) {
+        // TODO : Remote Database 연결 -> 삭제 진행
+
+        viewModelScope.launch {
+            _snackBarFlow.emit(SNACKBAR_MESSAGE_DELETE)
+        }
+    }
+
     companion object {
         private const val SNACKBAR_MESSAGE = "로또 번호를 복사했어요!"
+        private const val SNACKBAR_MESSAGE_DELETE = "로또 번호를 삭제했어요."
         private const val CLIPBOARD_LABEL = "RandomNumbers"
     }
 }
