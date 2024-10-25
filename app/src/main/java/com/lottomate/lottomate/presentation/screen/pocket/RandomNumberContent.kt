@@ -197,7 +197,6 @@ private fun DrawNumberRow(
             modifier = Modifier
                 .weight(1f)
                 .padding(vertical = 4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             numbers.forEach { num ->
@@ -205,6 +204,8 @@ private fun DrawNumberRow(
                     number = num,
                     size = 28.dp,
                 )
+                
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
 
