@@ -74,7 +74,7 @@ private fun RandomNumberStorageScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .padding(padding)
+            .padding(bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite)
     ) {
         Column(
