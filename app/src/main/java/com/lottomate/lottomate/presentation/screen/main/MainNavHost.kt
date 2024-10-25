@@ -24,18 +24,19 @@ fun MainNavHost(
         ) {
             homeNavGraph(
                 padding = padding,
-                onClickLottoInfo = { navigator.navigateLottoInfo() },
-                onClickInterview = { navigator.navigateInterview() },
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 
             mapNavGraph(
                 padding = padding,
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 
             lottoNavGraph(
                 padding = padding,
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 

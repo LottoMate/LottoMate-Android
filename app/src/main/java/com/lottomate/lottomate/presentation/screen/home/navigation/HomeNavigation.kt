@@ -7,6 +7,9 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.lottomate.lottomate.presentation.screen.home.HomeRoute
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
+import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
+import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
+import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
 import com.lottomate.lottomate.presentation.screen.map.MapRoute
 
 fun NavController.navigateHome(navOptions: NavOptions) {
@@ -15,23 +18,16 @@ fun NavController.navigateHome(navOptions: NavOptions) {
 
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
-    onClickLottoInfo: () -> Unit,
-    onClickInterview: () -> Unit,
+    navController: NavController,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     composable(BottomNavigationRoute.HOME.name) {
         HomeRoute(
             padding = padding,
-            onClickLottoInfo = onClickLottoInfo,
-            onClickInterview = onClickInterview,
+            onClickLottoInfo = { navController.navigateLottoInfo() },
+            onClickInterview = { navController.navigateInterview() },
+            onClickLogin = { navController.navigateToLogin() },
             onShowErrorSnackBar = onShowErrorSnackBar
-        )
-    }
-
-    composable(BottomNavigationRoute.MAP.name) {
-        MapRoute(
-            padding = padding,
-            onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }
 }

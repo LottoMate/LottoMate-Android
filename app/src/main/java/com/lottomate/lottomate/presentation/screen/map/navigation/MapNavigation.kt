@@ -14,6 +14,7 @@ fun NavController.navigateMap(navOptions: NavOptions) {
 
 fun NavGraphBuilder.mapNavGraph(
     padding: PaddingValues,
+    navController: NavController,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     composable(BottomNavigationRoute.MAP.name) {
