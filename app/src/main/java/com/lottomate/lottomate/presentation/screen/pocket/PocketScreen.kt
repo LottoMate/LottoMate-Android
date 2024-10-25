@@ -94,7 +94,7 @@ private fun PocketScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding)
+            .padding(bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite),
     ) {
         Column(
@@ -118,9 +118,7 @@ private fun PocketScreen(
                 }
                 1 -> {
                     RandomNumberContent(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         drewRandomNumbers = drewRandomNumbers,
                         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
                         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
@@ -129,8 +127,6 @@ private fun PocketScreen(
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
         }
 
         LottoMateTopAppBar(

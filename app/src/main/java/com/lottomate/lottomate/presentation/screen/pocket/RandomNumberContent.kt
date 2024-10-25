@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.pocket
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
@@ -29,6 +31,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
@@ -50,18 +53,20 @@ fun RandomNumberContent(
         modifier = modifier,
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Column {
                 LottoMateText(
-                    text = "행운의 랜덤 뽑기",
+                    text = stringResource(id = R.string.pocket_title_sub_random_number),
                     style = LottoMateTheme.typography.title3
                         .copy(color = LottoMateGray100),
                 )
 
                 LottoMateText(
-                    text = "행운의 랜덤 뽑기",
+                    text = stringResource(id = R.string.pocket_title_random_number),
                     style = LottoMateTheme.typography.title2
                         .copy(color = LottoMateBlack),
                 )
@@ -69,7 +74,7 @@ fun RandomNumberContent(
 
             Icon(
                 painter = painterResource(id = R.drawable.icon_file),
-                contentDescription = "",
+                contentDescription = stringResource(id = R.string.desc_pocket_storage_icon),
                 modifier = Modifier.noInteractionClickable { onClickStorageOfRandomNumbers() }
             )
         }
@@ -77,15 +82,17 @@ fun RandomNumberContent(
         Spacer(modifier = Modifier.height(36.dp))
 
         Box(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.pocket_venus_boli_bori),
-                contentDescription = null
+                contentDescription = stringResource(id = R.string.desc_pocket_draw_random_lotto_image),
             )
 
             LottoMateSolidButton(
-                text = "랜덤 뽑기",
+                text = stringResource(id = R.string.pocket_btn_random_number),
                 buttonSize = LottoMateButtonProperty.Size.LARGE,
                 onClick = onClickDrawRandomNumbers,
                 modifier = Modifier
@@ -122,61 +129,101 @@ private fun BottomDrawNumbers(
     Column(
         modifier = modifier,
     ) {
-        LottoMateText(
-            text = "오늘 뽑은 번호",
-            style = LottoMateTheme.typography.headline1
-                .copy(color = LottoMateBlack),
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+        ) {
+            LottoMateText(
+                text = stringResource(id = R.string.pocket_title_today_draw_lotto),
+                style = LottoMateTheme.typography.headline1
+                    .copy(color = LottoMateBlack),
+            )
 
-        LottoMateText(
-            text = "오늘이 지나면 뽑은 번호가 사라집니다.",
-            style = LottoMateTheme.typography.caption1
-                .copy(color = LottoMateGray80),
-        )
+            LottoMateText(
+                text = stringResource(id = R.string.pocket_title_sub_today_draw_lotto),
+                style = LottoMateTheme.typography.caption1
+                    .copy(color = LottoMateGray80),
+            )
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        visibleNumbers.chunked(if (isInitialShow) 5 else 10).forEachIndexed { index, chunk ->
-            chunk.forEachIndexed { chunkIndex, it ->
-                DrawNumberRow(
-                    numbers = it,
-                    onClickCopyRandomNumbers = { onClickCopyRandomNumbers(it) },
-                    onClickSaveRandomNumbers = { onClickSaveRandomNumbers(it) },
-                )
-
-                if (chunkIndex != chunk.lastIndex) Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            if (index != visibleNumbers.lastIndex) Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        if (numbers.size > 5) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
+        if (numbers.isEmpty()) {
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .noInteractionClickable {
-                        if (ballsToShow < numbers.size) ballsToShow += 10
-                        else ballsToShow = 5
-                    },
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
+                    .height(220.dp)
+                    .background(LottoMateGray10),
+                contentAlignment = Alignment.Center,
             ) {
-                LottoMateText(
-                    text = if (ballsToShow < numbers.size) "더보기" else "접기",
-                    style = LottoMateTheme.typography.caption1
-                        .copy(color = LottoMateGray100,)
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Image(
+                        painter = painterResource(id = R.drawable.pocket_venus),
+                        contentDescription = stringResource(id = R.string.desc_pocket_empty_image),
+                    )
 
-                Spacer(modifier = Modifier.width(4.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Icon(
-                    painter = if (ballsToShow < numbers.size) painterResource(id = R.drawable.icon_arrow_down)
-                    else painterResource(id = R.drawable.icon_arrow_up),
-                    contentDescription = null,
-                    modifier = Modifier.size(14.dp)
-                )
+                    LottoMateText(
+                        text = stringResource(id = R.string.pocket_text_empty_draw_lotto),
+                        style = LottoMateTheme.typography.body2
+                            .copy(color = LottoMateGray100),
+                    )
+                }
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            ) {
+                visibleNumbers.chunked(if (isInitialShow) 5 else 10).forEachIndexed { index, chunk ->
+                    chunk.forEachIndexed { chunkIndex, it ->
+                        DrawNumberRow(
+                            numbers = it,
+                            onClickCopyRandomNumbers = { onClickCopyRandomNumbers(it) },
+                            onClickSaveRandomNumbers = { onClickSaveRandomNumbers(it) },
+                        )
+
+                        if (chunkIndex != chunk.lastIndex) Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    if (index != visibleNumbers.lastIndex) Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                if (numbers.size > 5) {
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .noInteractionClickable {
+                                if (ballsToShow < numbers.size) ballsToShow += 10
+                                else ballsToShow = 5
+                            },
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        LottoMateText(
+                            text = if (ballsToShow < numbers.size) stringResource(id = R.string.common_extend) 
+                            else stringResource(id = R.string.common_collapse),
+                            style = LottoMateTheme.typography.caption1
+                                .copy(color = LottoMateGray100,),
+                        )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+                        Icon(
+                            painter = if (ballsToShow < numbers.size) painterResource(id = R.drawable.icon_arrow_down)
+                            else painterResource(id = R.drawable.icon_arrow_up),
+                            contentDescription = stringResource(id = R.string.desc_common_extend_or_collapse_icon),
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
@@ -213,7 +260,7 @@ private fun DrawNumberRow(
 
         Icon(
             painter = painterResource(id = R.drawable.icon_copy),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.desc_common_copy_icon),
             modifier = Modifier.noInteractionClickable { onClickCopyRandomNumbers() }
         )
 
@@ -221,7 +268,7 @@ private fun DrawNumberRow(
 
         Icon(
             painter = painterResource(id = R.drawable.icon_save),
-            contentDescription = null,
+            contentDescription = stringResource(id = R.string.desc_common_save_icon),
             modifier = Modifier.noInteractionClickable { onClickSaveRandomNumbers() }
         )
     }
