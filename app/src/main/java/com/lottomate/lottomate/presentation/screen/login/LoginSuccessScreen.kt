@@ -2,7 +2,7 @@ package com.lottomate.lottomate.presentation.screen.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -53,17 +53,18 @@ private fun LoginSuccessScreen(
         36.dp.minus(padding.calculateBottomPadding()).plus(padding.calculateBottomPadding())
     } else padding.calculateBottomPadding()
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(LottoMateWhite),
-        contentAlignment = Alignment.BottomCenter,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = bottomPadding),
+                .padding(top = padding.calculateTopPadding())
+                .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             LottoMateText(
                 text = stringResource(id = R.string.login_title_success),
@@ -86,9 +87,13 @@ private fun LoginSuccessScreen(
                 bitmap = ImageBitmap.imageResource(id = R.drawable.img_login_2),
                 contentDescription = stringResource(id = R.string.desc_login_success_image),
             )
-
-            Spacer(modifier = Modifier.height(97.dp))
-
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = bottomPadding),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             BannerCard(
                 modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20),
                 onClickBanner = moveToMap,
@@ -100,7 +105,8 @@ private fun LoginSuccessScreen(
                 text = stringResource(id = R.string.login_btn_start), 
                 buttonSize = LottoMateButtonProperty.Size.LARGE,
                 onClick = moveToHome,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = Dimens.DefaultPadding20)
             )
         }

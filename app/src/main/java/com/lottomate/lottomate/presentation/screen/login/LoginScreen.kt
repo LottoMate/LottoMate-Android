@@ -80,8 +80,9 @@ private fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .padding(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite),
-        contentAlignment = Alignment.BottomCenter,
+        contentAlignment = Alignment.Center,
     ) {
         LottoMateText(
             text = "로그인 완료",
@@ -91,9 +92,7 @@ private fun LoginScreen(
                 .clickable { moveToLoginSuccess() }
         )
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 104.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             LottoMateText(
