@@ -30,6 +30,7 @@ android {
 
         buildConfigField("String", "DATABASE_BASE_URL", localProperties.getProperty("DATABASE_BASE_URL"))
         buildConfigField("String", "MOCK_SERVER_URL", localProperties.getProperty("MOCK_SERVER_URL"))
+        buildConfigField("String", "GOOGLE_OAUTH_CLIENT_ID", localProperties.getProperty("GOOGLE_OAUTH_CLIENT_ID"))
         manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = localProperties.getProperty("NAVER_MAP_CLIENT_ID")
     }
 
@@ -104,6 +105,9 @@ dependencies {
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
+
+    // Oauth
+    implementation(libs.google.gms.play.services.auth)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
