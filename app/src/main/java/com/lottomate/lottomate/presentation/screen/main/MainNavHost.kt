@@ -7,8 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.lottomate.lottomate.presentation.screen.home.navigation.homeNavGraph
+import com.lottomate.lottomate.presentation.screen.login.navigation.loginNavGraph
 import com.lottomate.lottomate.presentation.screen.lotto.navigation.lottoNavGraph
 import com.lottomate.lottomate.presentation.screen.map.navigation.mapNavGraph
+import com.lottomate.lottomate.presentation.screen.pocket.navigation.pocketNavGraph
 
 @Composable
 fun MainNavHost(
@@ -23,18 +25,31 @@ fun MainNavHost(
         ) {
             homeNavGraph(
                 padding = padding,
-                onClickLottoInfo = { navigator.navigateLottoInfo() },
-                onClickInterview = { navigator.navigateInterview() },
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 
             mapNavGraph(
                 padding = padding,
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 
             lottoNavGraph(
                 padding = padding,
+                navController = navigator.navController,
+                onShowErrorSnackBar = onShowErrorSnackBar,
+            )
+
+            pocketNavGraph(
+                padding = padding,
+                navController = navigator.navController,
+                onShowErrorSnackBar = onShowErrorSnackBar,
+            )
+
+            loginNavGraph(
+                padding = padding,
+                navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
         }

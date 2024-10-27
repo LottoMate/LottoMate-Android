@@ -22,6 +22,12 @@ coil = "2.7.0"
 naver-map = "3.19.1"
 naver-map-compose = "1.7.2"
 
+# Oauth
+google-auth = "21.2.0"
+
+# Room
+room = "2.6.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -57,6 +63,14 @@ com-naver-maps = { group = "com.naver.maps", name = "map-sdk", version.ref = "na
 io-github-fornewid-naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", version.ref = "naver-map-compose" }
 
 io-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+# Oauth
+google-gms-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-auth" }
+
+# Room
+androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

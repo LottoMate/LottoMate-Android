@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 
@@ -45,4 +46,6 @@ object Dimens {
 
     val BaseTopPadding
         @Composable get() = TopAppBarHeight.plus(StatusBarHeight)
+
+    val DefaultPadding20: Dp = 20.dp
 }

@@ -1,9 +1,11 @@
 package com.lottomate.lottomate.di
 
+import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
 import com.lottomate.lottomate.data.remote.repository.LottoInfoRepositoryImpl
 import com.lottomate.lottomate.data.remote.repository.StoreRepositoryImpl
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.domain.repository.StoreRepository
+import com.lottomate.lottomate.domain.repository.local.RandomLottoRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,4 +26,10 @@ abstract class RepositoryModule {
     abstract fun bindStoreRepository(
         storeRepositoryImpl: StoreRepositoryImpl
     ): StoreRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRandomLottoRepository(
+        randomLottoRepositoryImpl: RandomLottoRepositoryImpl
+    ): RandomLottoRepository
 }

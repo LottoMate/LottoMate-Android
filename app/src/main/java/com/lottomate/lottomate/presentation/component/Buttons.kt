@@ -29,6 +29,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateRed70
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 fun LottoMateSolidButton(
@@ -189,6 +190,18 @@ fun LottoMateTextButton(
             else textColor,
         )
     }
+
+//    LottoMateText(
+//        text = buttonText,
+//        style = when (buttonSize) {
+//            LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
+//            else -> LottoMateTheme.typography.label2
+//        },
+//        color = if (isPressed) pressedTextColor
+//        else if (isDisabled) LottoMateGray40
+//        else textColor,
+//        modifier = modifier.noInteractionClickable { onClick() }
+//    )
 }
 
 @Composable
