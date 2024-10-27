@@ -12,6 +12,10 @@ fun NavController.navigateMap(navOptions: NavOptions) {
     navigate(route = BottomNavigationRoute.MAP.name, navOptions)
 }
 
+fun NavController.navigateToMap() {
+    navigate(route = BottomNavigationRoute.MAP.name)
+}
+
 fun NavGraphBuilder.mapNavGraph(
     padding: PaddingValues,
     navController: NavController,

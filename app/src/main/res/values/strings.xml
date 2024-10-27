@@ -28,6 +28,15 @@
 
     <string name="pocket_btn_random_number">랜덤 뽑기</string>
 
+    <!-- 로그인 -->
+    <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
+    <string name="login_title_success">가입을 축하해요!</string>
+    <string name="login_title_sub_success">1등 당첨을 기원합니다.</string>
+
+    <string name="login_text_bottom">가장 편한 방법으로 로그인하고\n로또메이트에서 더 많은 행운을 불러오세요.</string>
+    <string name="login_text_tooltip">최근 로그인했어요!</string>
+    <string name="login_btn_start">시작하기</string>
+
     <!-- 바로가기 배너 -->
     <string name="banner_lotto_info_title">행운의 1등 로또\n어디서 샀을까?</string>
     <string name="banner_lotto_info_sub_title">터치해서 당첨 판매점 보기</string>
@@ -41,6 +50,12 @@
     <string name="desc_pocket_empty_image">오늘 뽑은 번호가 존재하지 않을 때의 이미지</string>
     <string name="desc_pocket_storage_icon">저장한 번호 아이콘</string>
     <string name="desc_pocket_draw_random_lotto_image">랜덤 뽑기 이미지</string>
+
+    <string name="desc_login_image">로그인 이미지</string>
+    <string name="desc_login_success_image">로그인 성공 이미지</string>
+    <string name="desc_login_kakao_icon">카카오 로그인 아이콘</string>
+    <string name="desc_login_naver_icon">네이버 로그인 아이콘</string>
+    <string name="desc_login_google_icon">구글 로그인 아이콘</string>
 
     <string name="desc_common_extend_or_collapse_icon">더보기 혹은 접기 아이콘</string>
     <string name="desc_common_copy_icon">복사 아이콘</string>

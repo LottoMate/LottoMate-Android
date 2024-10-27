@@ -10,10 +10,13 @@ import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
 import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
 import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
-import com.lottomate.lottomate.presentation.screen.map.MapRoute
 
 fun NavController.navigateHome(navOptions: NavOptions) {
     navigate(BottomNavigationRoute.HOME.name, navOptions)
+}
+
+fun NavController.navigateToHome() {
+    navigate(BottomNavigationRoute.HOME.name)
 }
 
 fun NavGraphBuilder.homeNavGraph(
