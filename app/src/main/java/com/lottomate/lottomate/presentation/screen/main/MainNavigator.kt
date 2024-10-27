@@ -7,11 +7,14 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
-import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
 import androidx.navigation.navOptions
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateHome
+import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHome
+import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
+import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
+import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateMap
+import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigatePocket
 
 class MainNavigator(
@@ -48,12 +51,24 @@ class MainNavigator(
         }
     }
 
+    fun navigateToHome() {
+        navController.navigateToHome()
+    }
+
+    fun navigateToMap() {
+        navController.navigateToMap()
+    }
+
     fun navigateLottoInfo() {
         navController.navigateLottoInfo()
     }
 
     fun navigateInterview() {
         navController.navigateInterview()
+    }
+
+    fun navigateToLogin() {
+        navController.navigateToLogin()
     }
 }
 

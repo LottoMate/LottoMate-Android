@@ -16,12 +16,14 @@ fun HomeRoute(
     padding: PaddingValues,
     onClickLottoInfo: () -> Unit,
     onClickInterview: () -> Unit,
+    onClickLogin: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     HomeScreen(
         modifier = Modifier.fillMaxSize(),
         onClickLottoInfo = onClickLottoInfo,
         onClickInterview = onClickInterview,
+        onClickLogin = onClickLogin,
     )
 }
 
@@ -30,6 +32,7 @@ private fun HomeScreen(
     modifier: Modifier = Modifier,
     onClickLottoInfo: () -> Unit,
     onClickInterview: () -> Unit,
+    onClickLogin: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -44,6 +47,10 @@ private fun HomeScreen(
 
         Button(onClick = onClickInterview) {
             Text(text = "Move Lotto Review")
+        }
+
+        Button(onClick = onClickLogin) {
+            Text(text = "Move Login")
         }
     }
 }
