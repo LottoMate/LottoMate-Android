@@ -1,5 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.login
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
@@ -41,13 +45,26 @@ fun LoginRoute(
 ) {
     val latestLoginType by vm.latestLoginType
 
+    val resultLoginWithGoogle = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+
+        if (task.isSuccessful) {
+            Log.d("Google Login", task.result.serverAuthCode.toString())
+        }
+    }
+
+
     LoginScreen(
         padding = padding,
         latestLoginType = latestLoginType,
         moveToLoginSuccess = moveToLoginSuccess,
         onClickKakaoLogin = {},
         onClickNaverLogin = {},
-        onClickGoogleLogin = {},
+        onClickGoogleLogin = {
+            val googleClient = vm.loginWithGoogleClient()
+            googleClient.signOut()
+            resultLoginWithGoogle.launch(googleClient.signInIntent)
+        },
     )
 }
 
@@ -74,7 +91,8 @@ private fun LoginScreen(
                 .clickable { moveToLoginSuccess() }
         )
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(bottom = 104.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -113,7 +131,7 @@ private fun LoginScreen(
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.img_kakao),
                         contentDescription = stringResource(id = R.string.desc_login_kakao_icon),
-                        modifier = Modifier.noInteractionClickable { onClickKakaoLogin },
+                        modifier = Modifier.noInteractionClickable { onClickKakaoLogin() },
                     )
 
                     Spacer(modifier = Modifier.width(20.dp))
@@ -121,7 +139,7 @@ private fun LoginScreen(
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.img_naver),
                         contentDescription = stringResource(id = R.string.desc_login_naver_icon),
-                        modifier = Modifier.noInteractionClickable { onClickNaverLogin },
+                        modifier = Modifier.noInteractionClickable { onClickNaverLogin() },
                     )
 
                     Spacer(modifier = Modifier.width(20.dp))
@@ -129,7 +147,7 @@ private fun LoginScreen(
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.img_google),
                         contentDescription = stringResource(id = R.string.desc_login_google_icon),
-                        modifier = Modifier.noInteractionClickable { onClickGoogleLogin },
+                        modifier = Modifier.noInteractionClickable { onClickGoogleLogin() },
                     )
                 }
             }
