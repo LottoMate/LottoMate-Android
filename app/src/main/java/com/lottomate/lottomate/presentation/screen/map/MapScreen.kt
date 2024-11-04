@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.map
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,12 +39,14 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
@@ -74,6 +77,7 @@ fun MapRoute(
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
+    val selectStore by vm.selectStore.collectAsStateWithLifecycle()
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
     val favoriteStoreState by vm.favoriteStoreState
@@ -99,6 +103,7 @@ fun MapRoute(
     MapScreen(
         padding = padding,
         uiState = uiState,
+        selectStore = selectStore,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
         favoriteStoreState = favoriteStoreState,
@@ -107,6 +112,7 @@ fun MapRoute(
         onClickWinLottoStore = { vm.changeWinStoreState() },
         onClickFavoriteStore = { vm.changeFavoriteStoreState() },
         onClickRefresh = {},
+        onClickStoreList = { vm.showStoreList() },
         onClickLocationFocus = {},
         onClickSelectStoreMarker = { vm.selectStoreMarker(it) },
         onClickUnSelectStoreMarker = { vm.unselectStoreMarker() },
@@ -119,6 +125,7 @@ private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     uiState: MapUiState,
+    selectStore: StoreInfo?,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
@@ -127,6 +134,7 @@ private fun MapScreen(
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
     onClickRefresh: () -> Unit,
+    onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
     onClickUnSelectStoreMarker: () -> Unit,
@@ -141,7 +149,9 @@ private fun MapScreen(
 
     val coroutineScope = rememberCoroutineScope()
     var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
-    var selectStore by remember { mutableStateOf<StoreInfo?>(null) }
+//    var bottomSheetHeightPixel = mutableStateOf(0)
+//    val bottomSheetHeightToDp = pixelsToDp(pixels = bottomSheetHeightPixel)
+//    var bottomButtonPadding by remember { mutableStateOf(bottomSheetHeightToDp) }
 
     BottomSheetScaffold(
         modifier = modifier
@@ -169,7 +179,6 @@ private fun MapScreen(
                         state = MarkerState(position = store.latLng),
                         icon = OverlayImage.fromResource(R.drawable.marker_select),
                         onClick = {
-                            selectStore = null
                             onClickUnSelectStoreMarker()
 
                             coroutineScope.launch {
@@ -187,7 +196,7 @@ private fun MapScreen(
                        else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
                        else OverlayImage.fromResource(R.drawable.marker_win),
                        onClick = {
-                           selectStore = store
+//                           selectStore = store
                            onClickSelectStoreMarker(store)
                            true
                        }
@@ -214,11 +223,13 @@ private fun MapScreen(
                 lottoTypeState = lottoTypeState,
                 winStoreState = winStoreState,
                 favoriteStoreState = favoriteStoreState,
+                bottomButtonPadding = 0.dp,
                 onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
                 onClickLottoType = onClickLottoType,
                 onClickWinLottoStore = onClickWinLottoStore,
                 onClickFavoriteStore = onClickFavoriteStore,
                 onClickRefresh = onClickRefresh,
+                onClickStoreList = onClickStoreList,
                 onClickLocationFocus = onClickLocationFocus,
             )
         }
@@ -231,11 +242,13 @@ private fun MapButtons(
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
+    bottomButtonPadding: Dp,
     onSizeBottomSheetHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
     onClickRefresh: () -> Unit,
+    onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
 
@@ -253,7 +266,9 @@ private fun MapButtons(
 
         BottomButtons(
             modifier = Modifier.fillMaxSize(),
+            bottomButtonPadding = bottomButtonPadding,
             onClickRefresh = onClickRefresh,
+            onClickStoreList = onClickStoreList,
             onClickLocationFocus = onClickLocationFocus,
         )
    }
@@ -306,13 +321,16 @@ private fun TopFilterButtons(
 @Composable
 private fun BottomButtons(
     modifier: Modifier = Modifier,
+    bottomButtonPadding: Dp,
     onClickRefresh: () -> Unit,
+    onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
+    Log.d("MapScreen", bottomButtonPadding.toString())
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
-            .padding(bottom = 76.dp),
+            .padding(bottom = bottomButtonPadding.plus(28.dp)),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
     ) {
@@ -336,25 +354,51 @@ private fun BottomButtons(
                 contentDescription = stringResource(id = R.string.desc_refresh_icon_map),
             )
         }
-        IconButton(
-            onClick = onClickLocationFocus,
-            modifier = Modifier
-                .dropShadow(
-                    shape = CircleShape,
-                    offsetX = 0.dp,
-                    offsetY = 0.dp,
-                    blur = 8.dp,
+
+        Column {
+            IconButton(
+                onClick = onClickStoreList,
+                modifier = Modifier
+                    .dropShadow(
+                        shape = CircleShape,
+                        offsetX = 0.dp,
+                        offsetY = 0.dp,
+                        blur = 8.dp,
+                    )
+                    .background(
+                        color = LottoMateWhite,
+                        shape = CircleShape,
+                    )
+                    .size(40.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_list),
+                    contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
                 )
-                .background(
-                    color = LottoMateWhite,
-                    shape = CircleShape,
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+
+            IconButton(
+                onClick = onClickLocationFocus,
+                modifier = Modifier
+                    .dropShadow(
+                        shape = CircleShape,
+                        offsetX = 0.dp,
+                        offsetY = 0.dp,
+                        blur = 8.dp,
+                    )
+                    .background(
+                        color = LottoMateWhite,
+                        shape = CircleShape,
+                    )
+                    .size(40.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_location),
+                    contentDescription = stringResource(id = R.string.desc_location_focus_icon_map),
                 )
-                .size(40.dp),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.icon_location),
-                contentDescription = stringResource(id = R.string.desc_location_focus_icon_map),
-            )
+            }
         }
     }
 }
@@ -419,6 +463,7 @@ private fun MapScreenPreview() {
 
         MapScreen(
             uiState = MapUiState.Success(StoreInfoMocks),
+            selectStore = null,
             lottoTypeState = "복권 전체",
             winStoreState = true,
             favoriteStoreState = true,
@@ -426,6 +471,7 @@ private fun MapScreenPreview() {
             onClickWinLottoStore = {},
             onClickFavoriteStore = {},
             onClickRefresh = {},
+            onClickStoreList = {},
             onClickLocationFocus = {},
             onClickSelectStoreMarker = {},
             onClickUnSelectStoreMarker = {},

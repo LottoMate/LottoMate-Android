@@ -79,4 +79,5 @@
     <string name="desc_filter_icon_map">The Filter Icon for LottoType on the Map</string>
     <string name="desc_refresh_icon_map">The Refresh Icon on the Map</string>
     <string name="desc_location_focus_icon_map">The Current Location Icon on the Map</string>
+    <string name="desc_lotto_store_list_icon_map">The Store List Icon on the Map</string>
 </resources>

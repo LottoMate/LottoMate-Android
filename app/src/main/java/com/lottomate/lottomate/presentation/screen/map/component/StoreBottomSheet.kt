@@ -225,7 +225,10 @@ private fun StoreInfoListItem(
     var storeNameLineCount by remember { mutableIntStateOf(1) }
     var expendStoreWinHistory by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .noInteractionClickable { onClickStore(store.key) }
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -278,9 +281,7 @@ private fun StoreInfoListItem(
                         onTextLayout = {
                             storeNameLineCount = it.lineCount
                         },
-                        modifier = Modifier
-                            .alignByBaseline()
-                            .noInteractionClickable { onClickStore(store.key) },
+                        modifier = Modifier.alignByBaseline(),
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -377,7 +378,8 @@ private fun StoreInfoListItem(
                     modifier = Modifier
                         .size(20.dp)
                         .noInteractionClickable {
-                            expendStoreWinHistory = !expendStoreWinHistory
+                            if (isSelect) expendStoreWinHistory = !expendStoreWinHistory
+                            else onClickStore(store.key)
                         },
                 )
             }
@@ -406,7 +408,6 @@ private fun StoreWinHistory(
     if (histories.isEmpty()) {
         Box(
             modifier = modifier
-                .padding(top = 20.dp)
                 .background(LottoMateGray10),
             contentAlignment = Alignment.Center,
         ) {
