@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.map
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,7 +76,6 @@ fun MapRoute(
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-    val selectStore by vm.selectStore.collectAsStateWithLifecycle()
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
     val favoriteStoreState by vm.favoriteStoreState
@@ -103,7 +101,6 @@ fun MapRoute(
     MapScreen(
         padding = padding,
         uiState = uiState,
-        selectStore = selectStore,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
         favoriteStoreState = favoriteStoreState,
@@ -125,7 +122,7 @@ private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     uiState: MapUiState,
-    selectStore: StoreInfo?,
+    selectStore: StoreInfo? = null,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
@@ -149,9 +146,6 @@ private fun MapScreen(
 
     val coroutineScope = rememberCoroutineScope()
     var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
-//    var bottomSheetHeightPixel = mutableStateOf(0)
-//    val bottomSheetHeightToDp = pixelsToDp(pixels = bottomSheetHeightPixel)
-//    var bottomButtonPadding by remember { mutableStateOf(bottomSheetHeightToDp) }
 
     BottomSheetScaffold(
         modifier = modifier
@@ -159,79 +153,80 @@ private fun MapScreen(
             .padding(bottom = padding.calculateBottomPadding()),
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
-            StoreBottomSheet(
-                bottomSheetState = bottomSheetScaffoldState,
-                bottomSheetTopPadding = bottomSheetTopPadding,
-            )
+            when (uiState) {
+                is MapUiState.Success -> {
+                    StoreBottomSheet(
+                        bottomSheetState = bottomSheetScaffoldState,
+                        bottomSheetTopPadding = bottomSheetTopPadding,
+                    )
+                }
+                else -> {}
+            }
         },
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         sheetPeekHeight = BottomSheetPeekHeight,
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            val stores = uiState as MapUiState.Success
-
-            NaverMap(
-                modifier = Modifier.fillMaxSize(),
-                uiSettings = mapUiSettings,
-            ) {
-                selectStore?.let { store ->
-                    Marker(
-                        state = MarkerState(position = store.latLng),
-                        icon = OverlayImage.fromResource(R.drawable.marker_select),
-                        onClick = {
-                            onClickUnSelectStoreMarker()
-
-                            coroutineScope.launch {
-                                bottomSheetScaffoldState.bottomSheetState.collapse()
-                            }
-                            true
-                        }
-                    )
-                }
-
-                stores.storeInfo.forEach { store ->
-                   Marker(
-                       state = MarkerState(position = store.latLng),
-                       icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(R.drawable.marker_default)
-                       else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
-                       else OverlayImage.fromResource(R.drawable.marker_win),
-                       onClick = {
-//                           selectStore = store
-                           onClickSelectStoreMarker(store)
-                           true
-                       }
-                   )
-               }
-            }
-        }
-
         Box(
-            modifier = modifier
-                .fillMaxSize()
+            modifier = modifier.fillMaxSize()
         ) {
             when (uiState) {
                 MapUiState.Loading -> {
                     MapLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
                 is MapUiState.Success -> {
+                    val stores = uiState.storeInfo
 
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        NaverMap(
+                            modifier = Modifier.fillMaxSize(),
+                            uiSettings = mapUiSettings,
+                        ) {
+                            selectStore?.let { store ->
+                                Marker(
+                                    state = MarkerState(position = store.latLng),
+                                    icon = OverlayImage.fromResource(R.drawable.marker_select),
+                                    onClick = {
+                                        onClickUnSelectStoreMarker()
+
+                                        coroutineScope.launch {
+                                            bottomSheetScaffoldState.bottomSheetState.collapse()
+                                        }
+                                        true
+                                    }
+                                )
+                            }
+
+                            stores.forEach { store ->
+                                Marker(
+                                    state = MarkerState(position = store.latLng),
+                                    icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(R.drawable.marker_default)
+                                    else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
+                                    else OverlayImage.fromResource(R.drawable.marker_win),
+                                    onClick = {
+                                        onClickSelectStoreMarker(store)
+                                        true
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    MapButtons(
+                        modifier = Modifier.fillMaxSize(),
+                        lottoTypeState = lottoTypeState,
+                        winStoreState = winStoreState,
+                        favoriteStoreState = favoriteStoreState,
+                        bottomButtonPadding = 0.dp,
+                        onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
+                        onClickLottoType = onClickLottoType,
+                        onClickWinLottoStore = onClickWinLottoStore,
+                        onClickFavoriteStore = onClickFavoriteStore,
+                        onClickRefresh = onClickRefresh,
+                        onClickStoreList = onClickStoreList,
+                        onClickLocationFocus = onClickLocationFocus,
+                    )
                 }
             }
-
-            MapButtons(
-                modifier = Modifier.fillMaxSize(),
-                lottoTypeState = lottoTypeState,
-                winStoreState = winStoreState,
-                favoriteStoreState = favoriteStoreState,
-                bottomButtonPadding = 0.dp,
-                onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
-                onClickLottoType = onClickLottoType,
-                onClickWinLottoStore = onClickWinLottoStore,
-                onClickFavoriteStore = onClickFavoriteStore,
-                onClickRefresh = onClickRefresh,
-                onClickStoreList = onClickStoreList,
-                onClickLocationFocus = onClickLocationFocus,
-            )
         }
     }
 }
@@ -326,7 +321,6 @@ private fun BottomButtons(
     onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
-    Log.d("MapScreen", bottomButtonPadding.toString())
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
