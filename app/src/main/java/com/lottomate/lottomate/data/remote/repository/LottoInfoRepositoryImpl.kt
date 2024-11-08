@@ -8,8 +8,6 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoMockDatas
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.ResponseBody
-import retrofit2.Response
 import javax.inject.Inject
 
 class LottoInfoRepositoryImpl @Inject constructor(
@@ -55,9 +53,5 @@ class LottoInfoRepositoryImpl @Inject constructor(
                 emit(SpeettoMockDatas)
             }
         }
-    }
-
-    override fun googleLogin(): Flow<Response<ResponseBody>> = flow {
-        emit(lottoInfoApi.googleLogin())
     }
 }
