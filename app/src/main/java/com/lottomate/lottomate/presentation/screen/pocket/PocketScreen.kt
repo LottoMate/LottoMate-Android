@@ -37,6 +37,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.pocket.my.MyNumberContent
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumberContent
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -111,13 +112,19 @@ private fun PocketScreen(
                 onClickTabMenu = onClickTabMenu,
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-
             when (currentTabIndex) {
                 0 -> {
-                    // TODO 내 번호
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    MyNumberContent(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClickQRScan = {},
+                        onClickSaveNumbers = {},
+                    )
                 }
                 1 -> {
+                    Spacer(modifier = Modifier.height(32.dp))
+
                     RandomNumberContent(
                         modifier = Modifier.fillMaxWidth(),
                         drewRandomNumbers = drewRandomNumbers,

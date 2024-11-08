@@ -23,10 +23,33 @@
     <string name="pocket_title_sub_random_number">행운의 랜덤 뽑기</string>
     <string name="pocket_title_today_draw_lotto">오늘 뽑은 번호</string>
     <string name="pocket_title_sub_today_draw_lotto">오늘이 지나면 뽑은 번호가 사라집니다.</string>
-
+    <string name="pocket_title_my_number_left">당첨 결과를\n빠르게 확인하려면?</string>
+    <string name="pocket_title_my_number_right">내 로또 번호를\n저장하려면?</string>
+    <string name="pocket_title_my_number_siuation">내 로또 현황</string>
+    <string name="pocket_title_my_number_possible_check">지금 당첨 확인 가능한</string>
+    <string name="pocket_title_my_number_before_draw">아직 당첨 발표 전인</string>
+    <string name="pocket_title_my_number_middle_bottom">내 로또 $2d개</string>
+    <string name="pocket_title_my_number_history">내 로또 내역</string>
+    
     <string name="pocket_text_empty_draw_lotto">아직 저장된 내 로또가 없어요.</string>
+    <string name="pocket_text_my_number_scan">QR 스캔하기</string>
+    <string name="pocket_text_my_number_save_number">번호 등록하기</string>
+    <string name="pocket_text_my_number_notice">로또 당첨 발표까지 $d일 남았어요.</string>
+    <string name="pocket_text_my_number_notice2">연금복권 당첨 발표까지 $d일 남았어요.</string>
+    <string name="pocket_text_my_number_notice_caption">역대 당첨금 확인하기</string>
+    <string name="pocket_text_my_number_history">%4d년 $2d월부터 로또를 총 %2d개 구매했어요.</string>
+    <string name="pocket_text_my_number_history2">당첨 $d개 미당첨 $d개로 내 당첨률은 %2d\%이에요.</string>
+    <string name="pocket_text_my_number_history_round">회차</string>
+    <string name="pocket_text_my_number_history_edit">편집</string>
+    <string name="pocket_text_my_number_history_win">당첨</string>
+    <string name="pocket_text_my_number_history_failed">미당첨</string>
+    <string name="pocket_text_my_number_history_check">확인</string>
 
     <string name="pocket_btn_random_number">랜덤 뽑기</string>
+    
+    <string name="pocket_desc_my_number_top_left_image">QR 스캔하기 이미지</string>
+    <string name="pocket_desc_my_number_top_right_image">번호 등록하기 이미지</string>
+    <string name="pocket_desc_my_number_notice_caption_icon">역대 당첨금 확인하기 아이콘</string>
 
     <!-- 로그인 -->
     <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
@@ -66,14 +89,14 @@
     <string name="desc_login_naver_icon">네이버 로그인 아이콘</string>
     <string name="desc_login_google_icon">구글 로그인 아이콘</string>
 
-    <string name="desc_common_extend_or_collapse_icon">더보기 혹은 접기 아이콘</string>
-    <string name="desc_common_copy_icon">복사 아이콘</string>
-    <string name="desc_common_save_icon">저장 아이콘</string>
-
     <!-- 공통 -->
     <string name="common_complete">완료</string>
     <string name="common_extend">더보기</string>
     <string name="common_collapse">접기</string>
+
+    <string name="desc_common_extend_or_collapse_icon">더보기 혹은 접기 아이콘</string>
+    <string name="desc_common_copy_icon">복사 아이콘</string>
+    <string name="desc_common_save_icon">저장 아이콘</string>
 
     <string name="desc_selection_icon_map">The Selection Icon for the Lotto Type Filter on the Map</string>
     <string name="desc_filter_icon_map">The Filter Icon for LottoType on the Map</string>
