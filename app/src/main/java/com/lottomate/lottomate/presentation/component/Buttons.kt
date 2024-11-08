@@ -151,7 +151,9 @@ fun LottoMateTextButton(
     modifier: Modifier = Modifier,
     buttonText: String,
     textColor: Color = MaterialTheme.colorScheme.primary,
+    buttonColor: Color = LottoMateTransparent,
     pressedTextColor: Color = LottoMateRed70,
+    pressedButtonColor: Color = LottoMateRed5,
     buttonSize: LottoMateButtonProperty.Size,
     buttonType: LottoMateButtonProperty.Type = LottoMateButtonProperty.Type.ACTIVE,
     onClick: () -> Unit,
@@ -159,18 +161,47 @@ fun LottoMateTextButton(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val isDisabled = buttonType == LottoMateButtonProperty.Type.DISABLED
+    val buttonHeight = when (buttonSize) {
+        LottoMateButtonProperty.Size.SMALL -> 22.dp
+        LottoMateButtonProperty.Size.LARGE -> 24.dp
+        else -> 0.dp
+    }
 
-    LottoMateText(
-        text = buttonText,
-        style = when (buttonSize) {
-            LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
-            else -> LottoMateTheme.typography.label2
-        },
-        color = if (isPressed) pressedTextColor
-        else if (isDisabled) LottoMateGray40
-        else textColor,
-        modifier = modifier.noInteractionClickable { onClick() }
-    )
+    Button(
+        modifier = modifier.height(buttonHeight),
+        onClick = { onClick() },
+        shape = RoundedCornerShape(Dimens.RadiusExtraSmall),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isPressed) pressedButtonColor else buttonColor,
+            disabledContainerColor = buttonColor
+        ),
+        interactionSource = interactionSource,
+        contentPadding = PaddingValues(horizontal = 8.dp),
+        enabled = !isDisabled
+    ) {
+        LottoMateText(
+            text = buttonText,
+            style = when (buttonSize) {
+                LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
+                else -> LottoMateTheme.typography.label2
+            },
+            color = if (isPressed) pressedTextColor
+            else if (isDisabled) LottoMateGray40
+            else textColor,
+        )
+    }
+
+//    LottoMateText(
+//        text = buttonText,
+//        style = when (buttonSize) {
+//            LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
+//            else -> LottoMateTheme.typography.label2
+//        },
+//        color = if (isPressed) pressedTextColor
+//        else if (isDisabled) LottoMateGray40
+//        else textColor,
+//        modifier = modifier.noInteractionClickable { onClick() }
+//    )
 }
 
 @Composable
@@ -186,8 +217,14 @@ private fun LottoMateBaseButton(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
+    val buttonHeight = when (buttonSize) {
+        LottoMateButtonProperty.Size.LARGE -> 48.dp
+        LottoMateButtonProperty.Size.MEDIUM -> 40.dp
+        LottoMateButtonProperty.Size.SMALL -> 34.dp
+    }
+
     Button(
-        modifier = modifier,
+        modifier = modifier.height(buttonHeight),
         contentPadding = PaddingValues(
             horizontal = when (buttonSize) {
                 LottoMateButtonProperty.Size.SMALL -> 16.dp

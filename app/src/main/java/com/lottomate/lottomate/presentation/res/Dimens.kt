@@ -26,6 +26,9 @@ object Dimens {
     
     val TopAppBarHeight: Dp
         @Composable get() = dimensionResource(id = R.dimen.top_app_bar_height)
+    
+    val BottomTabHeight: Dp
+        @Composable get() = dimensionResource(id = R.dimen.bottom_tab_height)
 
     val StatusBarHeight
         @Composable get() = LocalContext.current.resources.getDimensionPixelSize(
@@ -33,6 +36,13 @@ object Dimens {
     ).run {
         pixelsToDp(pixels = this)
     }
+
+    val NavigationBarHeight
+        @Composable get() = LocalContext.current.resources.getDimensionPixelSize(
+            LocalContext.current.resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        ).run {
+            pixelsToDp(pixels = this)
+        }
 
     val BaseTopPadding
         @Composable get() = TopAppBarHeight.plus(StatusBarHeight)

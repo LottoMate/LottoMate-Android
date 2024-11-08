@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -22,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.screen.main.MainBottomTab
+import com.lottomate.lottomate.presentation.ui.LottoMateBottomTabDivider
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
@@ -40,19 +43,26 @@ fun LottoMateBottomBar(
         color = LottoMateWhite,
         modifier = modifier,
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(BOTTOM_BAR_CONTAINER_HEIGHT)
-                .background(LottoMateWhite),
         ) {
-            tabs.forEach { tab ->
-                LottoMateBottomBarItem(
-                    modifier = Modifier.weight(1f),
-                    tab = tab,
-                    selected = tab == currentTab,
-                    onClick = { onTabSelected(tab) }
-                )
+            Divider(color = LottoMateBottomTabDivider)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(LottoMateWhite),
+            ) {
+                tabs.forEach { tab ->
+                    LottoMateBottomBarItem(
+                        modifier = Modifier.weight(1f),
+                        tab = tab,
+                        selected = tab == currentTab,
+                        onClick = { onTabSelected(tab) }
+                    )
+                }
             }
         }
     }

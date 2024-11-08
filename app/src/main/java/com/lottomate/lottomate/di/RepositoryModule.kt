@@ -2,7 +2,9 @@ package com.lottomate.lottomate.di
 
 import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
 import com.lottomate.lottomate.data.remote.repository.LottoInfoRepositoryImpl
+import com.lottomate.lottomate.data.remote.repository.StoreRepositoryImpl
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
+import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.domain.repository.local.RandomLottoRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -18,6 +20,12 @@ abstract class RepositoryModule {
     abstract fun bindLottoInfoRepository(
         lottoInfoRepositoryImpl: LottoInfoRepositoryImpl
     ): LottoInfoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStoreRepository(
+        storeRepositoryImpl: StoreRepositoryImpl
+    ): StoreRepository
 
     @Binds
     @Singleton

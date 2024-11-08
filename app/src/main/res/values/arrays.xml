@@ -36,6 +36,11 @@
         <item>보너스 번호 6자리 일치</item>
     </string-array>
 
+    <string-array name="map_store_info_top_filters">
+        <item>가까운 순</item>
+        <item>랭킹순</item>
+    </string-array>
+
     <!-- 로또 보관소 -->
     <string-array name="pocket_tab_menu">
         <item>내 번호</item>
