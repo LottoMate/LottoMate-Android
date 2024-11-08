@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.pocket
+package com.lottomate.lottomate.presentation.screen.pocket.random
 
 import android.content.ClipData
 import android.content.ClipboardManager

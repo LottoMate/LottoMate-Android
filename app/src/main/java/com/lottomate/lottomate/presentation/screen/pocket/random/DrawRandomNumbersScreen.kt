@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.pocket
+package com.lottomate.lottomate.presentation.screen.pocket.random
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -101,7 +101,7 @@ private fun DrawRandomNumbersScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 LottoMateText(
-                    text = if (uiState is DrawRandomNumbersUiState.Loading) stringResource(id = R.string.pocket_title_processing) 
+                    text = if (uiState is DrawRandomNumbersUiState.Loading) stringResource(id = R.string.pocket_title_processing)
                     else stringResource(id = R.string.pocket_title_complete),
                     style = LottoMateTheme.typography.title2,
                     textAlign = TextAlign.Center,

@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.pocket
+package com.lottomate.lottomate.presentation.screen.pocket.random
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
