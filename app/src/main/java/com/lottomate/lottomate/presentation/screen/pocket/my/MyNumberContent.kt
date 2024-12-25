@@ -80,12 +80,12 @@ fun MyNumberContent(
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             LottoMateCard(
-                modifier = Modifier,
+                modifier = Modifier.weight(1f),
                 onClick = {},
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
                         .padding(top = 24.dp, bottom = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -107,7 +107,7 @@ fun MyNumberContent(
 
                     LottoMateAssistiveButton(
                         text = stringResource(id = R.string.pocket_text_my_number_scan),
-                        buttonSize = LottoMateButtonProperty.Size.MEDIUM,
+                        buttonSize = LottoMateButtonProperty.Size.SMALL,
                         onClick = onClickQRScan,
                     )
                 }
@@ -116,12 +116,12 @@ fun MyNumberContent(
             Spacer(modifier = Modifier.width(15.dp))
 
             LottoMateCard(
-                modifier = Modifier,
+                modifier = Modifier.weight(1f),
                 onClick = {},
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
                         .padding(top = 24.dp, bottom = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -143,7 +143,7 @@ fun MyNumberContent(
 
                     LottoMateAssistiveButton(
                         text = stringResource(id = R.string.pocket_text_my_number_save_number),
-                        buttonSize = LottoMateButtonProperty.Size.MEDIUM,
+                        buttonSize = LottoMateButtonProperty.Size.SMALL,
                         onClick = onClickSaveNumbers,
                     )
                 }
