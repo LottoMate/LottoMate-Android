@@ -153,12 +153,15 @@ fun MyNumberContent(
         Spacer(modifier = Modifier.height(40.dp))
 
         MyLottoSituation(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimens.DefaultPadding20),
         )
 
         Spacer(modifier = Modifier.height(48.dp))
 
         MyLottoHistory(
+            modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20),
             myLottoHistories = mockLottoDetails,
             onClickEdit = {},
             onClickCheckWin = {},
@@ -226,7 +229,7 @@ private fun MyLottoSituation(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
+        modifier = modifier,
     ) {
         LottoMateText(
             text = "내 로또 현황",
