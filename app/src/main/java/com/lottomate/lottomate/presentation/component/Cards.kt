@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateGray90
+import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow5
@@ -105,7 +105,7 @@ fun BannerCard(
                 LottoMateText(
                     text = stringResource(id = R.string.banner_lotto_info_sub_title),
                     style = LottoMateTheme.typography.caption1
-                        .copy(LottoMateGray90),
+                        .copy(LottoMateGray120),
                 )
             }
 
