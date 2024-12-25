@@ -167,6 +167,61 @@ fun MyNumberContent(
 }
 
 @Composable
+private fun MyLottoEmpty(
+    modifier: Modifier = Modifier,
+    onClickDrawNumber: () -> Unit,
+) {
+    Column {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(color = LottoMateGray10)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 56.dp, bottom = 49.dp),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.pocket_venus),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LottoMateText(
+                    text = "아직 저장한 내 로또가 없어요.",
+                    style = LottoMateTheme.typography.body2
+                        .copy(color = LottoMateGray100),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LottoMateSolidButton(
+                    text = "번호 뽑으러 가기",
+                    buttonSize = LottoMateButtonProperty.Size.SMALL,
+                    buttonShape = LottoMateButtonProperty.Shape.ROUND,
+                    onClick = onClickDrawNumber,
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(12.dp))
+
+        BannerCard(
+            modifier = Modifier
+                .padding(Dimens.DefaultPadding20)
+                .padding(bottom = 28.dp),
+            onClickBanner = {}
+        )
+    }
+
+}
+
+@Composable
 private fun MyLottoSituation(
     modifier: Modifier = Modifier,
 ) {
