@@ -90,3 +90,6 @@ val LottoMateGray110 = Color(0xFF484848)
 val LottoMateGray120 = Color(0xFF373737)
 val LottoMateGray130 = Color(0xFF262626)
 val LottoMateGray140 = Color(0xFF131313)
+
+val LottoMatePositive = LottoMateGreen60
+val LottoMateError = LottoMateRed40

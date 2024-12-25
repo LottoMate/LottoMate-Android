@@ -25,11 +25,15 @@
     <string name="pocket_title_sub_today_draw_lotto">오늘이 지나면 뽑은 번호가 사라집니다.</string>
     <string name="pocket_title_my_number_left">당첨 결과를\n빠르게 확인하려면?</string>
     <string name="pocket_title_my_number_right">내 로또 번호를\n저장하려면?</string>
-    <string name="pocket_title_my_number_siuation">내 로또 현황</string>
+    <string name="pocket_title_my_number_situation">내 로또 현황</string>
     <string name="pocket_title_my_number_possible_check">지금 당첨 확인 가능한</string>
     <string name="pocket_title_my_number_before_draw">아직 당첨 발표 전인</string>
-    <string name="pocket_title_my_number_middle_bottom">내 로또 $2d개</string>
     <string name="pocket_title_my_number_history">내 로또 내역</string>
+<!--    <string name="pocket_title_my_number_middle_bottom">내 로또 $2d개</string>-->
+    <plurals name="pocket_title_my_number_middle_bottom">
+        <item quantity="one">내 로또 %2d개</item>
+        <item quantity="other">내 로또 %2d개</item>
+    </plurals>
     
     <string name="pocket_text_empty_draw_lotto">아직 저장된 내 로또가 없어요.</string>
     <string name="pocket_text_my_number_scan">QR 스캔하기</string>
