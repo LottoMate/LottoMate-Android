@@ -55,6 +55,9 @@
     <string name="pocket_desc_my_number_top_right_image">번호 등록하기 이미지</string>
     <string name="pocket_desc_my_number_notice_caption_icon">역대 당첨금 확인하기 아이콘</string>
 
+    <!-- 보관소 - 번호 등록 -->
+    <string name="save_numbers_title">번호 등록</string>
+
     <!-- 로그인 -->
     <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
     <string name="login_title_success">가입을 축하해요!</string>
