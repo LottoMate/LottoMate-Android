@@ -137,6 +137,8 @@
     <string name="guide_top_notice_content04">정해진 기간이 지나면 받을 수 없으니 꼭 주의하세요</string>
     <string name="guide_top_notice_sub_content">지급 마지막 날짜가 공휴일 또는 주말일 경우 다음날까지 찾아갈 수\n있어요. 수령하지 않은 당첨금은 복권기금으로 포함됩니다.</string>
 
+    <!-- 보관소 - 번호 등록 -->
+    <string name="save_numbers_title">번호 등록</string>
 
     <!-- 로그인 -->
     <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
