@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -156,6 +158,7 @@ fun LottoMateTextButton(
     pressedButtonColor: Color = LottoMateRed5,
     buttonSize: LottoMateButtonProperty.Size,
     buttonType: LottoMateButtonProperty.Type = LottoMateButtonProperty.Type.ACTIVE,
+    textAlign: TextAlign = TextAlign.Center,
     onClick: () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -167,41 +170,32 @@ fun LottoMateTextButton(
         else -> 0.dp
     }
 
-    Button(
-        modifier = modifier.height(buttonHeight),
-        onClick = { onClick() },
-        shape = RoundedCornerShape(Dimens.RadiusExtraSmall),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isPressed) pressedButtonColor else buttonColor,
-            disabledContainerColor = buttonColor
-        ),
-        interactionSource = interactionSource,
-        contentPadding = PaddingValues(horizontal = 8.dp),
-        enabled = !isDisabled
-    ) {
-        LottoMateText(
-            text = buttonText,
-            style = when (buttonSize) {
-                LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
-                else -> LottoMateTheme.typography.label2
-            },
-            color = if (isPressed) pressedTextColor
-            else if (isDisabled) LottoMateGray40
-            else textColor,
-        )
-    }
+    LottoMateText(
+        text = buttonText,
+        style = when (buttonSize) {
+            LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
+            else -> LottoMateTheme.typography.label2
+        },
+        color = if (isPressed) pressedTextColor
+        else if (isDisabled) LottoMateGray40
+        else textColor,
+        textAlign = textAlign,
+    )
 
-//    LottoMateText(
-//        text = buttonText,
-//        style = when (buttonSize) {
-//            LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.label1
-//            else -> LottoMateTheme.typography.label2
-//        },
-//        color = if (isPressed) pressedTextColor
-//        else if (isDisabled) LottoMateGray40
-//        else textColor,
-//        modifier = modifier.noInteractionClickable { onClick() }
-//    )
+//    Button(
+//        modifier = modifier.height(buttonHeight),
+//        onClick = { onClick() },
+//        shape = RoundedCornerShape(Dimens.RadiusExtraSmall),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = if (isPressed) pressedButtonColor else buttonColor,
+//            disabledContainerColor = buttonColor
+//        ),
+//        interactionSource = interactionSource,
+//        contentPadding = PaddingValues(horizontal = 8.dp),
+//        enabled = !isDisabled
+//    ) {
+//
+//    }
 }
 
 @Composable
@@ -221,12 +215,14 @@ private fun LottoMateBaseButton(
         LottoMateButtonProperty.Size.LARGE -> 48.dp
         LottoMateButtonProperty.Size.MEDIUM -> 40.dp
         LottoMateButtonProperty.Size.SMALL -> 34.dp
+        LottoMateButtonProperty.Size.XSMALL -> 22.dp
     }
 
     Button(
-        modifier = modifier.height(buttonHeight),
+        modifier = modifier.height(buttonHeight).wrapContentWidth(),
         contentPadding = PaddingValues(
             horizontal = when (buttonSize) {
+                LottoMateButtonProperty.Size.XSMALL -> 8.dp
                 LottoMateButtonProperty.Size.SMALL -> 16.dp
                 LottoMateButtonProperty.Size.MEDIUM -> 22.dp
                 LottoMateButtonProperty.Size.LARGE -> 40.dp
@@ -235,11 +231,13 @@ private fun LottoMateBaseButton(
                 LottoMateButtonProperty.Size.LARGE -> 12.dp
                 LottoMateButtonProperty.Size.MEDIUM -> 8.dp
                 LottoMateButtonProperty.Size.SMALL -> 6.dp
+                LottoMateButtonProperty.Size.XSMALL -> 2.dp
             }
         ),
         border = buttonBorder,
         shape = when (buttonShape) {
             LottoMateButtonProperty.Shape.NORMAL -> RoundedCornerShape(Dimens.RadiusSmall)
+            LottoMateButtonProperty.Shape.SMALL_ROUND -> RoundedCornerShape(Dimens.RadiusExtraSmall)
             LottoMateButtonProperty.Shape.ROUND -> RoundedCornerShape(60.dp)
         },
         enabled = enabled,
@@ -255,6 +253,7 @@ private fun LottoMateBaseButton(
             color = textColor,
             style = when (buttonSize) {
                 LottoMateButtonProperty.Size.SMALL -> LottoMateTheme.typography.label2
+                LottoMateButtonProperty.Size.XSMALL -> LottoMateTheme.typography.caption1
                 else -> LottoMateTheme.typography.label1
             },
         )
@@ -263,11 +262,11 @@ private fun LottoMateBaseButton(
 
 sealed interface LottoMateButtonProperty {
     enum class Shape {
-        NORMAL, ROUND,
+        NORMAL, SMALL_ROUND, ROUND,
     }
 
     enum class Size {
-        SMALL, MEDIUM, LARGE,
+        XSMALL, SMALL, MEDIUM, LARGE,
     }
 
     enum class Type {

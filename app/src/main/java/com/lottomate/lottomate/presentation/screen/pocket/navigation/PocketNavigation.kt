@@ -7,9 +7,9 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
 import com.lottomate.lottomate.presentation.navigation.Route
-import com.lottomate.lottomate.presentation.screen.pocket.DrawRandomNumbersRoute
+import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
-import com.lottomate.lottomate.presentation.screen.pocket.RandomNumbersStorageRoute
+import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
 
 fun NavController.navigatePocket(navOptions: NavOptions) {
     navigate(route = BottomNavigationRoute.POCKET.name, navOptions)
