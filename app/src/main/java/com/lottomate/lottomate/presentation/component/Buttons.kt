@@ -219,7 +219,7 @@ private fun LottoMateBaseButton(
     }
 
     Button(
-        modifier = modifier.height(buttonHeight).wrapContentWidth(),
+        modifier = modifier.height(buttonHeight),
         contentPadding = PaddingValues(
             horizontal = when (buttonSize) {
                 LottoMateButtonProperty.Size.XSMALL -> 8.dp

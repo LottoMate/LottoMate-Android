@@ -51,6 +51,7 @@ fun PocketRoute(
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
+    moveToSaveNumberScreen: () -> Unit,
 ) {
     var currentTabIndex by vm.currentTabIndex
     val drewRandomNumbers by vm.drewRandomNumbers.collectAsStateWithLifecycle()
@@ -77,7 +78,8 @@ fun PocketRoute(
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
-        onClickSaveRandomNumbers = {  },
+        onClickSaveRandomNumbers = {},
+        moveToSaveNumberScreen = moveToSaveNumberScreen,
     )
 }
 
@@ -92,6 +94,7 @@ private fun PocketScreen(
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
+    moveToSaveNumberScreen: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -119,7 +122,7 @@ private fun PocketScreen(
                     MyNumberContent(
                         modifier = Modifier.fillMaxWidth(),
                         onClickQRScan = {},
-                        onClickSaveNumbers = {},
+                        onClickSaveNumbers = { moveToSaveNumberScreen() },
                     )
                 }
                 1 -> {
@@ -220,7 +223,8 @@ private fun PocketScreenPreview() {
             padding = PaddingValues(0.dp),
             onShowErrorSnackBar = {},
             onClickDrawRandomNumbers = {},
-            onClickStorageOfRandomNumbers = {}
+            onClickStorageOfRandomNumbers = {},
+            moveToSaveNumberScreen = {},
         )
     }
 }

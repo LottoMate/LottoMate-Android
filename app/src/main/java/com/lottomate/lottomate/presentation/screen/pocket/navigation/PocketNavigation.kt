@@ -10,6 +10,7 @@ import com.lottomate.lottomate.presentation.navigation.Route
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
+import com.lottomate.lottomate.presentation.screen.pocket.savenumber.SaveNumbersRoute
 
 fun NavController.navigatePocket(navOptions: NavOptions) {
     navigate(route = BottomNavigationRoute.POCKET.name, navOptions)
@@ -23,6 +24,10 @@ fun NavController.navigateToDrawRandomNumbers() {
     navigate(route = Route.POCKET_DRAW_RANDOM_NUMBERS.name)
 }
 
+fun NavController.navigateToSaveNumbers() {
+    navigate(route = Route.POCKET_SAVE_NUMBERS.name)
+}
+
 fun NavGraphBuilder.pocketNavGraph(
     padding: PaddingValues,
     navController: NavController,
@@ -33,7 +38,8 @@ fun NavGraphBuilder.pocketNavGraph(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,
             onClickDrawRandomNumbers = { navController.navigateToDrawRandomNumbers() },
-            onClickStorageOfRandomNumbers = { navController.navigateToRandomNumberStorage() }
+            onClickStorageOfRandomNumbers = { navController.navigateToRandomNumberStorage() },
+            moveToSaveNumberScreen = { navController.navigateToSaveNumbers() },
         )
     }
 
@@ -49,6 +55,13 @@ fun NavGraphBuilder.pocketNavGraph(
         DrawRandomNumbersRoute(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,
+            onBackPressed = { navController.navigateUp() },
+        )
+    }
+
+    composable(Route.POCKET_SAVE_NUMBERS.name) {
+        SaveNumbersRoute(
+            padding = padding,
             onBackPressed = { navController.navigateUp() },
         )
     }
