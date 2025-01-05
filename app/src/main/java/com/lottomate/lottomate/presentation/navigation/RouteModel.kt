@@ -24,6 +24,7 @@ sealed interface LottoMateRoute {
     // 보관소
     @Serializable data object PocketStorage : LottoMateRoute
     @Serializable data object PocketDrawRandomNumbers : LottoMateRoute
+    @Serializable data object RegisterLottoNumber : LottoMateRoute
     @Serializable data object LottoScan : LottoMateRoute
     @Serializable data class LottoScanResult(val data: String) : LottoMateRoute
 
@@ -36,9 +37,12 @@ sealed interface LottoMateRoute {
  * Main Bottom Tab Route
  */
 sealed interface BottomTabRoute : LottoMateRoute {
-    @Serializable data object Home : BottomTabRoute
-    @Serializable data object Map : BottomTabRoute
-    @Serializable data object Pocket : BottomTabRoute
-    @Serializable data object Lounge : BottomTabRoute
+    @Serializable
+    data object Home : BottomTabRoute
+    @Serializable
+    data object Map : BottomTabRoute
+    @Serializable
+    data object Pocket : BottomTabRoute
+    @Serializable
+    data object Lounge : BottomTabRoute
 }
-

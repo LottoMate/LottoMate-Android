@@ -52,6 +52,7 @@ fun PocketRoute(
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
+    moveToSaveNumberScreen: () -> Unit,
 ) {
     var currentTabIndex by vm.currentTabIndex
     val drewRandomNumbers by vm.drewRandomNumbers.collectAsStateWithLifecycle()
@@ -83,6 +84,7 @@ fun PocketRoute(
         onClickSaveRandomNumbers = { vm.saveDrewRandomNumber(it) },
         onClickQRScan = moveToLottoScan,
         onClickSetting = moveToSetting,
+        moveToSaveNumberScreen = moveToSaveNumberScreen,
     )
 }
 
@@ -99,6 +101,7 @@ private fun PocketScreen(
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
     onClickQRScan: () -> Unit,
     onClickSetting: () -> Unit,
+    moveToSaveNumberScreen: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -122,9 +125,9 @@ private fun PocketScreen(
                     MyNumberContent(
                         modifier = Modifier.padding(top = 24.dp),
                         onClickQRScan = onClickQRScan,
-                        onClickSaveNumbers = {},
                         onClickLottoInfo = {},
                         onClickBanner = {},
+                        onClickSaveNumbers = { moveToSaveNumberScreen() },
                     )
                 }
                 1 -> {
@@ -225,6 +228,7 @@ private fun PocketScreenPreview() {
             onShowErrorSnackBar = {},
             onClickDrawRandomNumbers = {},
             onClickStorageOfRandomNumbers = {},
+            moveToSaveNumberScreen = {},
         )
     }
 }
