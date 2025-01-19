@@ -63,18 +63,15 @@ private fun HomeScreen(
                     .padding(horizontal = Dimens.DefaultPadding20),
             )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(36.dp))
 
-        Button(onClick = onClickLottoInfo) {
-            Text(text = "Move Lotto Info View")
-        }
+            WeeklyWinnerResultSection(
 
-        Button(onClick = onClickInterview) {
-            Text(text = "Move Lotto Review")
-        }
+            )
 
-        Button(onClick = onClickLogin) {
-            Text(text = "Move Login")
+//            Button(onClick = onClickLogin) {
+//                Text(text = "Move Login")
+//            }
         }
         LottoMateTopAppBar(
             titleRes = R.string.home_title,
