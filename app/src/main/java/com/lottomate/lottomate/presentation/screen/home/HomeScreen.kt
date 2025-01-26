@@ -22,6 +22,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
 import com.lottomate.lottomate.presentation.screen.home.component.MateVoteSection
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
@@ -54,12 +55,12 @@ private fun HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .background(LottoMateWhite),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
                 .padding(top = Dimens.BaseTopPadding)
         ) {
             TopLottoNotice(
@@ -96,6 +97,10 @@ private fun HomeScreen(
             
             MateVoteSection(
                 modifier = Modifier.padding(top = 48.dp),
+            )
+
+            BottomNoticeSection(
+                modifier = Modifier.padding(top = 56.dp),
             )
 
 
