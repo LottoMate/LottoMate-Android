@@ -214,23 +214,6 @@ private fun Lotto645WeeklyWinnerResult(
 
                 LottoBall645(number = 43)
             }
-
-            Row(
-                modifier = Modifier.padding(top = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                LottoMateText(
-                    text = "다음 회차 1등 예상 당첨금 약 36억",
-                    style = LottoMateTheme.typography.caption1
-                        .copy(color = LottoMateGray100),
-                )
-
-                LottoMateText(
-                    text = "2024.00.00 00:00:00 기준",
-                    style = LottoMateTheme.typography.caption1
-                        .copy(color = LottoMateGray70),
-                )
-            }
         }
 
         Spacer(modifier = Modifier.width(3.dp))
