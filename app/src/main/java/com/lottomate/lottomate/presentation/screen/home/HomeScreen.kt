@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,6 +23,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
+import com.lottomate.lottomate.presentation.screen.home.component.WinInterviewCardsSection
 import com.lottomate.lottomate.presentation.screen.home.component.WishWinCardsSection
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
@@ -49,6 +52,7 @@ private fun HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(LottoMateWhite),
     ) {
         Column(
@@ -70,6 +74,13 @@ private fun HomeScreen(
 
             WishWinCardsSection(
                 modifier = Modifier.padding(top = 36.dp),
+            )
+
+            WinInterviewCardsSection(
+                modifier = Modifier.padding(top = 48.dp),
+                onClickInterview = {
+
+                },
             )
 
 
