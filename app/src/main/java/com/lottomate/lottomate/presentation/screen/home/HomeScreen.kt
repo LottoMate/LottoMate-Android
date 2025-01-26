@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
@@ -79,6 +80,15 @@ private fun HomeScreen(
             WinInterviewCardsSection(
                 modifier = Modifier.padding(top = 48.dp),
                 onClickInterview = {
+
+                },
+            )
+
+            BannerCard(
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .padding(horizontal = Dimens.DefaultPadding20),
+                onClickBanner = {
 
                 },
             )
