@@ -22,6 +22,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.home.component.MateVoteSection
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
 import com.lottomate.lottomate.presentation.screen.home.component.WinInterviewCardsSection
@@ -91,6 +92,10 @@ private fun HomeScreen(
                 onClickBanner = {
 
                 },
+            )
+            
+            MateVoteSection(
+                modifier = Modifier.padding(top = 48.dp),
             )
 
 
