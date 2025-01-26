@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -23,6 +21,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
+import com.lottomate.lottomate.presentation.screen.home.component.WishWinCardsSection
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -68,6 +67,11 @@ private fun HomeScreen(
             WeeklyWinnerResultSection(
 
             )
+
+            WishWinCardsSection(
+                modifier = Modifier.padding(top = 36.dp),
+            )
+
 
 //            Button(onClick = onClickLogin) {
 //                Text(text = "Move Login")
