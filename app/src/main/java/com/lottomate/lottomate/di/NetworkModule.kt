@@ -1,6 +1,8 @@
 package com.lottomate.lottomate.di
 
 import com.lottomate.lottomate.BuildConfig
+import com.lottomate.lottomate.data.remote.api.InterviewApi
+import com.lottomate.lottomate.data.remote.api.LoginApi
 import com.lottomate.lottomate.data.remote.api.LottoInfoApi
 import com.lottomate.lottomate.data.remote.api.StoreApi
 import dagger.Module
@@ -60,4 +62,12 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideStoreApi(retrofit: Retrofit): StoreApi = retrofit.create(StoreApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLoginApi(retrofit: Retrofit): LoginApi = retrofit.create(LoginApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideInterviewApi(retrofit: Retrofit): InterviewApi = retrofit.create(InterviewApi::class.java)
 }

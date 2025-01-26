@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
@@ -41,9 +42,9 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 @Composable
 internal fun WinInterviewCardsSection(
     modifier: Modifier = Modifier,
+    interviews: List<ResponseInterviewsInfo>,
     onClickInterview: () -> Unit,
 ) {
-    val interviews = listOf("", "")
     val pagerState = rememberPagerState(
         pageCount = { interviews.size }
     )
@@ -91,7 +92,7 @@ internal fun WinInterviewCardsSection(
                     ) {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
-                                .data(interviews[page])
+                                .data(interviews[page].reviewThumb)
                                 .build(),
                             contentDescription = "Lotto Interview Image",
                             contentScale = ContentScale.Crop,
@@ -108,19 +109,20 @@ internal fun WinInterviewCardsSection(
                                 .padding(horizontal = 16.dp)
                         ) {
                             LottoMateText(
-                                text = "연금복권 1등",
+                                text = interviews[page].reviewPlace,
                                 style = LottoMateTheme.typography.caption1
                                     .copy(color = LottoMateGray80),
                             )
 
                             LottoMateText(
-                                text = "일이 잘 풀리나 싶더니 \n로또까지 1등 당첨",
+                                text = interviews[page].reviewTitle,
                                 style = LottoMateTheme.typography.headline1,
+                                maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                             )
 
                             LottoMateText(
-                                text = "2025.01.01",
+                                text = interviews[page].intrvDate.replace("-", "."),
                                 style = LottoMateTheme.typography.caption1
                                     .copy(color = LottoMateGray80),
                             )

@@ -16,13 +16,17 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -41,6 +45,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
+    vm: HomeViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToLottoInfo: (Int) -> Unit,
     onClickInterview: () -> Unit,
@@ -48,8 +53,11 @@ fun HomeRoute(
     moveToSetting: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    val interviews by vm.interviews.collectAsStateWithLifecycle()
+
     HomeScreen(
         modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
+        interviews = interviews,
         onClickLogin = onClickLogin,
         moveToSetting = moveToSetting,
         moveToLottoInfo = moveToLottoInfo,
@@ -60,6 +68,7 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
+    interviews: List<ResponseInterviewsInfo>?,
     onClickLogin: () -> Unit,
     moveToLottoInfo: (Int) -> Unit,
     moveToSetting: () -> Unit,
@@ -121,6 +130,7 @@ private fun HomeScreen(
 
                 WinInterviewCardsSection(
                     modifier = Modifier.padding(top = 48.dp),
+                    interviews = interviews ?: emptyList(),
                     onClickInterview = {
 
                     },
@@ -166,8 +176,10 @@ private fun HomeScreen(
 private fun HomeScreenPreview() {
     LottoMateTheme {
         HomeScreen(
+            interviews = emptyList(),
             onClickLogin = {},
             moveToSetting = {},
+            moveToLottoInfo = {},
         )
     }
 }
