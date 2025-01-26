@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateCard
@@ -18,10 +17,12 @@ import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 internal fun WishWinCardsSection(
     modifier: Modifier = Modifier,
+    onClickMap: () -> Unit,
 ) {
     Column(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
@@ -66,7 +67,9 @@ internal fun WishWinCardsSection(
                 modifier = Modifier.weight(1f),
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20, vertical = 16.dp),
+                    modifier = Modifier
+                        .padding(horizontal = Dimens.DefaultPadding20, vertical = 16.dp)
+                        .noInteractionClickable { onClickMap() },
 
                     ) {
                     Image(

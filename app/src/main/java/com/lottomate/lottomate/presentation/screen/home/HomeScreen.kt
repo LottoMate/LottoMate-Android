@@ -51,6 +51,7 @@ fun HomeRoute(
     onClickInterview: () -> Unit,
     onClickLogin: () -> Unit,
     moveToSetting: () -> Unit,
+    moveToMap: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val interviews by vm.interviews.collectAsStateWithLifecycle()
@@ -60,6 +61,7 @@ fun HomeRoute(
         interviews = interviews,
         onClickLogin = onClickLogin,
         moveToSetting = moveToSetting,
+        moveToMap = moveToMap,
         moveToLottoInfo = moveToLottoInfo,
     )
 }
@@ -71,6 +73,7 @@ private fun HomeScreen(
     interviews: List<ResponseInterviewsInfo>?,
     onClickLogin: () -> Unit,
     moveToLottoInfo: (Int) -> Unit,
+    moveToMap: () -> Unit,
     moveToSetting: () -> Unit,
 ) {
     val bottomSheetScaffoldState = androidx.compose.material.rememberModalBottomSheetState(
@@ -126,6 +129,7 @@ private fun HomeScreen(
 
                 WishWinCardsSection(
                     modifier = Modifier.padding(top = 36.dp),
+                    onClickMap = moveToMap,
                 )
 
                 WinInterviewCardsSection(
@@ -180,6 +184,7 @@ private fun HomeScreenPreview() {
             onClickLogin = {},
             moveToSetting = {},
             moveToLottoInfo = {},
+            moveToMap = {},
         )
     }
 }

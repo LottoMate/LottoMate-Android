@@ -12,6 +12,7 @@ import com.lottomate.lottomate.presentation.screen.home.SettingPage
 import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
 import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
+import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 
 fun NavController.navigateHome(navOptions: NavOptions) {
     navigate(BottomNavigationRoute.HOME.name, navOptions)
@@ -37,6 +38,7 @@ fun NavGraphBuilder.homeNavGraph(
             onClickInterview = { navController.navigateInterview() },
             onClickLogin = { navController.navigateToLogin() },
             moveToSetting = { navController.navigateToSetting() },
+            moveToMap = { navController.navigateToMap() },
             onShowErrorSnackBar = onShowErrorSnackBar
         )
     }
