@@ -45,11 +45,13 @@ fun HomeRoute(
     onClickLottoInfo: () -> Unit,
     onClickInterview: () -> Unit,
     onClickLogin: () -> Unit,
+    moveToSetting: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     HomeScreen(
         modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
         onClickLogin = onClickLogin,
+        moveToSetting = moveToSetting,
     )
 }
 
@@ -58,6 +60,7 @@ fun HomeRoute(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     onClickLogin: () -> Unit,
+    moveToSetting: () -> Unit,
 ) {
     val bottomSheetScaffoldState = androidx.compose.material.rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -147,7 +150,7 @@ private fun HomeScreen(
                         painter = painterResource(id = R.drawable.icon_setting),
                         contentDescription = stringResource(id = R.string.desc_setting_icon),
                         tint = LottoMateGray100,
-                        modifier = Modifier.noInteractionClickable {  }
+                        modifier = Modifier.noInteractionClickable { moveToSetting() }
                     )
                 }
             )
@@ -160,7 +163,8 @@ private fun HomeScreen(
 private fun HomeScreenPreview() {
     LottoMateTheme {
         HomeScreen(
-            onClickLogin = {}
+            onClickLogin = {},
+            moveToSetting = {},
         )
     }
 }
