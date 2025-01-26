@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeRoute(
     padding: PaddingValues,
-    onClickLottoInfo: () -> Unit,
+    moveToLottoInfo: (Int) -> Unit,
     onClickInterview: () -> Unit,
     onClickLogin: () -> Unit,
     moveToSetting: () -> Unit,
@@ -52,6 +52,7 @@ fun HomeRoute(
         modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
         onClickLogin = onClickLogin,
         moveToSetting = moveToSetting,
+        moveToLottoInfo = moveToLottoInfo,
     )
 }
 
@@ -60,6 +61,7 @@ fun HomeRoute(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     onClickLogin: () -> Unit,
+    moveToLottoInfo: (Int) -> Unit,
     moveToSetting: () -> Unit,
 ) {
     val bottomSheetScaffoldState = androidx.compose.material.rememberModalBottomSheetState(
@@ -105,11 +107,12 @@ private fun HomeScreen(
                 Spacer(modifier = Modifier.height(36.dp))
 
                 WeeklyWinnerResultSection(
+                    onClickLottoInfo = moveToLottoInfo,
                     openLottoTypeInfoBottomSheet = {
                         coroutineScope.launch {
                             bottomSheetScaffoldState.show()
                         }
-                    }
+                    },
                 )
 
                 WishWinCardsSection(

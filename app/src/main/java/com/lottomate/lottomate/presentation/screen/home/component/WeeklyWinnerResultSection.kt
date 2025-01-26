@@ -43,6 +43,7 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 internal fun WeeklyWinnerResultSection(
     modifier: Modifier = Modifier,
     openLottoTypeInfoBottomSheet: () -> Unit,
+    onClickLottoInfo: (Int) -> Unit,
 ) {
     val tabRowState = rememberTabState()
     val tabs = listOf("로또", "연금복권", "스피또")
@@ -88,15 +89,21 @@ internal fun WeeklyWinnerResultSection(
         when (tabRowState.currentTabIndex) {
             0 -> {
                 // 로또 당첨 결과
-                Lotto645WeeklyWinnerResult()
+                Lotto645WeeklyWinnerResult(
+                    onClickLottoInfo = { onClickLottoInfo(tabRowState.currentTabIndex) },
+                )
             }
             1 -> {
                 // 연금복권 당첨 결과
-                Lotto720WeeklyWinnerResult()
+                Lotto720WeeklyWinnerResult(
+                    onClickLottoInfo = { onClickLottoInfo(tabRowState.currentTabIndex) },
+                )
             }
             2 -> {
                 // 스피또 당첨 결과
-                SpeettoWeeklyWinnerResult()
+                SpeettoWeeklyWinnerResult(
+                    onClickLottoInfo = { onClickLottoInfo(tabRowState.currentTabIndex) },
+                )
             }
         }
 
@@ -144,13 +151,15 @@ internal fun WeeklyWinnerResultSection(
 @Composable
 private fun Lotto645WeeklyWinnerResult(
     modifier: Modifier = Modifier,
+    onClickLottoInfo: () -> Unit,
 ) {
     val winNumbers = listOf(4, 5, 11, 21, 37, 40)
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
-            .padding(horizontal = Dimens.DefaultPadding20),
+            .padding(horizontal = Dimens.DefaultPadding20)
+            .clickable { onClickLottoInfo() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -233,6 +242,7 @@ private fun Lotto645WeeklyWinnerResult(
 @Composable
 private fun Lotto720WeeklyWinnerResult(
     modifier: Modifier = Modifier,
+    onClickLottoInfo: () -> Unit,
 ) {
     val winNumbers = listOf(5, 4, 5, 11, 21, 37, 40)
 
@@ -240,7 +250,8 @@ private fun Lotto720WeeklyWinnerResult(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
-            .padding(horizontal = Dimens.DefaultPadding20),
+            .padding(horizontal = Dimens.DefaultPadding20)
+            .clickable { onClickLottoInfo() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -333,6 +344,7 @@ private fun Lotto720WeeklyWinnerResult(
 @Composable
 private fun SpeettoWeeklyWinnerResult(
     modifier: Modifier = Modifier,
+    onClickLottoInfo: () -> Unit,
 ) {
     val winNumbers = listOf(5, 4, 5, 11, 21, 37, 40)
 
@@ -340,7 +352,8 @@ private fun SpeettoWeeklyWinnerResult(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
-            .padding(horizontal = Dimens.DefaultPadding20),
+            .padding(horizontal = Dimens.DefaultPadding20)
+            .clickable { onClickLottoInfo() },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

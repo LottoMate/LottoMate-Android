@@ -33,7 +33,7 @@ fun NavGraphBuilder.homeNavGraph(
     composable(BottomNavigationRoute.HOME.name) {
         HomeRoute(
             padding = padding,
-            onClickLottoInfo = { navController.navigateLottoInfo() },
+            moveToLottoInfo = { navController.navigateLottoInfo() },
             onClickInterview = { navController.navigateInterview() },
             onClickLogin = { navController.navigateToLogin() },
             moveToSetting = { navController.navigateToSetting() },
