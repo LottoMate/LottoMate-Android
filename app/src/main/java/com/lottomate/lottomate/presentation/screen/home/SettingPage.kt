@@ -1,5 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.home
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,26 +20,48 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.login.LoginViewModel
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 internal fun SettingPage(
+    vm: LoginViewModel = hiltViewModel(),
     padding: PaddingValues,
     onBackPressed: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val resultLoginWithGoogle = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+
+        if (task.isSuccessful) {
+            Log.d("Google Login", task.result.toString())
+
+            task.result.idToken?.let {  idToken ->
+                task.result.serverAuthCode?.let { accessToken ->
+                    vm.loginWithGoogle(idToken, accessToken)
+                }
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -79,8 +104,12 @@ internal fun SettingPage(
                     Image(
                         painter = painterResource(id = R.drawable.img_google),
                         contentDescription = null,
-                        modifier = Modifier.padding(start = 20.dp),
-
+                        modifier = Modifier
+                            .padding(start = 20.dp)
+                            .noInteractionClickable {
+                                val gso = vm.loginWithGoogleClient(context)
+                                resultLoginWithGoogle.launch(gso.signInIntent)
+                            }
                         )
                 }
 

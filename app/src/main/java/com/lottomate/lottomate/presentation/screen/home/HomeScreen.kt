@@ -49,7 +49,6 @@ fun HomeRoute(
     padding: PaddingValues,
     moveToLottoInfo: (Int) -> Unit,
     onClickInterview: () -> Unit,
-    onClickLogin: () -> Unit,
     moveToSetting: () -> Unit,
     moveToMap: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
@@ -59,7 +58,6 @@ fun HomeRoute(
     HomeScreen(
         modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
         interviews = interviews,
-        onClickLogin = onClickLogin,
         moveToSetting = moveToSetting,
         moveToMap = moveToMap,
         moveToLottoInfo = moveToLottoInfo,
@@ -71,7 +69,6 @@ fun HomeRoute(
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     interviews: List<ResponseInterviewsInfo>?,
-    onClickLogin: () -> Unit,
     moveToLottoInfo: (Int) -> Unit,
     moveToMap: () -> Unit,
     moveToSetting: () -> Unit,
@@ -181,7 +178,6 @@ private fun HomeScreenPreview() {
     LottoMateTheme {
         HomeScreen(
             interviews = emptyList(),
-            onClickLogin = {},
             moveToSetting = {},
             moveToLottoInfo = {},
             moveToMap = {},

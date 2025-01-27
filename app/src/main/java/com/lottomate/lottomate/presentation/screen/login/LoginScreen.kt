@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -43,13 +44,20 @@ fun LoginRoute(
     moveToLoginSuccess: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    val context = LocalContext.current
     val latestLoginType by vm.latestLoginType
 
     val resultLoginWithGoogle = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
 
         if (task.isSuccessful) {
-            Log.d("Google Login", task.result.serverAuthCode.toString())
+            Log.d("Google Login", task.result.toString())
+
+            task.result.idToken?.let {  idToken ->
+                task.result.serverAuthCode?.let { accessToken ->
+                    vm.loginWithGoogle(idToken, accessToken)
+                }
+            }
         }
     }
 
@@ -61,7 +69,7 @@ fun LoginRoute(
         onClickKakaoLogin = {},
         onClickNaverLogin = {},
         onClickGoogleLogin = {
-            val googleClient = vm.loginWithGoogleClient()
+            val googleClient = vm.loginWithGoogleClient(context)
             googleClient.signOut()
             resultLoginWithGoogle.launch(googleClient.signInIntent)
         },

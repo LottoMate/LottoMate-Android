@@ -36,7 +36,6 @@ fun NavGraphBuilder.homeNavGraph(
             padding = padding,
             moveToLottoInfo = { navController.navigateLottoInfo() },
             onClickInterview = { navController.navigateInterview() },
-            onClickLogin = { navController.navigateToLogin() },
             moveToSetting = { navController.navigateToSetting() },
             moveToMap = { navController.navigateToMap() },
             onShowErrorSnackBar = onShowErrorSnackBar
