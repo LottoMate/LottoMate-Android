@@ -163,24 +163,23 @@ private fun HomeScreen(
                         )
                     }
                 }
+                BannerCard(
+                    modifier = Modifier
+                        .padding(top = 40.dp)
+                        .padding(horizontal = Dimens.DefaultPadding20),
+                    onClickBanner = {
+
+                    },
+                )
+
+                MateVoteSection(
+                    modifier = Modifier.padding(top = 48.dp),
+                )
+
+                BottomNoticeSection(
+                    modifier = Modifier.padding(top = 56.dp),
+                )
             }
-
-            BannerCard(
-                modifier = Modifier
-                    .padding(top = 40.dp)
-                    .padding(horizontal = Dimens.DefaultPadding20),
-                onClickBanner = {
-
-                },
-            )
-
-            MateVoteSection(
-                modifier = Modifier.padding(top = 48.dp),
-            )
-
-            BottomNoticeSection(
-                modifier = Modifier.padding(top = 56.dp),
-            )
 
             LottoMateTopAppBar(
                 titleRes = R.string.home_title,
