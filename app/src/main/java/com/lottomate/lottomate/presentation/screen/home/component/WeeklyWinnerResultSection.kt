@@ -22,10 +22,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateScrollableTabRow
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.rememberTabState
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto645Info
+import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto720Info
+import com.lottomate.lottomate.presentation.screen.home.model.HomeLottoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall720
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
@@ -42,8 +46,13 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 @Composable
 internal fun WeeklyWinnerResultSection(
     modifier: Modifier = Modifier,
+    lottoInfos: Map<Int, HomeLottoInfo>,
+    latestLotto645Round: Int,
+    latestLotto720Round: Int,
     openLottoTypeInfoBottomSheet: () -> Unit,
-    onClickLottoInfo: (Int) -> Unit,
+    onClickPrevLottoInfo: (LottoType, Int) -> Unit,
+    onClickNextLottoInfo: (LottoType, Int) -> Unit,
+    onClickLottoInfo: (LottoType, Int) -> Unit,
 ) {
     val tabRowState = rememberTabState()
     val tabs = listOf("로또", "연금복권", "스피또")
@@ -88,21 +97,35 @@ internal fun WeeklyWinnerResultSection(
 
         when (tabRowState.currentTabIndex) {
             0 -> {
+                val lottoInfo = lottoInfos[LottoType.L645.num] as HomeLotto645Info
+
                 // 로또 당첨 결과
                 Lotto645WeeklyWinnerResult(
-                    onClickLottoInfo = { onClickLottoInfo(tabRowState.currentTabIndex) },
+                    latestLottoRound = latestLotto645Round,
+                    lottoInfo = lottoInfo,
+                    onClickPrevLottoInfo = { onClickPrevLottoInfo(LottoType.L645, it) },
+                    onClickNextLottoInfo = { onClickNextLottoInfo(LottoType.L645, it) },
+                    onClickLottoInfo = { onClickLottoInfo(LottoType.L645, lottoInfo.round) },
                 )
             }
             1 -> {
+                val lottoInfo = lottoInfos[LottoType.L720.num] as HomeLotto720Info
+
                 // 연금복권 당첨 결과
                 Lotto720WeeklyWinnerResult(
-                    onClickLottoInfo = { onClickLottoInfo(tabRowState.currentTabIndex) },
+                    latestLottoRound = latestLotto720Round,
+                    lottoInfo = lottoInfos[LottoType.L720.num] as HomeLotto720Info,
+                    onClickPrevLottoInfo = { onClickPrevLottoInfo(LottoType.L720, it) },
+                    onClickNextLottoInfo = { onClickNextLottoInfo(LottoType.L720, it) },
+                    onClickLottoInfo = { onClickLottoInfo(LottoType.L720, lottoInfo.round) },
                 )
             }
             2 -> {
                 // 스피또 당첨 결과
                 SpeettoWeeklyWinnerResult(
-                    onClickLottoInfo = { onClickLottoInfo(tabRowState.currentTabIndex) },
+                    onClickLottoInfo = {
+                        // TODO : 스피또 선택 시, 해당 회차로 이동
+                    },
                 )
             }
         }
@@ -151,6 +174,10 @@ internal fun WeeklyWinnerResultSection(
 @Composable
 private fun Lotto645WeeklyWinnerResult(
     modifier: Modifier = Modifier,
+    latestLottoRound: Int,
+    lottoInfo: HomeLotto645Info,
+    onClickPrevLottoInfo: (Int) -> Unit,
+    onClickNextLottoInfo: (Int) -> Unit,
     onClickLottoInfo: () -> Unit,
 ) {
     val winNumbers = listOf(4, 5, 11, 21, 37, 40)
@@ -158,22 +185,27 @@ private fun Lotto645WeeklyWinnerResult(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
-            .padding(horizontal = Dimens.DefaultPadding20)
-            .clickable { onClickLottoInfo() },
+            .padding(horizontal = Dimens.DefaultPadding20),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val isLatestRound = lottoInfo.round == latestLottoRound
+
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_left),
             contentDescription = null,
             tint = LottoMateGray100,
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable { onClickPrevLottoInfo(lottoInfo.round.minus(1)) }
         )
 
         Spacer(modifier = Modifier.width(3.dp))
 
         Column(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .noInteractionClickable { onClickLottoInfo() },
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -183,13 +215,13 @@ private fun Lotto645WeeklyWinnerResult(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LottoMateText(
-                    text = "1126회 1등 당첨금",
+                    text = "${lottoInfo.round}회 1등 당첨금",
                     style = LottoMateTheme.typography.label2
                         .copy(color = LottoMateGray120),
                 )
 
                 LottoMateText(
-                    text = "2024.06.29 추첨",
+                    text = "${lottoInfo.date} 추첨",
                     style = LottoMateTheme.typography.caption1
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.padding(start = 8.dp),
@@ -197,13 +229,13 @@ private fun Lotto645WeeklyWinnerResult(
             }
 
             LottoMateText(
-                text = "총 269억원",
+                text = "총 ${lottoInfo.winnerPrice.replace(",", "").toLong()/100_000_000}억원",
                 style = LottoMateTheme.typography.title1,
                 modifier = Modifier.padding(top = 12.dp),
             )
 
             LottoMateText(
-                text = "당첨된 11명은 한 번에 23억을 받아요",
+                text = "당첨된 ${lottoInfo.winnerCount}명은 한 번에 ${lottoInfo.winnerPrice.replace(",", "").toLong().div(lottoInfo.winnerCount.toInt())/100_000_000}억을 받아요",
                 style = LottoMateTheme.typography.label1,
                 modifier = Modifier.padding(top = 4.dp),
             )
@@ -215,7 +247,7 @@ private fun Lotto645WeeklyWinnerResult(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                winNumbers.forEach { number ->
+                lottoInfo.winnerNumbers.forEach { number ->
                     LottoBall645(number = number)
                 }
 
@@ -225,7 +257,7 @@ private fun Lotto645WeeklyWinnerResult(
                     contentDescription = "Just Separator",
                 )
 
-                LottoBall645(number = 43)
+                LottoBall645(number = lottoInfo.winnerBonusNumber)
             }
         }
 
@@ -234,7 +266,9 @@ private fun Lotto645WeeklyWinnerResult(
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_right),
             contentDescription = null,
-            tint = LottoMateGray100,
+            tint = if (isLatestRound) LottoMateWhite else LottoMateGray100,
+            modifier = Modifier
+                .noInteractionClickable { if (!isLatestRound) onClickNextLottoInfo(lottoInfo.round.plus(1)) }
         )
     }
 }
@@ -242,16 +276,19 @@ private fun Lotto645WeeklyWinnerResult(
 @Composable
 private fun Lotto720WeeklyWinnerResult(
     modifier: Modifier = Modifier,
+    lottoInfo: HomeLotto720Info,
+    latestLottoRound: Int,
+    onClickPrevLottoInfo: (Int) -> Unit,
+    onClickNextLottoInfo: (Int) -> Unit,
     onClickLottoInfo: () -> Unit,
 ) {
-    val winNumbers = listOf(5, 4, 5, 11, 21, 37, 40)
+    val isLatestRound = lottoInfo.round == latestLottoRound
 
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
-            .padding(horizontal = Dimens.DefaultPadding20)
-            .clickable { onClickLottoInfo() },
+            .padding(horizontal = Dimens.DefaultPadding20),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -259,13 +296,17 @@ private fun Lotto720WeeklyWinnerResult(
             painter = painterResource(id = R.drawable.icon_arrow_left),
             contentDescription = null,
             tint = LottoMateGray100,
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable { onClickPrevLottoInfo(lottoInfo.round.minus(1)) },
         )
 
         Spacer(modifier = Modifier.width(3.dp))
 
         Column(
             modifier = Modifier
-                .weight(1f),
+                .weight(1f)
+                .noInteractionClickable { onClickLottoInfo() },
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -275,13 +316,13 @@ private fun Lotto720WeeklyWinnerResult(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LottoMateText(
-                    text = "1126회 1등 당첨금",
+                    text = "${lottoInfo.round}회 1등 당첨금",
                     style = LottoMateTheme.typography.label2
                         .copy(color = LottoMateGray120),
                 )
 
                 LottoMateText(
-                    text = "2024.06.29 추첨",
+                    text = "${lottoInfo.date} 추첨",
                     style = LottoMateTheme.typography.caption1
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.padding(start = 8.dp),
@@ -309,7 +350,7 @@ private fun Lotto720WeeklyWinnerResult(
             ) {
                 LottoBall720(
                     index = 0,
-                    number = winNumbers.first(),
+                    number = lottoInfo.winnerNumbers.first().toInt(),
                     isBonusNumber = false,
                 )
 
@@ -320,10 +361,10 @@ private fun Lotto720WeeklyWinnerResult(
                     style = LottoMateTheme.typography.label2,
                 )
 
-                (1..winNumbers.lastIndex).forEach { index ->
+                (1..lottoInfo.winnerNumbers.lastIndex).forEach { index ->
                     LottoBall720(
                         index = index,
-                        number = winNumbers[index],
+                        number = lottoInfo.winnerNumbers[index],
                         isBonusNumber = false,
                         modifier = Modifier.padding(start = 7.dp),
                     )
@@ -336,7 +377,9 @@ private fun Lotto720WeeklyWinnerResult(
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_right),
             contentDescription = null,
-            tint = LottoMateGray100,
+            tint = if (isLatestRound) LottoMateWhite else LottoMateGray100,
+            modifier = Modifier
+                .noInteractionClickable { if (!isLatestRound) onClickPrevLottoInfo(lottoInfo.round.plus(1)) },
         )
     }
 }

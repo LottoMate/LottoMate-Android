@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
-import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -47,20 +47,27 @@ import kotlinx.coroutines.launch
 fun HomeRoute(
     vm: HomeViewModel = hiltViewModel(),
     padding: PaddingValues,
-    moveToLottoInfo: (Int) -> Unit,
+    moveToLottoInfo: (LottoType, Int) -> Unit,
     onClickInterview: () -> Unit,
     moveToSetting: () -> Unit,
     moveToMap: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
-    val interviews by vm.interviews.collectAsStateWithLifecycle()
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
+
+    val latestLotto645Round by vm.latestLotto645Round
+    val latestLotto720Round by vm.latestLotto720Round
 
     HomeScreen(
         modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
-        interviews = interviews,
+        uiState = uiState,
+        latestLotto645Round = latestLotto645Round,
+        latestLotto720Round = latestLotto720Round,
+        onClickPrevLottoInfo = { type, round -> vm.getLottoInfo(type, round) },
+        onClickNextLottoInfo = { type, round -> vm.getLottoInfo(type, round) },
         moveToSetting = moveToSetting,
         moveToMap = moveToMap,
-        moveToLottoInfo = moveToLottoInfo,
+        moveToLottoInfo = { type, round -> moveToLottoInfo(type, round) },
     )
 }
 
@@ -68,8 +75,12 @@ fun HomeRoute(
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
-    interviews: List<ResponseInterviewsInfo>?,
-    moveToLottoInfo: (Int) -> Unit,
+    uiState: HomeUiState,
+    latestLotto645Round: Int,
+    latestLotto720Round: Int,
+    onClickPrevLottoInfo: (LottoType, Int) -> Unit,
+    onClickNextLottoInfo: (LottoType, Int) -> Unit,
+    moveToLottoInfo: (LottoType, Int) -> Unit,
     moveToMap: () -> Unit,
     moveToSetting: () -> Unit,
 ) {
@@ -115,45 +126,61 @@ private fun HomeScreen(
 
                 Spacer(modifier = Modifier.height(36.dp))
 
-                WeeklyWinnerResultSection(
-                    onClickLottoInfo = moveToLottoInfo,
-                    openLottoTypeInfoBottomSheet = {
-                        coroutineScope.launch {
-                            bottomSheetScaffoldState.show()
-                        }
-                    },
-                )
+                when (uiState) {
+                    HomeUiState.Loading -> {
 
-                WishWinCardsSection(
-                    modifier = Modifier.padding(top = 36.dp),
-                    onClickMap = moveToMap,
-                )
+                    }
+                    is HomeUiState.Error -> TODO()
+                    is HomeUiState.Success -> {
+                        val lottoInfos = uiState.lottoInfos
+                        val interviews = uiState.interviews
 
-                WinInterviewCardsSection(
-                    modifier = Modifier.padding(top = 48.dp),
-                    interviews = interviews ?: emptyList(),
-                    onClickInterview = {
+                        WeeklyWinnerResultSection(
+                            lottoInfos = lottoInfos,
+                            latestLotto645Round = latestLotto645Round,
+                            latestLotto720Round = latestLotto720Round,
+                            onClickLottoInfo = moveToLottoInfo,
+                            onClickNextLottoInfo = onClickNextLottoInfo,
+                            onClickPrevLottoInfo = onClickPrevLottoInfo,
+                            openLottoTypeInfoBottomSheet = {
+                                coroutineScope.launch {
+                                    bottomSheetScaffoldState.show()
+                                }
+                            },
+                        )
 
-                    },
-                )
+                        WishWinCardsSection(
+                            modifier = Modifier.padding(top = 36.dp),
+                            onClickMap = moveToMap,
+                        )
 
-                BannerCard(
-                    modifier = Modifier
-                        .padding(top = 40.dp)
-                        .padding(horizontal = Dimens.DefaultPadding20),
-                    onClickBanner = {
+                        WinInterviewCardsSection(
+                            modifier = Modifier.padding(top = 48.dp),
+                            interviews = interviews,
+                            onClickInterview = {
 
-                    },
-                )
-
-                MateVoteSection(
-                    modifier = Modifier.padding(top = 48.dp),
-                )
-
-                BottomNoticeSection(
-                    modifier = Modifier.padding(top = 56.dp),
-                )
+                            },
+                        )
+                    }
+                }
             }
+
+            BannerCard(
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .padding(horizontal = Dimens.DefaultPadding20),
+                onClickBanner = {
+
+                },
+            )
+
+            MateVoteSection(
+                modifier = Modifier.padding(top = 48.dp),
+            )
+
+            BottomNoticeSection(
+                modifier = Modifier.padding(top = 56.dp),
+            )
 
             LottoMateTopAppBar(
                 titleRes = R.string.home_title,
@@ -177,10 +204,14 @@ private fun HomeScreen(
 private fun HomeScreenPreview() {
     LottoMateTheme {
         HomeScreen(
-            interviews = emptyList(),
+            uiState = HomeUiState.Loading,
+            latestLotto645Round = 1152,
+            latestLotto720Round = 1152,
             moveToSetting = {},
-            moveToLottoInfo = {},
+            moveToLottoInfo = { _, _ -> },
             moveToMap = {},
+            onClickNextLottoInfo = { _, _ -> },
+            onClickPrevLottoInfo = { _, _ -> },
         )
     }
 }
