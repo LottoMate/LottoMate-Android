@@ -97,6 +97,8 @@ internal fun WinInterviewCardsSection(
                             contentDescription = "Lotto Interview Image",
                             contentScale = ContentScale.Crop,
                             placeholder = painterResource(id = R.drawable.img_review),
+                            // TODO : 기본 이미지 변경 필요 
+                            error = painterResource(id = R.drawable.img_review),
                             modifier = Modifier
                                 .height(160.dp)
                                 .fillMaxWidth(),
