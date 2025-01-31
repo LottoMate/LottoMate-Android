@@ -253,7 +253,7 @@ private fun LottoMateBaseButton(
             color = textColor,
             style = when (buttonSize) {
                 LottoMateButtonProperty.Size.SMALL -> LottoMateTheme.typography.label2
-                LottoMateButtonProperty.Size.XSMALL -> LottoMateTheme.typography.caption1
+                LottoMateButtonProperty.Size.XSMALL -> LottoMateTheme.typography.caption
                 else -> LottoMateTheme.typography.label1
             },
         )

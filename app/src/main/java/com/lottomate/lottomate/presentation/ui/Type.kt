@@ -32,73 +32,87 @@ private val pretendardStyle = TextStyle(
 
 private val display1 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 52.sp,
+//    fontSize = 52.sp,
+    fontSize = 48.sp,
     lineHeight = 62.sp,
 )
 
 private val display2 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 42.sp,
+//    fontSize = 42.sp,
+    fontSize = 40.sp,
     lineHeight = 54.sp,
 )
 
 private val title1 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 40.sp,
+//    fontSize = 40.sp,
+    fontSize = 36.sp,
     lineHeight = 48.sp,
 )
 
 private val title2 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 31.sp,
+//    fontSize = 31.sp,
+    fontSize = 28.sp,
     lineHeight = 40.sp,
 )
 
 private val title3 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 27.sp,
+//    fontSize = 27.sp,
+    fontSize = 24.sp,
     lineHeight = 34.sp,
 )
 
 private val headline1 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 20.sp,
+//    fontSize = 20.sp,
+    fontSize = 18.sp,
     lineHeight = 28.sp,
 )
 
 private val headline2 = pretendardStyle.copy(
     fontWeight = FontWeight.Bold,
-    fontSize = 18.sp,
-    lineHeight = 26.sp,
+//    fontSize = 18.sp,
+    fontSize = 16.sp,
+//    lineHeight = 26.sp,
+    lineHeight = 24.sp,
 )
 
 private val body1 = pretendardStyle.copy(
     fontWeight = FontWeight.Medium,
-    fontSize = 18.sp,
+//    fontSize = 18.sp,
+    fontSize = 16.sp,
     lineHeight = 24.sp,
 )
 
 private val body2 = pretendardStyle.copy(
     fontWeight = FontWeight.Normal,
-    fontSize = 18.sp,
+//    fontSize = 18.sp,
+    fontSize = 16.sp,
     lineHeight = 24.sp,
 )
 
 private val label1 = pretendardStyle.copy(
-    fontWeight = FontWeight.SemiBold,
-    fontSize = 18.sp,
-    lineHeight = 24.sp,
+    fontWeight = FontWeight.Medium,
+//    fontSize = 18.sp,
+    fontSize = 14.sp,
+//    lineHeight = 24.sp,
+    lineHeight = 22.sp,
 )
 
 private val label2 = pretendardStyle.copy(
     fontWeight = FontWeight.SemiBold,
-    fontSize = 15.sp,
+//    fontSize = 15.sp,
+    fontSize = 14.sp,
     lineHeight = 22.sp,
 )
 
-private val caption1 = pretendardStyle.copy(
+private val caption = pretendardStyle.copy(
     fontWeight = FontWeight.SemiBold,
-    fontSize = 13.sp,
+//    fontSize = 13.sp,
+    fontSize = 12.sp,
     lineHeight = 18.sp,
 )
 
@@ -121,7 +135,7 @@ data class LottoMateTypography(
     val body2: TextStyle,
     val label1: TextStyle,
     val label2: TextStyle,
-    val caption1: TextStyle,
+    val caption: TextStyle,
     val caption2: TextStyle,
 )
 
@@ -137,7 +151,7 @@ val Typography = LottoMateTypography(
     body2 = body2,
     label1 = label1,
     label2 = label2,
-    caption1 = caption1,
+    caption = caption,
     caption2 = caption2,
 )
 
@@ -154,7 +168,7 @@ val LocalLottoMateTypography = staticCompositionLocalOf {
         body2 = body2,
         label1 = label1,
         label2 = label2,
-        caption1 = caption1,
+        caption = caption,
         caption2 = caption2,
     )
 }

@@ -78,12 +78,12 @@ private fun Lotto645WinNumber(
         ) {
             LottoMateText(
                 text = "당첨 번호",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray70)
             )
             LottoMateText(
                 text = "보너스",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray70)
             )
         }
@@ -122,7 +122,7 @@ private fun Lotto720WinNumber(
     ) {
         LottoMateText(
             text = "1등",
-            style = LottoMateTheme.typography.caption1
+            style = LottoMateTheme.typography.caption
                 .copy(LottoMateGray70),
         )
 
@@ -170,7 +170,7 @@ private fun Lotto720WinNumber(
 
         LottoMateText(
             text = "보너스",
-            style = LottoMateTheme.typography.caption1
+            style = LottoMateTheme.typography.caption
                 .copy(LottoMateGray70),
         )
 

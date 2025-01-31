@@ -80,7 +80,7 @@ private fun StoreWinHistoryChip(
 
             LottoMateText(
                 text = history.round,
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray100),
             )
         }

@@ -51,7 +51,7 @@ internal fun WishWinCardsSection(
 
                     LottoMateText(
                         text = "내 로또는 과연 몇 등일까?",
-                        style = LottoMateTheme.typography.caption1
+                        style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray100),
                         modifier = Modifier.padding(top = 8.dp),
                     )
@@ -79,7 +79,7 @@ internal fun WishWinCardsSection(
 
                     LottoMateText(
                         text = "로또 사러 어디로 가지?",
-                        style = LottoMateTheme.typography.caption1
+                        style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray100),
                         modifier = Modifier.padding(top = 8.dp),
                     )

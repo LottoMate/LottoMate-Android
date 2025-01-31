@@ -45,18 +45,19 @@ fun LottoMateText(
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
 ) {
-    val textStyle: LottoMateTextStyle = lottoMateTextStyle(style = style)
-    val baselineModifier = if (textStyle != LottoMateTextStyle.UNSPECIFIED) {
-        val top = textStyle.firstBaseLineToTop.value.dp
-        val bottom = textStyle.lastBaseLineToBottom.value.dp
-        Modifier.paddingFromBaseline(top = top, bottom = bottom)
-    } else {
-        Modifier
-    }
+//    val textStyle: LottoMateTextStyle = lottoMateTextStyle(style = style)
+//    val baselineModifier = if (textStyle != LottoMateTextStyle.UNSPECIFIED) {
+//        val top = textStyle.firstBaseLineToTop.value.dp
+//        val bottom = textStyle.lastBaseLineToBottom.value.dp
+//        Modifier.paddingFromBaseline(top = top, bottom = bottom)
+//    } else {
+//        Modifier
+//    }
 
     Text(
         text = text,
-        modifier = modifier.then(baselineModifier),
+//        modifier = modifier.then(baselineModifier),
+        modifier = modifier,
         color = color,
         fontSize = fontSize,
         fontStyle = fontStyle,
@@ -147,7 +148,7 @@ private fun lottoMateTextStyle(style: TextStyle = LocalTextStyle.current): Lotto
         equals(LottoMateTheme.typography.body2, style) -> LottoMateTextStyle.BODY2
         equals(LottoMateTheme.typography.label1, style) -> LottoMateTextStyle.LABEL1
         equals(LottoMateTheme.typography.label2, style) -> LottoMateTextStyle.LABEL2
-        equals(LottoMateTheme.typography.caption1, style) -> LottoMateTextStyle.CAPTION1
+        equals(LottoMateTheme.typography.caption, style) -> LottoMateTextStyle.CAPTION1
         equals(LottoMateTheme.typography.caption2, style) -> LottoMateTextStyle.CAPTION2
         else -> LottoMateTextStyle.UNSPECIFIED
     }

@@ -396,7 +396,7 @@ private fun MyLottoSituation(
         ) {
             LottoMateText(
                 text = "역대 당첨금 확인하기",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray100),
             )
             
@@ -519,7 +519,7 @@ internal fun MyLottoHistory(
 
                             LottoMateText(
                                 text = lottoDetails.first().date,
-                                style = LottoMateTheme.typography.caption1
+                                style = LottoMateTheme.typography.caption
                                     .copy(color = LottoMateGray80),
                             )
                         }

@@ -76,14 +76,14 @@ private fun WinLottoTypeChip(
 
             LottoMateText(
                 text = winLottoType,
-                style = LottoMateTheme.typography.caption1,
+                style = LottoMateTheme.typography.caption,
             )
 
             Spacer(modifier = Modifier.width(2.dp))
 
             LottoMateText(
                 text = "${winCount}회",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateRed50),
             )
         }
