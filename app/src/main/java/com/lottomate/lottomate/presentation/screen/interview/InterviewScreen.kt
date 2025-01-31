@@ -69,6 +69,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun InterviewRoute(
     vm: InterviewViewModel = hiltViewModel(),
+    no: Int,
     onClickBanner: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onBackPressed: () -> Unit,

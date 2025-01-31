@@ -20,7 +20,7 @@ object LottoInfoMapper {
             prizePerPerson[0] = p1PerJackpot
             lottoWinnerCntList[1] = p2WinnrCnt
             lottoPrizes[1] = p2Jackpot
-            prizePerPerson[1] = p2JPerJackpot
+            prizePerPerson[1] = p2PerJackpot
             lottoWinnerCntList[2] = p3WinnrCnt
             lottoPrizes[2] = p3Jackpot
             prizePerPerson[2] = p3PerJackpot

@@ -5,15 +5,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
+import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.screen.map.MapRoute
 
-fun NavController.navigateMap(navOptions: NavOptions) {
-    navigate(route = BottomNavigationRoute.MAP.name, navOptions)
+fun NavController.navigateToMapTab(navOptions: NavOptions) {
+    navigate(BottomTabRoute.Map, navOptions)
 }
 
 fun NavController.navigateToMap() {
-    navigate(route = BottomNavigationRoute.MAP.name)
+    navigate(BottomTabRoute.Map)
 }
 
 fun NavGraphBuilder.mapNavGraph(
@@ -21,7 +21,7 @@ fun NavGraphBuilder.mapNavGraph(
     navController: NavController,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
-    composable(BottomNavigationRoute.MAP.name) {
+    composable<BottomTabRoute.Map> {
         MapRoute(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,

@@ -21,7 +21,7 @@ data class Lotto645InfoEntity(
     val p1PerJackpot:Long,
     val p2Jackpot: Long,
     val p2WinnrCnt: Int,
-    val p2JPerJackpot: Long,
+    val p2PerJackpot: Long,
     val p3Jackpot: Long,
     val p3WinnrCnt: Int,
     val p3PerJackpot: Long,
