@@ -2,37 +2,37 @@ package com.lottomate.lottomate.presentation.screen.main
 
 import androidx.compose.runtime.Composable
 import com.lottomate.lottomate.R
-import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
+import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 
 enum class MainBottomTab(
     val icon: Int,
     val contentDescription: String,
-    val route: BottomNavigationRoute,
+    val route: BottomTabRoute,
 ) {
     HOME(
         icon = R.drawable.icon_clover,
         contentDescription = "홈",
-        route = BottomNavigationRoute.HOME,
+        route = BottomTabRoute.Home,
     ),
     MAP(
         icon = R.drawable.icon_map,
         contentDescription = "지도",
-        route = BottomNavigationRoute.MAP,
+        route = BottomTabRoute.Map,
     ),
     POCKET(
         icon = R.drawable.icon_pocket,
         contentDescription = "보관소",
-        route = BottomNavigationRoute.POCKET,
+        route = BottomTabRoute.Pocket,
     ),
     LOUNGE(
         icon = R.drawable.icon_person,
         contentDescription = "라운지",
-        route = BottomNavigationRoute.LOUNGE,
+        route = BottomTabRoute.Lounge,
     );
 
     companion object {
         @Composable
-        fun find(predicate: @Composable (BottomNavigationRoute) -> Boolean): MainBottomTab? {
+        fun find(predicate: @Composable (BottomTabRoute) -> Boolean): MainBottomTab? {
             return entries.find { predicate(it.route) }
         }
     }

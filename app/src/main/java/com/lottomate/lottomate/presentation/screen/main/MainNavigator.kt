@@ -3,19 +3,15 @@ package com.lottomate.lottomate.presentation.screen.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.lottomate.lottomate.presentation.screen.home.navigation.navigateHome
-import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHome
-import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateInterview
-import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
-import com.lottomate.lottomate.presentation.screen.lottoinfo.navigation.navigateLottoInfo
-import com.lottomate.lottomate.presentation.screen.map.navigation.navigateMap
-import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
-import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigatePocket
+import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHomeTab
+import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
+import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigateToPocketTab
 
 class MainNavigator(
     val navController: NavHostController,
@@ -30,8 +26,8 @@ class MainNavigator(
         @Composable get() = currentTab != null
 
     val currentTab: MainBottomTab?
-        @Composable get() = MainBottomTab.find {
-            currentDestination?.route == it.name
+        @Composable get() = MainBottomTab.find { tab ->
+            currentDestination?.hasRoute(tab::class) == true
         }
 
     fun navigate(bottomTab: MainBottomTab) {
@@ -44,31 +40,11 @@ class MainNavigator(
         }
 
         when (bottomTab) {
-            MainBottomTab.HOME -> navController.navigateHome(navOptions)
-            MainBottomTab.MAP -> navController.navigateMap(navOptions)
-            MainBottomTab.POCKET -> navController.navigatePocket(navOptions)
+            MainBottomTab.HOME -> navController.navigateToHomeTab(navOptions)
+            MainBottomTab.MAP -> navController.navigateToMapTab(navOptions)
+            MainBottomTab.POCKET -> navController.navigateToPocketTab(navOptions)
             MainBottomTab.LOUNGE -> {}
         }
-    }
-
-    fun navigateToHome() {
-        navController.navigateToHome()
-    }
-
-    fun navigateToMap() {
-        navController.navigateToMap()
-    }
-
-    fun navigateLottoInfo() {
-        navController.navigateLottoInfo()
-    }
-
-    fun navigateInterview() {
-        navController.navigateInterview()
-    }
-
-    fun navigateToLogin() {
-        navController.navigateToLogin()
     }
 }
 

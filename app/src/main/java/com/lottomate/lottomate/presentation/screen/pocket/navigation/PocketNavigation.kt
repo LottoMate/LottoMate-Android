@@ -5,22 +5,22 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.lottomate.lottomate.presentation.navigation.BottomNavigationRoute
-import com.lottomate.lottomate.presentation.navigation.Route
-import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
+import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
+import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
+import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
 
-fun NavController.navigatePocket(navOptions: NavOptions) {
-    navigate(route = BottomNavigationRoute.POCKET.name, navOptions)
+fun NavController.navigateToPocketTab(navOptions: NavOptions) {
+    navigate(BottomTabRoute.Pocket, navOptions)
 }
 
 fun NavController.navigateToRandomNumberStorage() {
-    navigate(route = Route.POCKET_STORAGE.name)
+    navigate(LottoMateRoute.PocketStorage)
 }
 
 fun NavController.navigateToDrawRandomNumbers() {
-    navigate(route = Route.POCKET_DRAW_RANDOM_NUMBERS.name)
+    navigate(LottoMateRoute.PocketDrawRandomNumbers)
 }
 
 fun NavGraphBuilder.pocketNavGraph(
@@ -28,7 +28,7 @@ fun NavGraphBuilder.pocketNavGraph(
     navController: NavController,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
-    composable(BottomNavigationRoute.POCKET.name) {
+    composable<BottomTabRoute.Pocket> {
         PocketRoute(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,
@@ -37,7 +37,7 @@ fun NavGraphBuilder.pocketNavGraph(
         )
     }
 
-    composable(Route.POCKET_STORAGE.name) {
+    composable<LottoMateRoute.PocketStorage> {
         RandomNumbersStorageRoute(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,
@@ -45,7 +45,7 @@ fun NavGraphBuilder.pocketNavGraph(
         )
     }
 
-    composable(Route.POCKET_DRAW_RANDOM_NUMBERS.name) {
+    composable<LottoMateRoute.PocketDrawRandomNumbers> {
         DrawRandomNumbersRoute(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,
