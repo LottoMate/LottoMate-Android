@@ -3,11 +3,17 @@ package com.lottomate.lottomate.presentation.screen.home.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,11 +25,38 @@ import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.ui.LottoMateDim
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LottoTypeInfoBottomSheet(
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+) {
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true,
+    )
+
+    ModalBottomSheet(
+        onDismissRequest = { onDismiss() },
+        modifier = modifier,
+        sheetState = bottomSheetState,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+        containerColor = LottoMateWhite,
+        scrimColor = LottoMateDim,
+        dragHandle = null,
+        windowInsets = WindowInsets.navigationBars
+    ) {
+        LottoTypeInfoBottomSheetContent(
+            onClickClose = onDismiss,
+        )
+    }
+}
+@Composable
+private fun LottoTypeInfoBottomSheetContent(
     modifier: Modifier = Modifier,
     onClickClose: () -> Unit,
 ) {

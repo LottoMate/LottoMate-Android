@@ -9,15 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,7 +40,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
-import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoute(
@@ -84,118 +82,103 @@ private fun HomeScreen(
     moveToMap: () -> Unit,
     moveToSetting: () -> Unit,
 ) {
-    val bottomSheetScaffoldState = androidx.compose.material.rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        skipHalfExpanded = true
-    )
-    val coroutineScope = rememberCoroutineScope()
+    var showLottoInfoBottomSheet by remember { mutableStateOf(false) }
 
-    ModalBottomSheetLayout(
-        modifier = Modifier,
-        sheetState = bottomSheetScaffoldState,
-        sheetContent = {
-            Box(modifier = modifier) {
-                LottoTypeInfoBottomSheet(
-                    onClickClose = {
-                        coroutineScope.launch {
-                            bottomSheetScaffoldState.hide()
-                        }
-                    }
-                )
-            }
-        },
-        sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+    if (showLottoInfoBottomSheet) {
+        LottoTypeInfoBottomSheet(
+            onDismiss = { showLottoInfoBottomSheet = false }
+        )
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(LottoMateWhite),
     ) {
-        Box(
-            modifier = modifier
+        Column(
+            modifier = Modifier
                 .fillMaxSize()
-                .background(LottoMateWhite),
+                .verticalScroll(rememberScrollState())
         ) {
-            Column(
+            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
+
+            TopLottoNotice(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
+                    .padding(top = Dimens.DefaultPadding20)
+                    .padding(horizontal = Dimens.DefaultPadding20),
+            )
 
-                TopLottoNotice(
-                    modifier = Modifier
-                        .padding(top = Dimens.DefaultPadding20)
-                        .padding(horizontal = Dimens.DefaultPadding20),
-                )
+            Spacer(modifier = Modifier.height(36.dp))
 
-                Spacer(modifier = Modifier.height(36.dp))
+            when (uiState) {
+                HomeUiState.Loading -> {
 
-                when (uiState) {
-                    HomeUiState.Loading -> {
-
-                    }
-                    is HomeUiState.Error -> TODO()
-                    is HomeUiState.Success -> {
-                        val lottoInfos = uiState.lottoInfos
-                        val interviews = uiState.interviews
-
-                        WeeklyWinnerResultSection(
-                            lottoInfos = lottoInfos,
-                            latestLotto645Round = latestLotto645Round,
-                            latestLotto720Round = latestLotto720Round,
-                            onClickLottoInfo = moveToLottoInfo,
-                            onClickNextLottoInfo = onClickNextLottoInfo,
-                            onClickPrevLottoInfo = onClickPrevLottoInfo,
-                            openLottoTypeInfoBottomSheet = {
-                                coroutineScope.launch {
-                                    bottomSheetScaffoldState.show()
-                                }
-                            },
-                        )
-
-                        WishWinCardsSection(
-                            modifier = Modifier.padding(top = 36.dp),
-                            onClickMap = moveToMap,
-                        )
-
-                        WinInterviewCardsSection(
-                            modifier = Modifier.padding(top = 48.dp),
-                            interviews = interviews,
-                            onClickInterview = {
-
-                            },
-                        )
-                    }
                 }
-                BannerCard(
-                    modifier = Modifier
-                        .padding(top = 40.dp)
-                        .padding(horizontal = Dimens.DefaultPadding20),
-                    onClickBanner = {
 
-                    },
-                )
+                is HomeUiState.Error -> TODO()
+                is HomeUiState.Success -> {
+                    val lottoInfos = uiState.lottoInfos
+                    val interviews = uiState.interviews
 
-                MateVoteSection(
-                    modifier = Modifier.padding(top = 48.dp),
-                )
+                    WeeklyWinnerResultSection(
+                        lottoInfos = lottoInfos,
+                        latestLotto645Round = latestLotto645Round,
+                        latestLotto720Round = latestLotto720Round,
+                        onClickLottoInfo = moveToLottoInfo,
+                        onClickNextLottoInfo = onClickNextLottoInfo,
+                        onClickPrevLottoInfo = onClickPrevLottoInfo,
+                        openLottoTypeInfoBottomSheet = {
+                            showLottoInfoBottomSheet = true
+                        },
+                    )
 
-                BottomNoticeSection(
-                    modifier = Modifier.padding(top = 56.dp),
-                )
-            }
+                    WishWinCardsSection(
+                        modifier = Modifier.padding(top = 36.dp),
+                        onClickMap = moveToMap,
+                    )
 
-            LottoMateTopAppBar(
-                titleRes = R.string.home_title,
-                hasNavigation = false,
-                isTitleCenter = false,
-                actionButtons = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_setting),
-                        contentDescription = stringResource(id = R.string.desc_setting_icon),
-                        tint = LottoMateGray100,
-                        modifier = Modifier.noInteractionClickable { moveToSetting() }
+                    WinInterviewCardsSection(
+                        modifier = Modifier.padding(top = 48.dp),
+                        interviews = interviews,
+                        onClickInterview = {
+
+                        },
                     )
                 }
+            }
+            BannerCard(
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .padding(horizontal = Dimens.DefaultPadding20),
+                onClickBanner = {
+
+                },
+            )
+
+            MateVoteSection(
+                modifier = Modifier.padding(top = 48.dp),
+            )
+
+            BottomNoticeSection(
+                modifier = Modifier.padding(top = 56.dp),
             )
         }
+
+        LottoMateTopAppBar(
+            titleRes = R.string.home_title,
+            hasNavigation = false,
+            isTitleCenter = false,
+            actionButtons = {
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_setting),
+                    contentDescription = stringResource(id = R.string.desc_setting_icon),
+                    tint = LottoMateGray100,
+                    modifier = Modifier.noInteractionClickable { moveToSetting() }
+                )
+            }
+        )
     }
+
 }
 
 @Preview(showBackground = true)
