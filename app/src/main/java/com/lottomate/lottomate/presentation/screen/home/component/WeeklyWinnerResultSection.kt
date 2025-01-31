@@ -78,8 +78,8 @@ internal fun WeeklyWinnerResultSection(
             LottoMateScrollableTabRow(
                 tabState = tabRowState,
                 tabs = tabs,
-                unselectedTabTextStyle = LottoMateTheme.typography.headline2,
-                unselectedTabTextColor = LottoMateGray60,
+//                unselectedTabTextStyle = LottoMateTheme.typography.headline2,
+//                unselectedTabTextColor = LottoMateGray60,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -153,7 +153,7 @@ internal fun WeeklyWinnerResultSection(
                 ) {
                     LottoMateText(
                         text = "당첨 정보 보기",
-                        style = LottoMateTheme.typography.caption1
+                        style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray100),
                     )
 
@@ -222,7 +222,7 @@ private fun Lotto645WeeklyWinnerResult(
 
                 LottoMateText(
                     text = "${lottoInfo.date} 추첨",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.padding(start = 8.dp),
                 )
@@ -323,7 +323,7 @@ private fun Lotto720WeeklyWinnerResult(
 
                 LottoMateText(
                     text = "${lottoInfo.date} 추첨",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.padding(start = 8.dp),
                 )
@@ -427,7 +427,7 @@ private fun SpeettoWeeklyWinnerResult(
 
                 LottoMateText(
                     text = "2024.06.09 스피또 2000 기준",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
                 )
             }
@@ -445,7 +445,7 @@ private fun SpeettoWeeklyWinnerResult(
             )
             LottoMateText(
                 text = "현재까지 출고율 72%",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray100),
                 modifier = Modifier.padding(top = 4.dp),
             )
@@ -456,34 +456,34 @@ private fun SpeettoWeeklyWinnerResult(
             ) {
                 LottoMateText(
                     text = "1등 : 0/6",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
                 )
 
                 LottoMateText(
                     text = "|",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray40),
                     modifier = Modifier.padding(start = 8.dp),
                 )
 
                 LottoMateText(
                     text = "2등 : 11/18",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.padding(start = 8.dp),
                 )
 
                 LottoMateText(
                     text = "|",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray40),
                     modifier = Modifier.padding(start = 8.dp),
                 )
 
                 LottoMateText(
                     text = "3등 : 102/150",
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.padding(start = 8.dp),
                 )

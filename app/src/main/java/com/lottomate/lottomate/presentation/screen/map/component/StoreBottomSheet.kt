@@ -256,7 +256,7 @@ private fun StoreInfoListItem(
                     ) {
                         LottoMateText(
                             text = type,
-                            style = LottoMateTheme.typography.caption1
+                            style = LottoMateTheme.typography.caption
                                 .copy(color = textColor),
                             modifier = Modifier.padding(vertical = 2.dp, horizontal = 8.dp),
                         )
@@ -291,7 +291,7 @@ private fun StoreInfoListItem(
                             if (store.distance % 1000 == 0) { "${store.distance / 1000}km" }
                             else { "${store.distance / 1000}.${(store.distance % 1000) / 100}km" }
                         } else { "${store.distance}m" },
-                        style = LottoMateTheme.typography.caption1
+                        style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray80),
                         modifier = Modifier.alignByBaseline(),
                     )

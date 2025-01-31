@@ -340,7 +340,7 @@ private fun InterviewContentDetail(
             ) {
                 LottoMateText(
                     text = stringResource(id = R.string.interview_content_bottom_notice),
-                    style = LottoMateTheme.typography.caption1
+                    style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80)
                 )
 
@@ -350,7 +350,7 @@ private fun InterviewContentDetail(
                 ) {
                     LottoMateText(
                         text = "원문 보러가기",
-                        style = LottoMateTheme.typography.caption1
+                        style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray100)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -383,7 +383,7 @@ private fun InterviewTitle(
             LottoMateText(
                 text = "•",
                 textAlign = TextAlign.Center,
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray120)
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -404,19 +404,19 @@ private fun InterviewTitle(
         Row(verticalAlignment = Alignment.CenterVertically) {
             LottoMateText(
                 text = "인터뷰 ${interview.interviewDate}",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray80)
             )
             Spacer(modifier = Modifier.width(8.dp))
             LottoMateText(
                 text = "|",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray80)
             )
             Spacer(modifier = Modifier.width(8.dp))
             LottoMateText(
                 text = "작성 ${interview.uploadDate}",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray80)
             )
         }
@@ -524,7 +524,7 @@ private fun BottomInterviewListItem(
                 Column {
                     LottoMateText(
                         text = subTitle,
-                        style = LottoMateTheme.typography.caption1
+                        style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray80)
                     )
                     LottoMateText(

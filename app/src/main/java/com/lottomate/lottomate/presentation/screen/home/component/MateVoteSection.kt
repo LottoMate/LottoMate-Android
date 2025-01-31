@@ -117,7 +117,7 @@ internal fun MateVoteSection(
         ) {
             LottoMateText(
                 text = "투표하고 싶은 질문이 있다면?",
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray100),
             )
 

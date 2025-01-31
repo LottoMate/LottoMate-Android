@@ -142,7 +142,7 @@ private fun BottomDrawNumbers(
 
             LottoMateText(
                 text = stringResource(id = R.string.pocket_title_sub_today_draw_lotto),
-                style = LottoMateTheme.typography.caption1
+                style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray80),
             )
         }
@@ -208,7 +208,7 @@ private fun BottomDrawNumbers(
                         LottoMateText(
                             text = if (ballsToShow < numbers.size) stringResource(id = R.string.common_extend) 
                             else stringResource(id = R.string.common_collapse),
-                            style = LottoMateTheme.typography.caption1
+                            style = LottoMateTheme.typography.caption
                                 .copy(color = LottoMateGray100,),
                         )
 

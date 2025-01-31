@@ -112,7 +112,7 @@ internal fun WinInterviewCardsSection(
                         ) {
                             LottoMateText(
                                 text = interviews[page].reviewPlace,
-                                style = LottoMateTheme.typography.caption1
+                                style = LottoMateTheme.typography.caption
                                     .copy(color = LottoMateGray80),
                             )
 
@@ -125,7 +125,7 @@ internal fun WinInterviewCardsSection(
 
                             LottoMateText(
                                 text = interviews[page].intrvDate.replace("-", "."),
-                                style = LottoMateTheme.typography.caption1
+                                style = LottoMateTheme.typography.caption
                                     .copy(color = LottoMateGray80),
                             )
                         }
