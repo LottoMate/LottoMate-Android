@@ -64,7 +64,8 @@ private fun LottoTypeInfoBottomSheetContent(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = Dimens.DefaultPadding20)
-            .padding(top = 32.dp, bottom = 28.dp),
+            .padding(top = 32.dp, bottom = 28.dp)
+            .verticalScroll(rememberScrollState()),
     ) {
         LottoMateText(
             text = "복권 종류",
@@ -77,9 +78,7 @@ private fun LottoTypeInfoBottomSheetContent(
             modifier = Modifier.padding(top = 4.dp),
         )
 
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
-        ) {
+        Column {
             Row(
                 modifier = Modifier.padding(top = 32.dp),
                 verticalAlignment = Alignment.CenterVertically,
