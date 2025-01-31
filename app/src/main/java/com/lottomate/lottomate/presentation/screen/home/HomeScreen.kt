@@ -46,9 +46,9 @@ fun HomeRoute(
     vm: HomeViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToLottoInfo: (LottoType, Int) -> Unit,
-    onClickInterview: () -> Unit,
     moveToSetting: () -> Unit,
     moveToMap: () -> Unit,
+    moveToInterviewDetail: (Int) -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -63,6 +63,7 @@ fun HomeRoute(
         latestLotto720Round = latestLotto720Round,
         onClickPrevLottoInfo = { type, round -> vm.getLottoInfo(type, round) },
         onClickNextLottoInfo = { type, round -> vm.getLottoInfo(type, round) },
+        onClickInterview = moveToInterviewDetail,
         moveToSetting = moveToSetting,
         moveToMap = moveToMap,
         moveToLottoInfo = { type, round -> moveToLottoInfo(type, round) },
@@ -78,6 +79,7 @@ private fun HomeScreen(
     latestLotto720Round: Int,
     onClickPrevLottoInfo: (LottoType, Int) -> Unit,
     onClickNextLottoInfo: (LottoType, Int) -> Unit,
+    onClickInterview: (Int) -> Unit,
     moveToLottoInfo: (LottoType, Int) -> Unit,
     moveToMap: () -> Unit,
     moveToSetting: () -> Unit,
@@ -140,9 +142,7 @@ private fun HomeScreen(
                     WinInterviewCardsSection(
                         modifier = Modifier.padding(top = 48.dp),
                         interviews = interviews,
-                        onClickInterview = {
-
-                        },
+                        onClickInterview = { onClickInterview(it) },
                     )
                 }
             }
@@ -192,6 +192,7 @@ private fun HomeScreenPreview() {
             moveToSetting = {},
             moveToLottoInfo = { _, _ -> },
             moveToMap = {},
+            onClickInterview = {},
             onClickNextLottoInfo = { _, _ -> },
             onClickPrevLottoInfo = { _, _ -> },
         )

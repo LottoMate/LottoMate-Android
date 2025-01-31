@@ -43,7 +43,7 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 internal fun WinInterviewCardsSection(
     modifier: Modifier = Modifier,
     interviews: List<ResponseInterviewsInfo>,
-    onClickInterview: () -> Unit,
+    onClickInterview: (Int) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         pageCount = { interviews.size }
@@ -84,7 +84,7 @@ internal fun WinInterviewCardsSection(
                             offsetY = 0.dp,
                             blur = 8.dp,
                         )
-                        .noInteractionClickable { },
+                        .noInteractionClickable { onClickInterview(interviews[page].reviewNo) },
                     shape = RoundedCornerShape(Dimens.RadiusLarge),
                 ) {
                     Column(
