@@ -38,6 +38,7 @@ class MapViewModel @Inject constructor(
     var winStoreState = mutableStateOf(false)
         private set
     var favoriteStoreState = mutableStateOf(false)
+    private var isFirstLoading = true
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
 
@@ -84,7 +85,11 @@ class MapViewModel @Inject constructor(
 
             storeRepository.fetchStoreList(type = 0, locationInfo = userLocationInfo)
                 .onStart {
-                    _uiState.update { MapUiState.Loading }
+                    // 처음으로 진입했을 때에만 로딩 화면 표시
+                    if (isFirstLoading) {
+                        _uiState.update { MapUiState.Loading }
+                        isFirstLoading = false
+                    }
                 }
                 .catch {
                     Log.d("MapVM", it.stackTraceToString())
