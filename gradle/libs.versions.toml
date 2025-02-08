@@ -18,6 +18,7 @@ retrofit2 = "2.11.0"
 okhttp3 = "4.12.0"
 serialization = "2.0.0"
 serialization-json = "1.6.0"
+serialization-converter = "1.0.0"
 coil = "2.7.0"
 naver-map = "3.19.1"
 naver-map-compose = "1.7.2"
@@ -54,7 +55,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 squareup-retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
 squareup-okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
 squareup-okhttp3-logger-interceptor = { group ="com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
-squareup-retrofit2-converter-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit2" }
+retrofit2-converter-serialization = { group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "serialization-converter" }
 
 org-jetbrains-kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "serialization" }
 org-jetbrains-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization-json" }

@@ -1,6 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.map
 
+import android.content.Context
 import android.util.Log
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -9,7 +11,9 @@ import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
+import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,20 +26,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val storeRepository: StoreRepository,
 ) : ViewModel() {
+    var currentPosition = mutableStateOf(DEFAULT_LATLNG)
+        private set
+    var currentZoomLevel = mutableDoubleStateOf(14.0)
+        private set
     var lottoTypeState = mutableStateListOf(LottoTypeFilter.All.kr)
         private set
     var winStoreState = mutableStateOf(false)
         private set
     var favoriteStoreState = mutableStateOf(false)
-
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
-
-    init {
-        fetchStoreList()
-    }
 
     fun selectStoreMarker(store: StoreInfo) = storeRepository.selectStore(store.key)
     fun unselectStoreMarker() = storeRepository.unselectStore()
@@ -66,11 +70,19 @@ class MapViewModel @Inject constructor(
         favoriteStoreState.value = !favoriteStoreState.value
     }
 
-    private fun fetchStoreList() {
+    fun fetchStoreList(leftTopPosition: Pair<Double, Double>, rightBottomPosition: Pair<Double, Double>) {
         viewModelScope.launch {
-            val userLocationInfo = StoreInfoRequestBody()
 
-            storeRepository.fetchStoreList(type = 1, locationInfo = userLocationInfo)
+            val userLocationInfo = StoreInfoRequestBody(
+                leftLot = leftTopPosition.second,
+                leftLat = leftTopPosition.first,
+                rightLot = rightBottomPosition.second,
+                rightLat = rightBottomPosition.first,
+                personLot = currentPosition.value.longitude,
+                personLat = currentPosition.value.latitude,
+            )
+
+            storeRepository.fetchStoreList(type = 0, locationInfo = userLocationInfo)
                 .onStart {
                     _uiState.update { MapUiState.Loading }
                 }
@@ -83,6 +95,18 @@ class MapViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun changeCurrentPosition(newCurrentPosition: Pair<Double, Double>) {
+        currentPosition.value = LatLng(newCurrentPosition.first, newCurrentPosition.second)
+    }
+
+    fun changeCurrentZoomLevel(newZoomLevel: Double) {
+        currentZoomLevel.value = newZoomLevel
+    }
+
+    companion object {
+        private val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
     }
 }
 

@@ -24,6 +24,7 @@ import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,7 +46,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
@@ -56,12 +56,19 @@ import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateDim
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.GeoPositionCalculator
 import com.lottomate.lottomate.utils.dropShadow
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
+import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.overlay.OverlayImage
 import kotlinx.coroutines.launch
 
@@ -75,7 +82,10 @@ fun MapRoute(
     padding: PaddingValues,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    val currentPosition by vm.currentPosition
+    val currentZoomLevel by vm.currentZoomLevel
     val uiState by vm.uiState.collectAsStateWithLifecycle()
+
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
     val favoriteStoreState by vm.favoriteStoreState
@@ -98,9 +108,28 @@ fun MapRoute(
         )
     }
 
+    val leftTopPosition = GeoPositionCalculator.calculateLeftTopGeoPosition(
+        currentLat = currentPosition.latitude,
+        currentLon = currentPosition.longitude,
+        zoom = currentZoomLevel
+    )
+
+    val rightBottomPosition = GeoPositionCalculator.calculateBottomRightGeoPosition(
+        currentLat = currentPosition.latitude,
+        currentLon = currentPosition.longitude,
+        zoom = currentZoomLevel
+    )
+
+    LaunchedEffect(Unit) {
+        vm.fetchStoreList(leftTopPosition, rightBottomPosition)
+    }
+
     MapScreen(
         padding = padding,
         uiState = uiState,
+        currentPosition = currentPosition,
+        leftTopPosition = leftTopPosition,
+        rightBottomPosition = rightBottomPosition,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
         favoriteStoreState = favoriteStoreState,
@@ -108,7 +137,10 @@ fun MapRoute(
         onClickLottoType = { showLottoTypeSelectorBottomSheet = true },
         onClickWinLottoStore = { vm.changeWinStoreState() },
         onClickFavoriteStore = { vm.changeFavoriteStoreState() },
-        onClickRefresh = {},
+        onClickRefresh = { newPosition, newZoomLevel ->
+            vm.changeCurrentPosition(newPosition)
+            vm.changeCurrentZoomLevel(newZoomLevel)
+        },
         onClickStoreList = { vm.showStoreList() },
         onClickLocationFocus = {},
         onClickSelectStoreMarker = { vm.selectStoreMarker(it) },
@@ -122,6 +154,9 @@ private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     uiState: MapUiState,
+    currentPosition: LatLng,
+    leftTopPosition: Pair<Double, Double>,
+    rightBottomPosition: Pair<Double, Double>,
     selectStore: StoreInfo? = null,
     lottoTypeState: String,
     winStoreState: Boolean,
@@ -130,18 +165,22 @@ private fun MapScreen(
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
-    onClickRefresh: () -> Unit,
+    onClickRefresh: (Pair<Double, Double>, Double) -> Unit,
     onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
     onClickUnSelectStoreMarker: () -> Unit,
 ) {
-    var mapUiSettings by remember {
+    val mapUiSettings by remember {
         mutableStateOf(
             MapUiSettings(
                 isZoomControlEnabled = false,
             )
         )
+    }
+    val cameraPositionState: CameraPositionState = rememberCameraPositionState {
+        // 카메라 초기 위치를 설정합니다.
+        position = CameraPosition(currentPosition, 14.0)
     }
 
     val coroutineScope = rememberCoroutineScope()
@@ -160,6 +199,7 @@ private fun MapScreen(
                         bottomSheetTopPadding = bottomSheetTopPadding,
                     )
                 }
+
                 else -> {}
             }
         },
@@ -172,7 +212,9 @@ private fun MapScreen(
             when (uiState) {
                 MapUiState.Loading -> {
                     MapLoadingScreen(modifier = Modifier.fillMaxSize())
+
                 }
+
                 is MapUiState.Success -> {
                     val stores = uiState.storeInfo
 
@@ -180,6 +222,10 @@ private fun MapScreen(
                         NaverMap(
                             modifier = Modifier.fillMaxSize(),
                             uiSettings = mapUiSettings,
+                            properties = MapProperties(
+                                locationTrackingMode = LocationTrackingMode.Follow,
+                            ),
+                            cameraPositionState = cameraPositionState,
                         ) {
                             selectStore?.let { store ->
                                 Marker(
@@ -199,7 +245,9 @@ private fun MapScreen(
                             stores.forEach { store ->
                                 Marker(
                                     state = MarkerState(position = store.latLng),
-                                    icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(R.drawable.marker_default)
+                                    icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(
+                                        R.drawable.marker_default
+                                    )
                                     else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
                                     else OverlayImage.fromResource(R.drawable.marker_win),
                                     onClick = {
@@ -208,6 +256,31 @@ private fun MapScreen(
                                     }
                                 )
                             }
+
+                            Marker(
+                                state = MarkerState(
+                                    position = LatLng(
+                                        leftTopPosition.first,
+                                        leftTopPosition.second
+                                    )
+                                ),
+                                icon = OverlayImage.fromResource(R.drawable.marker_like),
+                            )
+
+                            Marker(
+                                state = MarkerState(
+                                    position = LatLng(
+                                        rightBottomPosition.first,
+                                        rightBottomPosition.second
+                                    )
+                                ),
+                                icon = OverlayImage.fromResource(R.drawable.marker_win),
+                            )
+
+                            Marker(
+                                state = MarkerState(position = currentPosition),
+                                icon = OverlayImage.fromResource(R.drawable.marker_select),
+                            )
                         }
                     }
 
@@ -221,7 +294,12 @@ private fun MapScreen(
                         onClickLottoType = onClickLottoType,
                         onClickWinLottoStore = onClickWinLottoStore,
                         onClickFavoriteStore = onClickFavoriteStore,
-                        onClickRefresh = onClickRefresh,
+                        onClickRefresh = {
+                            val currentCameraPosition = cameraPositionState.position.target
+                            val currentZoomLevel = cameraPositionState.position.zoom
+
+                            onClickRefresh(Pair(currentCameraPosition.latitude, currentCameraPosition.longitude), currentZoomLevel)
+                        },
                         onClickStoreList = onClickStoreList,
                         onClickLocationFocus = onClickLocationFocus,
                     )
@@ -266,7 +344,7 @@ private fun MapButtons(
             onClickStoreList = onClickStoreList,
             onClickLocationFocus = onClickLocationFocus,
         )
-   }
+    }
 }
 
 @Composable
@@ -301,7 +379,7 @@ private fun TopFilterButtons(
                 isSelected = winStoreState,
                 onClick = onClickWinLottoStore,
             )
-            
+
             Spacer(modifier = Modifier.width(8.dp))
 
             FilterButton(
@@ -370,7 +448,7 @@ private fun BottomButtons(
                     contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
                 )
             }
-            
+
             Spacer(modifier = Modifier.height(20.dp))
 
             IconButton(
@@ -464,12 +542,15 @@ private fun MapScreenPreview() {
             onClickLottoType = {},
             onClickWinLottoStore = {},
             onClickFavoriteStore = {},
-            onClickRefresh = {},
+            onClickRefresh = { newPosition, newZoomLevel -> },
             onClickStoreList = {},
             onClickLocationFocus = {},
             onClickSelectStoreMarker = {},
             onClickUnSelectStoreMarker = {},
             padding = PaddingValues(32.dp),
+            leftTopPosition = Pair(0.0, 0.0),
+            rightBottomPosition = Pair(0.0, 0.0),
+            currentPosition = LatLng(37.566499, 126.968555),
             bottomSheetScaffoldState = bottomSheetScaffoldState,
         )
     }

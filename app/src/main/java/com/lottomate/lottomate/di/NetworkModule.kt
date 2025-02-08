@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.di
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.lottomate.lottomate.BuildConfig
 import com.lottomate.lottomate.data.remote.api.InterviewApi
 import com.lottomate.lottomate.data.remote.api.LoginApi
@@ -14,7 +15,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @Module

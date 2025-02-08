@@ -44,11 +44,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -93,7 +93,7 @@ dependencies {
     // Kotlin Serialization
     implementation(libs.org.jetbrains.kotlin.serialization)
     implementation(libs.org.jetbrains.kotlinx.serialization.json)
-    implementation(libs.squareup.retrofit2.converter.serialization)
+    implementation(libs.retrofit2.converter.serialization)
 
     // Coil
     implementation(libs.io.coil.compose)
