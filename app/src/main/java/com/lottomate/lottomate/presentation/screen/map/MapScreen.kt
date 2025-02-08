@@ -120,7 +120,7 @@ fun MapRoute(
         zoom = currentZoomLevel
     )
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(currentPosition) {
         vm.fetchStoreList(leftTopPosition, rightBottomPosition)
     }
 
