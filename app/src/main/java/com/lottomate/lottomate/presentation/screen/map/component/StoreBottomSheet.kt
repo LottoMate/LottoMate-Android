@@ -36,9 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -131,27 +134,52 @@ private fun StoreInfoBottomSheetContent(
                 .align(Alignment.CenterHorizontally)
         )
 
-        selectedStore?.let { store ->
-            coroutineScope.launch {
-                bottomSheetState.bottomSheetState.expand()
+        when {
+            stores.isEmpty() -> {
+                Column(
+                    modifier = Modifier.padding(bottom = 118.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.img_pochi_black),
+                        contentDescription = null,
+                        modifier = Modifier.padding(top = 100.dp)
+                    )
+
+                    LottoMateText(
+                        text = "해당 지역엔 로또 판매점이 없어요.\n" +
+                                "위치를 이동해서 다른 지점을 찾아볼까요?",
+                        style = LottoMateTheme.typography.body2
+                            .copy(color = LottoMateGray100),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(top = 8.dp),
+                    )
+                }
             }
+            else -> {
+                selectedStore?.let { store ->
+                    coroutineScope.launch {
+                        bottomSheetState.bottomSheetState.expand()
+                    }
 
-            SelectStoreInfoContent(
-                modifier = Modifier.fillMaxWidth(),
-                store = store,
-                onClickStoreLike = onClickStoreLike,
-            )
-        } ?: run {
-            StoreInfoListContent(
-                modifier = Modifier.fillMaxWidth(),
-                stores = stores,
-                selectFilterIndex = selectFilterIndex,
-                onClickStore = onClickStore,
-                onClickStoreLike = onClickStoreLike,
-                onClickFilter = onClickFilter,
-            )
+                    SelectStoreInfoContent(
+                        modifier = Modifier.fillMaxWidth(),
+                        store = store,
+                        onClickStoreLike = onClickStoreLike,
+                    )
+                } ?: run {
+                    StoreInfoListContent(
+                        modifier = Modifier.fillMaxWidth(),
+                        stores = stores,
+                        selectFilterIndex = selectFilterIndex,
+                        onClickStore = onClickStore,
+                        onClickStoreLike = onClickStoreLike,
+                        onClickFilter = onClickFilter,
+                    )
+                }
+            }
         }
-
     }
 }
 
@@ -389,11 +417,14 @@ private fun StoreInfoListItem(
             val winHistories = store.winCountOfLottoType.flatMap { it.winningDetails }
 
             StoreWinHistory(
-                modifier = Modifier.fillMaxWidth()
-                    .padding(bottom = when {
-                        isSelect && store.winCountOfLottoType.isEmpty() -> 0.dp
-                        else -> 20.dp
-                    }),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = when {
+                            isSelect && store.winCountOfLottoType.isEmpty() -> 0.dp
+                            else -> 20.dp
+                        }
+                    ),
                 histories = winHistories,
             )
         }
