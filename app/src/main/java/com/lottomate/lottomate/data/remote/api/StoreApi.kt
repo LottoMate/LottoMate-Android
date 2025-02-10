@@ -9,7 +9,7 @@ import retrofit2.http.Query
 interface StoreApi {
     @POST("store/list")
     suspend fun getStoreList(
-        @Query("type") type: Int = 0,
+        @Query("type") type: Int,
         @Body body: StoreInfoRequestBody,
-    ) : StoreListResponse
+    ): StoreListResponse
 }

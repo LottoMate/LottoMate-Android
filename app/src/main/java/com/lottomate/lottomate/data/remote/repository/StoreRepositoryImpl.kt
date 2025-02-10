@@ -27,12 +27,9 @@ class StoreRepositoryImpl @Inject constructor(
         val result = storeApi.getStoreList(type = type, body = locationInfo)
 
         if (result.code == 200) {
-            val stores = result.storeInfoList.map { storeInfo -> StoreMapper.toModel(storeInfo) }
+            val stores = result.storeInfoList.content.map { storeInfo -> StoreMapper.toModel(storeInfo) }
 
-            _stores.update {
-                stores.toList()
-            }
-
+            _stores.update { stores.toList() }
             emit(stores.toList())
         } else {
             emit(emptyList())

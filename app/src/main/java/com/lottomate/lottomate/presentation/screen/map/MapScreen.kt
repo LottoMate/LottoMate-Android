@@ -120,8 +120,13 @@ fun MapRoute(
         zoom = currentZoomLevel
     )
 
+    LaunchedEffect(leftTopPosition, rightBottomPosition) {
+        vm.changeLeftTopPosition(leftTopPosition)
+        vm.changeRightBottomPosition(rightBottomPosition)
+    }
+
     LaunchedEffect(currentPosition) {
-        vm.fetchStoreList(leftTopPosition, rightBottomPosition)
+        vm.fetchStoreList()
     }
 
     MapScreen(

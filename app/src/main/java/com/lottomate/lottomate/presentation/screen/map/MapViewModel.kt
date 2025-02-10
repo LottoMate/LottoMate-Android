@@ -29,16 +29,21 @@ class MapViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val storeRepository: StoreRepository,
 ) : ViewModel() {
+    private var isFirstLoading = true
+    private var leftTopPosition = mutableStateOf(DEFAULT_LATLNG)
+    private var rightBottomPosition = mutableStateOf(DEFAULT_LATLNG)
     var currentPosition = mutableStateOf(DEFAULT_LATLNG)
         private set
-    var currentZoomLevel = mutableDoubleStateOf(14.0)
+
+    var currentZoomLevel = mutableDoubleStateOf(DEFAULT_ZOOM_LEVEL)
         private set
     var lottoTypeState = mutableStateListOf(LottoTypeFilter.All.kr)
         private set
     var winStoreState = mutableStateOf(false)
         private set
     var favoriteStoreState = mutableStateOf(false)
-    private var isFirstLoading = true
+        private set
+
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
 
@@ -49,7 +54,7 @@ class MapViewModel @Inject constructor(
     fun changeLottoTypeState(selectedLottoTypes: List<Boolean>) {
         val tempLottoTypeState = mutableListOf<String>()
 
-        if (selectedLottoTypes.all { !it }) {
+        if (selectedLottoTypes.all { it }) {
             tempLottoTypeState.add(LottoTypeFilter.All.kr)
         } else {
             selectedLottoTypes.forEachIndexed { index, isSelected ->
@@ -61,29 +66,53 @@ class MapViewModel @Inject constructor(
 
         lottoTypeState.clear()
         lottoTypeState.addAll(tempLottoTypeState)
+
+        fetchStoreList()
     }
 
     fun changeWinStoreState() {
         winStoreState.value = !winStoreState.value
+
+        fetchStoreList()
     }
 
     fun changeFavoriteStoreState() {
         favoriteStoreState.value = !favoriteStoreState.value
+
+        fetchStoreList()
     }
 
-    fun fetchStoreList(leftTopPosition: Pair<Double, Double>, rightBottomPosition: Pair<Double, Double>) {
-        viewModelScope.launch {
+    fun changeLeftTopPosition(newLeftTopPosition: Pair<Double, Double>) {
+        leftTopPosition.value = LatLng(newLeftTopPosition.first, newLeftTopPosition.second)
+    }
 
+    fun changeRightBottomPosition(newRightBottomPosition: Pair<Double, Double>) {
+        rightBottomPosition.value = LatLng(newRightBottomPosition.first, newRightBottomPosition.second)
+    }
+
+    fun fetchStoreList() {
+        viewModelScope.launch {
             val userLocationInfo = StoreInfoRequestBody(
-                leftLot = leftTopPosition.second,
-                leftLat = leftTopPosition.first,
-                rightLot = rightBottomPosition.second,
-                rightLat = rightBottomPosition.first,
+                leftLot = leftTopPosition.value.latitude,
+                leftLat = leftTopPosition.value.longitude,
+                rightLot = rightBottomPosition.value.latitude,
+                rightLat = rightBottomPosition.value.longitude,
                 personLot = currentPosition.value.longitude,
                 personLat = currentPosition.value.latitude,
             )
 
-            storeRepository.fetchStoreList(type = 0, locationInfo = userLocationInfo)
+            val type = when {
+                lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 6
+                lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 5
+                lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 4
+                lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 3
+                lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 2
+                lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) -> 1
+                lottoTypeState.contains(LottoTypeFilter.All.kr) -> 0
+                else -> 0
+            }
+
+            storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
                 .onStart {
                     // 처음으로 진입했을 때에만 로딩 화면 표시
                     if (isFirstLoading) {
@@ -112,6 +141,7 @@ class MapViewModel @Inject constructor(
 
     companion object {
         private val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
+        private const val DEFAULT_ZOOM_LEVEL = 14.0
     }
 }
 
