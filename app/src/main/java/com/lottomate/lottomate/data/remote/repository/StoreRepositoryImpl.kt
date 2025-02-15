@@ -4,6 +4,7 @@ import com.lottomate.lottomate.data.mapper.StoreMapper
 import com.lottomate.lottomate.data.remote.api.StoreApi
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
+import com.lottomate.lottomate.presentation.screen.map.StoreListFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,8 @@ class StoreRepositoryImpl @Inject constructor(
         if (result.code == 200) {
             val stores = result.storeInfoList.content.map { storeInfo -> StoreMapper.toModel(storeInfo) }
 
-            _stores.update { stores.toList() }
+//            _stores.update { stores.toList() }
+            _stores.update { StoreInfoMocks.sortedBy { it.distance } }
             emit(stores.toList())
         } else {
             emit(emptyList())
@@ -60,6 +62,17 @@ class StoreRepositoryImpl @Inject constructor(
         if (_store.value?.key == key) {
             _store.update { currentStore ->
                 currentStore?.copy(isLike = !store.isLike, countLike = changeCountLike)
+            }
+        }
+    }
+
+    override fun applyStoreFilter(filter: StoreListFilter) {
+        when (filter) {
+            StoreListFilter.DISTANCE -> {
+                _stores.update { stores.value.sortedBy { it.distance } }
+            }
+            StoreListFilter.RANK -> {
+                _stores.update { stores.value.sortedByDescending { it.getCountLotto645().plus(it.getCountLotto720()).plus(it.getCountSpeetto()) } }
             }
         }
     }

@@ -1,9 +1,11 @@
 package com.lottomate.lottomate.presentation.screen.map
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
+import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -26,8 +28,16 @@ class StoreBottomSheetViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = null,
         )
+    var selectStoreListFilter = mutableStateOf(StoreListFilter.DISTANCE)
+        private set
 
     fun setFavoriteStore(key: Int) = storeRepository.setFavoriteStore(key)
     fun selectStore(key: Int) = storeRepository.selectStore(key)
     fun unselectStore() = storeRepository.unselectStore()
+
+    fun changeStoreListFilter(newStoreListFilter: StoreListFilter) {
+        selectStoreListFilter.value = newStoreListFilter
+
+        storeRepository.applyStoreFilter(selectStoreListFilter.value)
+    }
 }

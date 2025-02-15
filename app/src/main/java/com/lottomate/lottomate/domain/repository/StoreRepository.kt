@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.domain.repository
 
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
+import com.lottomate.lottomate.presentation.screen.map.StoreListFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,4 +14,5 @@ interface StoreRepository {
     fun selectStore(key: Int)
     fun unselectStore()
     fun setFavoriteStore(key: Int)
+    fun applyStoreFilter(filter: StoreListFilter)
 }
