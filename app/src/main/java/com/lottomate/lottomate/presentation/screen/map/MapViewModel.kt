@@ -95,7 +95,7 @@ class MapViewModel @Inject constructor(
         rightBottomPosition.value = LatLng(newRightBottomPosition.first, newRightBottomPosition.second)
     }
 
-    fun fetchStoreList() {
+    fun fetchStoreList(position: LatLng? = null) {
         viewModelScope.launch {
             val userLocationInfo = StoreInfoRequestBody(
                 leftLot = leftTopPosition.value.latitude,
@@ -137,7 +137,17 @@ class MapViewModel @Inject constructor(
     }
 
     fun changeCurrentPosition(newCurrentPosition: Pair<Double, Double>) {
+        Log.d("MapVM", "변경된 사용자 GPS 위치 : ${newCurrentPosition.first} / ${newCurrentPosition.second}")
+
         currentPosition.value = LatLng(newCurrentPosition.first, newCurrentPosition.second)
+
+        changeCurrentCameraPosition(newCurrentPosition)
+    }
+
+    fun changeCurrentCameraPosition(newCurrentCameraPosition: Pair<Double, Double>) {
+        Log.d("MapVM", "카메라 GPS 위치 변경 : ${newCurrentCameraPosition.first} / ${newCurrentCameraPosition.second}")
+
+        currentCameraPosition.value = LatLng(newCurrentCameraPosition.first, newCurrentCameraPosition.second)
     }
 
     fun changeCurrentZoomLevel(newZoomLevel: Double) {
@@ -151,8 +161,8 @@ class MapViewModel @Inject constructor(
     }
 
     companion object {
-        private val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
-        private const val DEFAULT_ZOOM_LEVEL = 14.0
+        val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
+        const val DEFAULT_ZOOM_LEVEL = 14.0
     }
 }
 

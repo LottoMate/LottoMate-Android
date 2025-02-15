@@ -1,0 +1,50 @@
+package com.lottomate.lottomate.utils
+
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.setValue
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+
+object LocationManager {
+    private var latitude by mutableDoubleStateOf(0.0)
+    private var longitude by mutableDoubleStateOf(0.0)
+
+    fun getCurrentLocation() = Pair(latitude, longitude)
+
+    fun hasGpsLocation(): Boolean {
+        return latitude != 0.0 && longitude != 0.0
+    }
+
+    fun updateLocation(context: Context) {
+        val locationService = LocationServices.getFusedLocationProviderClient(context)
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        locationService.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener { location ->
+                Log.d("LocationManager", "사용자 GPS Update 성공 : ${location.latitude} / ${location.longitude}")
+                latitude = location.latitude
+                longitude = location.longitude
+            }
+            .addOnFailureListener {
+                Log.d("LocationManager", "사용자 GPS Update 실패 : ${it.stackTraceToString()}")
+
+            }
+    }
+}

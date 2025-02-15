@@ -102,6 +102,9 @@ dependencies {
     implementation(libs.com.naver.maps)
     implementation(libs.io.github.fornewid.naver.map.compose)
 
+    // GPS
+    implementation(libs.google.gms.play.services.location)
+
     // Room
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)

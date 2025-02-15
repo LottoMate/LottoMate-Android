@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.map
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,11 +22,13 @@ import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,10 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,15 +57,19 @@ import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelect
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
-import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateDim
+import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.GeoPositionCalculator
+import com.lottomate.lottomate.utils.LocationManager
 import com.lottomate.lottomate.utils.dropShadow
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -76,24 +82,36 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.overlay.OverlayImage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 private val LoadingBackgroundSize = 160.dp
 private val BottomSheetPeekHeight = 48.dp
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class)
 @Composable
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    val context = LocalContext.current
     val currentPosition by vm.currentPosition
+    val currentCameraPosition by vm.currentCameraPosition
     val currentZoomLevel by vm.currentZoomLevel
     val uiState by vm.uiState.collectAsStateWithLifecycle()
 
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
     val favoriteStoreState by vm.favoriteStoreState
+
+    val cameraPositionState: CameraPositionState = rememberCameraPositionState {
+        // 카메라 초기 위치를 설정합니다.
+        position = CameraPosition(
+            if (!LocationManager.hasGpsLocation()) { MapViewModel.DEFAULT_LATLNG } else currentPosition,
+            MapViewModel.DEFAULT_ZOOM_LEVEL
+        )
+    }
 
     var showLottoTypeSelectorBottomSheet by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -109,6 +127,10 @@ fun MapRoute(
         bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
     )
 
+    val userLocation by remember {
+        derivedStateOf { LocationManager.getCurrentLocation() }
+    }
+
     if (showLottoTypeSelectorBottomSheet) {
         LottoTypeSelectorBottomSheet(
             selectedLottoTypes = lottoTypeState,
@@ -122,14 +144,14 @@ fun MapRoute(
     }
 
     val leftTopPosition = GeoPositionCalculator.calculateLeftTopGeoPosition(
-        currentLat = currentPosition.latitude,
-        currentLon = currentPosition.longitude,
+        currentLat = currentCameraPosition.latitude,
+        currentLon = currentCameraPosition.longitude,
         zoom = currentZoomLevel
     )
 
     val rightBottomPosition = GeoPositionCalculator.calculateBottomRightGeoPosition(
-        currentLat = currentPosition.latitude,
-        currentLon = currentPosition.longitude,
+        currentLat = currentCameraPosition.latitude,
+        currentLon = currentCameraPosition.longitude,
         zoom = currentZoomLevel
     )
 
@@ -140,12 +162,35 @@ fun MapRoute(
 
     LaunchedEffect(currentPosition) {
         vm.fetchStoreList()
+        cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
+    }
+
+    LaunchedEffect(currentCameraPosition) {
+        vm.fetchStoreList(currentCameraPosition)
+        cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
+    }
+
+    LaunchedEffect(userLocation) {
+        Log.d("MapScreen", "현재 GPS : $userLocation")
+
+        if (LocationManager.hasGpsLocation()) {
+            vm.changeCurrentPosition(userLocation)
+            cameraPositionState.animate(
+                update = CameraUpdate.toCameraPosition(
+                    CameraPosition(LatLng(userLocation.first, userLocation.second), cameraPositionState.position.zoom)
+                ),
+                animation = CameraAnimation.Easing,
+                durationMs = 1_000,
+            )
+        }
     }
 
     MapScreen(
         padding = padding,
         uiState = uiState,
+        cameraPositionState = cameraPositionState,
         currentPosition = currentPosition,
+        currentCameraPosition = currentCameraPosition,
         leftTopPosition = leftTopPosition,
         rightBottomPosition = rightBottomPosition,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
@@ -156,11 +201,15 @@ fun MapRoute(
         onClickWinLottoStore = { vm.changeWinStoreState() },
         onClickFavoriteStore = { vm.changeFavoriteStoreState() },
         onClickRefresh = { newPosition, newZoomLevel ->
-            vm.changeCurrentPosition(newPosition)
+            // 판매점 새로고침 -> 카메라 이동,
+            vm.changeCurrentCameraPosition(newPosition)
             vm.changeCurrentZoomLevel(newZoomLevel)
         },
         onClickStoreList = { vm.showStoreList() },
-        onClickLocationFocus = {},
+        onClickLocationFocus = {
+            LocationManager.updateLocation(context)
+            vm.changeCurrentPosition(Pair(userLocation.first, userLocation.second))
+                               },
         onClickSelectStoreMarker = { vm.selectStoreMarker(it) },
         onClickUnSelectStoreMarker = { vm.unselectStoreMarker() },
         onShowSnackBar = { vm.sendSnackBar(it) },
@@ -180,15 +229,19 @@ fun MapRoute(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     uiState: MapUiState,
     currentPosition: LatLng,
+    currentCameraPosition: LatLng,
     leftTopPosition: Pair<Double, Double>,
     rightBottomPosition: Pair<Double, Double>,
+    cameraPositionState: CameraPositionState,
     selectStore: StoreInfo? = null,
     lottoTypeState: String,
     winStoreState: Boolean,
@@ -211,13 +264,10 @@ private fun MapScreen(
             )
         )
     }
-    val cameraPositionState: CameraPositionState = rememberCameraPositionState {
-        // 카메라 초기 위치를 설정합니다.
-        position = CameraPosition(currentPosition, 14.0)
-    }
 
     val coroutineScope = rememberCoroutineScope()
     var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
+    var bottomSheetHeight by remember { mutableIntStateOf(0) }
 
     BottomSheetScaffold(
         modifier = modifier
@@ -231,6 +281,7 @@ private fun MapScreen(
                         bottomSheetState = bottomSheetScaffoldState,
                         bottomSheetTopPadding = bottomSheetTopPadding,
                         onShowSnackBar = onShowSnackBar,
+                        onSizeChanged = { bottomSheetHeight = it }
                     )
                 }
 
@@ -311,10 +362,12 @@ private fun MapScreen(
                                 icon = OverlayImage.fromResource(R.drawable.marker_win),
                             )
 
-                            Marker(
-                                state = MarkerState(position = currentPosition),
-                                icon = OverlayImage.fromResource(R.drawable.marker_select),
-                            )
+                            if (LocationManager.hasGpsLocation()) {
+                                Marker(
+                                    state = MarkerState(position = currentPosition),
+                                    icon = OverlayImage.fromResource(R.drawable.icon_current_location),
+                                )
+                            }
                         }
                     }
 
@@ -323,16 +376,19 @@ private fun MapScreen(
                         lottoTypeState = lottoTypeState,
                         winStoreState = winStoreState,
                         favoriteStoreState = favoriteStoreState,
+                        currentCameraPosition = currentCameraPosition,
+                        bottomSheetHeight = bottomSheetHeight,
+                        cameraPositionState = cameraPositionState,
                         bottomButtonPadding = 0.dp,
                         onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
                         onClickLottoType = onClickLottoType,
                         onClickWinLottoStore = onClickWinLottoStore,
                         onClickFavoriteStore = onClickFavoriteStore,
                         onClickRefresh = {
-                            val currentCameraPosition = cameraPositionState.position.target
-                            val currentZoomLevel = cameraPositionState.position.zoom
+                            val cameraPosition = cameraPositionState.position.target
+                            val zoomLevel = cameraPositionState.position.zoom
 
-                            onClickRefresh(Pair(currentCameraPosition.latitude, currentCameraPosition.longitude), currentZoomLevel)
+                            onClickRefresh(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
                         },
                         onClickStoreList = onClickStoreList,
                         onClickLocationFocus = onClickLocationFocus,
@@ -343,12 +399,16 @@ private fun MapScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun MapButtons(
     modifier: Modifier = Modifier,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
+    currentCameraPosition: LatLng,
+    bottomSheetHeight: Int,
+    cameraPositionState: CameraPositionState,
     bottomButtonPadding: Dp,
     onSizeBottomSheetHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
@@ -373,6 +433,9 @@ private fun MapButtons(
         BottomButtons(
             modifier = Modifier.fillMaxSize(),
             bottomButtonPadding = bottomButtonPadding,
+            currentCameraPosition = currentCameraPosition,
+            bottomSheetHeight = bottomSheetHeight,
+            cameraPositionState = cameraPositionState,
             onClickRefresh = onClickRefresh,
             onClickStoreList = onClickStoreList,
             onClickLocationFocus = onClickLocationFocus,
@@ -424,23 +487,38 @@ private fun TopFilterButtons(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BottomButtons(
     modifier: Modifier = Modifier,
     bottomButtonPadding: Dp,
+    currentCameraPosition: LatLng,
+    bottomSheetHeight: Int,
+    cameraPositionState: CameraPositionState,
     onClickRefresh: () -> Unit,
     onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
+    fun isApproximatelyEqual(coord1: LatLng, coord2: LatLng): Boolean {
+        val roundedLat1 = BigDecimal(coord1.latitude).setScale(6, RoundingMode.HALF_UP).toDouble()
+        val roundedLon1 = BigDecimal(coord1.longitude).setScale(6, RoundingMode.HALF_UP).toDouble()
+
+        val roundedLat2 = BigDecimal(coord2.latitude).setScale(6, RoundingMode.HALF_UP).toDouble()
+        val roundedLon2 = BigDecimal(coord2.longitude).setScale(6, RoundingMode.HALF_UP).toDouble()
+
+        return roundedLat1 == roundedLat2 && roundedLon1 == roundedLon2
+    }
+    val isCurrentMoving = cameraPositionState.isMoving || isApproximatelyEqual(currentCameraPosition, cameraPositionState.position.target)
+
     Row(
         modifier = modifier
             .padding(horizontal = 20.dp)
-            .padding(bottom = bottomButtonPadding.plus(28.dp)),
+            .padding(bottom = 40.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
     ) {
         IconButton(
-            onClick = onClickRefresh,
+            onClick = onClickLocationFocus,
             modifier = Modifier
                 .dropShadow(
                     shape = CircleShape,
@@ -455,8 +533,9 @@ private fun BottomButtons(
                 .size(40.dp),
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.icon_refresh),
+                painter = painterResource(id = R.drawable.icon_location),
                 contentDescription = stringResource(id = R.string.desc_refresh_icon_map),
+                tint = LottoMateGray100,
             )
         }
 
@@ -479,19 +558,23 @@ private fun BottomButtons(
                 Icon(
                     painter = painterResource(id = R.drawable.icon_list),
                     contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
+                    tint = LottoMateGray100,
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             IconButton(
-                onClick = onClickLocationFocus,
+                onClick = onClickRefresh,
                 modifier = Modifier
                     .dropShadow(
                         shape = CircleShape,
                         offsetX = 0.dp,
                         offsetY = 0.dp,
-                        blur = 8.dp,
+                        blur = if (isCurrentMoving) 16.dp else 8.dp,
+                        color = if (isCurrentMoving) LottoMateBlue50.copy(
+                            alpha = 0.8f
+                        ) else LottoMateBlack.copy(alpha = 0.16f),
                     )
                     .background(
                         color = LottoMateWhite,
@@ -500,8 +583,9 @@ private fun BottomButtons(
                     .size(40.dp),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_location),
+                    painter = painterResource(id = R.drawable.icon_refresh),
                     contentDescription = stringResource(id = R.string.desc_location_focus_icon_map),
+                    tint = if (isCurrentMoving) LottoMateBlue50 else LottoMateGray100,
                 )
             }
         }
@@ -559,33 +643,33 @@ private fun MapLoadingScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Preview(showBackground = true)
-@Composable
-private fun MapScreenPreview() {
-    LottoMateTheme {
-        val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
-
-        MapScreen(
-            uiState = MapUiState.Success(StoreInfoMocks),
-            selectStore = null,
-            lottoTypeState = "복권 전체",
-            winStoreState = true,
-            favoriteStoreState = true,
-            onClickLottoType = {},
-            onClickWinLottoStore = {},
-            onClickFavoriteStore = {},
-            onClickRefresh = { newPosition, newZoomLevel -> },
-            onClickStoreList = {},
-            onClickLocationFocus = {},
-            onClickSelectStoreMarker = {},
-            onClickUnSelectStoreMarker = {},
-            padding = PaddingValues(32.dp),
-            leftTopPosition = Pair(0.0, 0.0),
-            rightBottomPosition = Pair(0.0, 0.0),
-            currentPosition = LatLng(37.566499, 126.968555),
-            bottomSheetScaffoldState = bottomSheetScaffoldState,
-            onShowSnackBar = {},
-        )
-    }
-}
+//@OptIn(ExperimentalMaterialApi::class)
+//@Preview(showBackground = true)
+//@Composable
+//private fun MapScreenPreview() {
+//    LottoMateTheme {
+//        val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+//
+//        MapScreen(
+//            uiState = MapUiState.Success(StoreInfoMocks),
+//            selectStore = null,
+//            lottoTypeState = "복권 전체",
+//            winStoreState = true,
+//            favoriteStoreState = true,
+//            onClickLottoType = {},
+//            onClickWinLottoStore = {},
+//            onClickFavoriteStore = {},
+//            onClickRefresh = { newPosition, newZoomLevel -> },
+//            onClickStoreList = {},
+//            onClickLocationFocus = {},
+//            onClickSelectStoreMarker = {},
+//            onClickUnSelectStoreMarker = {},
+//            padding = PaddingValues(32.dp),
+//            leftTopPosition = Pair(0.0, 0.0),
+//            rightBottomPosition = Pair(0.0, 0.0),
+//            currentPosition = LatLng(37.566499, 126.968555),
+//            bottomSheetScaffoldState = bottomSheetScaffoldState,
+//            onShowSnackBar = {},
+//        )
+//    }
+//}
