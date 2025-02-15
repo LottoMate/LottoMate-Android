@@ -23,6 +23,7 @@ import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
+import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
@@ -70,6 +74,7 @@ import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.overlay.OverlayImage
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 private val LoadingBackgroundSize = 160.dp
@@ -91,6 +96,14 @@ fun MapRoute(
     val favoriteStoreState by vm.favoriteStoreState
 
     var showLottoTypeSelectorBottomSheet by remember { mutableStateOf(false) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(true) {
+        vm.snackBarFlow.collectLatest { message ->
+            snackBarHostState.showSnackbar(
+                message = message,
+            )
+        }
+    }
 
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
         bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
@@ -150,7 +163,21 @@ fun MapRoute(
         onClickLocationFocus = {},
         onClickSelectStoreMarker = { vm.selectStoreMarker(it) },
         onClickUnSelectStoreMarker = { vm.unselectStoreMarker() },
+        onShowSnackBar = { vm.sendSnackBar(it) },
     )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = Dimens.BaseTopPadding),
+        contentAlignment = Alignment.TopCenter,
+    ) {
+        snackBarHostState.currentSnackbarData?.let {
+            LottoMateSnackBarHost(snackBarHostState = snackBarHostState) {
+                LottoMateSnackBar(message = it.visuals.message)
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class)
@@ -175,6 +202,7 @@ private fun MapScreen(
     onClickLocationFocus: () -> Unit,
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
     onClickUnSelectStoreMarker: () -> Unit,
+    onShowSnackBar: (String) -> Unit,
 ) {
     val mapUiSettings by remember {
         mutableStateOf(
@@ -202,6 +230,7 @@ private fun MapScreen(
                     StoreBottomSheet(
                         bottomSheetState = bottomSheetScaffoldState,
                         bottomSheetTopPadding = bottomSheetTopPadding,
+                        onShowSnackBar = onShowSnackBar,
                     )
                 }
 
@@ -329,7 +358,6 @@ private fun MapButtons(
     onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
-
     Box(modifier = modifier) {
         TopFilterButtons(
             modifier = Modifier.fillMaxWidth(),
@@ -557,6 +585,7 @@ private fun MapScreenPreview() {
             rightBottomPosition = Pair(0.0, 0.0),
             currentPosition = LatLng(37.566499, 126.968555),
             bottomSheetScaffoldState = bottomSheetScaffoldState,
+            onShowSnackBar = {},
         )
     }
 }

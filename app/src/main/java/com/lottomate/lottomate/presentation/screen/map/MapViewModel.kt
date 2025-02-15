@@ -14,8 +14,11 @@ import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -46,6 +49,8 @@ class MapViewModel @Inject constructor(
 
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
+    private var _snackBarFlow = MutableSharedFlow<String>()
+    val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
 
     fun selectStoreMarker(store: StoreInfo) = storeRepository.selectStore(store.key)
     fun unselectStoreMarker() = storeRepository.unselectStore()
@@ -137,6 +142,12 @@ class MapViewModel @Inject constructor(
 
     fun changeCurrentZoomLevel(newZoomLevel: Double) {
         currentZoomLevel.value = newZoomLevel
+    }
+
+    fun sendSnackBar(message: String) {
+        viewModelScope.launch {
+            _snackBarFlow.emit(message)
+        }
     }
 
     companion object {

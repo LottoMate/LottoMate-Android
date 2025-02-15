@@ -1,11 +1,14 @@
 package com.lottomate.lottomate.presentation.screen.map
 
+import android.content.Context
+import android.os.Build
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
+import com.lottomate.lottomate.utils.ClipboardUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -39,5 +42,14 @@ class StoreBottomSheetViewModel @Inject constructor(
         selectStoreListFilter.value = newStoreListFilter
 
         storeRepository.applyStoreFilter(selectStoreListFilter.value)
+    }
+
+    fun copyStoreInfo(context: Context, store: StoreInfo, onSuccess: (String) -> Unit) {
+        val copyText = "지점명: ${store.storeName}\n주소: ${store.address}"
+        ClipboardUtils.copyToClipboard(context, copyText)
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            onSuccess("로또 판매점 주소를 복사했어요")
+        }
     }
 }

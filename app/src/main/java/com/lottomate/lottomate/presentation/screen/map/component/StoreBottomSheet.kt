@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -86,7 +87,10 @@ fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
     bottomSheetState: BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
+    onShowSnackBar: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val stores by vm.stores.collectAsStateWithLifecycle()
     val store by vm.store.collectAsStateWithLifecycle()
 
@@ -102,6 +106,13 @@ fun StoreBottomSheet(
         onClickStore = { vm.selectStore(it) },
         onClickStoreLike = { vm.setFavoriteStore(it) },
         onClickFilter = { vm.changeStoreListFilter(it) },
+        onClickStoreInfoCopy = { store ->
+            vm.copyStoreInfo(
+                context,
+                store,
+                onSuccess = { onShowSnackBar(it)}
+            )
+        },
     )
 }
 
@@ -117,6 +128,7 @@ private fun StoreInfoBottomSheetContent(
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (StoreListFilter) -> Unit,
+    onClickStoreInfoCopy: (StoreInfo) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
@@ -171,6 +183,7 @@ private fun StoreInfoBottomSheetContent(
                         modifier = Modifier.fillMaxWidth(),
                         store = store,
                         onClickStoreLike = onClickStoreLike,
+                        onClickStoreInfoCopy = onClickStoreInfoCopy,
                     )
                 } ?: run {
                     StoreInfoListContent(
@@ -180,6 +193,7 @@ private fun StoreInfoBottomSheetContent(
                         onClickStore = onClickStore,
                         onClickStoreLike = onClickStoreLike,
                         onClickFilter = onClickFilter,
+                        onClickStoreInfoCopy = onClickStoreInfoCopy,
                     )
                 }
             }
@@ -192,6 +206,7 @@ private fun SelectStoreInfoContent(
     modifier: Modifier = Modifier,
     store: StoreInfo,
     onClickStoreLike: (Int) -> Unit,
+    onClickStoreInfoCopy: (StoreInfo) -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -202,6 +217,7 @@ private fun SelectStoreInfoContent(
             store = store,
             isSelect = true,
             onClickStoreLike = { onClickStoreLike(store.key) },
+            onClickStoreInfoCopy = onClickStoreInfoCopy,
         )
     }
 }
@@ -213,7 +229,8 @@ private fun StoreInfoListContent(
     selectStoreListFilter: StoreListFilter,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
-    onClickFilter: (StoreListFilter) -> Unit
+    onClickFilter: (StoreListFilter) -> Unit,
+    onClickStoreInfoCopy: (StoreInfo) -> Unit,
 ) {
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(20.dp))
@@ -233,7 +250,9 @@ private fun StoreInfoListContent(
             StoreInfoListItem(
                 store = store,
                 onClickStore = onClickStore,
-                onClickStoreLike = { onClickStoreLike(store.key) }
+                onClickStoreLike = { onClickStoreLike(store.key) },
+                onClickStoreInfoCopy = onClickStoreInfoCopy,
+
             )
 
             if (index != stores.lastIndex) {
@@ -253,6 +272,7 @@ private fun StoreInfoListItem(
     isSelect: Boolean = false,
     onClickStore: (Int) -> Unit = {},
     onClickStoreLike: () -> Unit,
+    onClickStoreInfoCopy: (StoreInfo) -> Unit,
 ) {
     var storeNameLineCount by remember { mutableIntStateOf(1) }
     var expendStoreWinHistory by remember { mutableStateOf(false) }
@@ -359,12 +379,23 @@ private fun StoreInfoListItem(
                     modifier = Modifier.size(12.dp),
                 )
 
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(8.dp))
 
                 LottoMateText(
                     text = store.address,
                     style = LottoMateTheme.typography.label2
                         .copy(color = LottoMateGray100)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_copy),
+                    contentDescription = "",
+                    tint = LottoMateGray100,
+                    modifier = Modifier
+                        .size(12.dp)
+                        .noInteractionClickable { onClickStoreInfoCopy(store) },
                 )
             }
 
@@ -589,7 +620,8 @@ private fun StoreInfoBottomSheetPreview() {
                 countLike = 99999,
                 distance = 10,
             ),
-            onClickStoreLike = {}
+            onClickStoreLike = {},
+            onClickStoreInfoCopy = {}
         )
     }
 }
