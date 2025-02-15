@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTextButton
@@ -56,6 +57,8 @@ import com.lottomate.lottomate.presentation.screen.map.StoreBottomSheetViewModel
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMock
+import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
+import com.lottomate.lottomate.presentation.screen.map.model.StoreWinCount
 import com.lottomate.lottomate.presentation.screen.map.model.WinningDetail
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue5
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
@@ -72,6 +75,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMatePeach50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.utils.noInteractionClickable
+import com.naver.maps.geometry.LatLng
 import kotlinx.coroutines.launch
 
 private const val BOTTOM_SHEET_TOP_SPACER = 78
@@ -86,18 +90,18 @@ fun StoreBottomSheet(
     val stores by vm.stores.collectAsStateWithLifecycle()
     val store by vm.store.collectAsStateWithLifecycle()
 
-    var selectFilterIndex by remember { mutableIntStateOf(0) }
+    val selectStoreListFilter by vm.selectStoreListFilter
 
     StoreInfoBottomSheetContent(
         modifier = Modifier.fillMaxWidth(),
         stores = stores,
         selectedStore = store,
-        selectFilterIndex = selectFilterIndex,
+        selectStoreListFilter = selectStoreListFilter,
         bottomSheetTopPadding = bottomSheetTopPadding,
         bottomSheetState = bottomSheetState,
         onClickStore = { vm.selectStore(it) },
         onClickStoreLike = { vm.setFavoriteStore(it) },
-        onClickFilter = { selectFilterIndex = it }
+        onClickFilter = { vm.changeStoreListFilter(it) },
     )
 }
 
@@ -107,12 +111,12 @@ private fun StoreInfoBottomSheetContent(
     modifier: Modifier = Modifier,
     stores: List<StoreInfo>,
     selectedStore: StoreInfo?,
-    selectFilterIndex: Int,
+    selectStoreListFilter: StoreListFilter,
     bottomSheetTopPadding: Int,
     bottomSheetState: BottomSheetScaffoldState,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
-    onClickFilter: (Int) -> Unit,
+    onClickFilter: (StoreListFilter) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
@@ -172,7 +176,7 @@ private fun StoreInfoBottomSheetContent(
                     StoreInfoListContent(
                         modifier = Modifier.fillMaxWidth(),
                         stores = stores,
-                        selectFilterIndex = selectFilterIndex,
+                        selectStoreListFilter = selectStoreListFilter,
                         onClickStore = onClickStore,
                         onClickStoreLike = onClickStoreLike,
                         onClickFilter = onClickFilter,
@@ -206,10 +210,10 @@ private fun SelectStoreInfoContent(
 private fun StoreInfoListContent(
     modifier: Modifier = Modifier,
     stores: List<StoreInfo>,
-    selectFilterIndex: Int,
+    selectStoreListFilter: StoreListFilter,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
-    onClickFilter: (Int) -> Unit
+    onClickFilter: (StoreListFilter) -> Unit
 ) {
     Column(modifier = modifier) {
         Spacer(modifier = Modifier.height(20.dp))
@@ -217,7 +221,7 @@ private fun StoreInfoListContent(
         FilterRow(
             modifier = Modifier.fillMaxWidth(),
             filters = stringArrayResource(id = R.array.map_store_info_top_filters),
-            selectFilterIndex = selectFilterIndex,
+            selectStoreListFilter = selectStoreListFilter,
             onClickFilter = onClickFilter,
         )
 
@@ -490,18 +494,22 @@ private fun StoreWinHistory(
 private fun FilterRow(
     modifier: Modifier = Modifier,
     filters: Array<String>,
-    selectFilterIndex: Int,
-    onClickFilter: (Int) -> Unit,
+    selectStoreListFilter: StoreListFilter,
+    onClickFilter: (StoreListFilter) -> Unit,
 ) {
     Row(
-        modifier = modifier.padding(horizontal = 12.dp),
+        modifier = modifier.padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         filters.forEachIndexed { index, filter ->
             FilterItem(
                 filter = filter,
-                isSelected = selectFilterIndex == index,
-                onClickFilter = { onClickFilter(index) }
+                isSelected = selectStoreListFilter.ordinal == index,
+                onClickFilter = {
+                    val selectFilter = StoreListFilter.findFromOrdinal(index)
+
+                    onClickFilter(selectFilter)
+                }
             )
 
             if (index != filters.lastIndex) {
@@ -538,7 +546,50 @@ private fun FilterItem(
 private fun StoreInfoBottomSheetPreview() {
     LottoMateTheme {
         SelectStoreInfoContent(
-            store = StoreInfoMock,
+            store = StoreInfoMock.copy(
+                key = 8,
+                storeName = "포이로또방",
+                address = "서울 강남구 개포로22길 19 1층",
+                latLng = LatLng(37.477752673752, 127.048542099489),
+                isLike = true,
+                winCountOfLottoType = listOf(
+                    StoreWinCount(
+                        lottoType = LottoType.L645,
+                        count = 1,
+                        winningDetails = List(1) {
+                            WinningDetail(
+                                lottoType = "로또",
+                                prize = "25억원",
+                                round = "6102회"
+                            )
+                        },
+                    ),
+                    StoreWinCount(
+                        lottoType = LottoType.L720,
+                        count = 0,
+                        winningDetails = List(0) {
+                            WinningDetail(
+                                lottoType = "연금복권",
+                                prize = "25억원",
+                                round = "6102회"
+                            )
+                        },
+                    ),
+                    StoreWinCount(
+                        lottoType = LottoType.S2000,
+                        count = 2,
+                        winningDetails = List(2) {
+                            WinningDetail(
+                                lottoType = "스피또 2000",
+                                prize = "25억원",
+                                round = "6102회"
+                            )
+                        },
+                    ),
+                ).shuffled(),
+                countLike = 99999,
+                distance = 10,
+            ),
             onClickStoreLike = {}
         )
     }
