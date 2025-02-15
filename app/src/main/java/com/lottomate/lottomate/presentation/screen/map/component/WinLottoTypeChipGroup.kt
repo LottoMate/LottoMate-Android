@@ -30,27 +30,33 @@ fun WinLottoTypeChipGroup(
     store: StoreInfo,
 ) {
     Row(modifier = modifier) {
-        WinLottoTypeChip(
-            icon = R.drawable.icon_lotto645_rank_first,
-            winLottoType = LottoTypeFilter.Lotto645.kr,
-            winCount = store.getCountLotto645()
-        )
+        if (store.hasWinLotto645) {
+            WinLottoTypeChip(
+                icon = R.drawable.icon_lotto645_rank_first,
+                winLottoType = LottoTypeFilter.Lotto645.kr,
+                winCount = store.getCountLotto645()
+            )
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
-        WinLottoTypeChip(
-            icon = R.drawable.icon_lotto720_rank_first,
-            winLottoType = LottoTypeFilter.Lotto720.kr,
-            winCount = store.getCountLotto720(),
-        )
+        if (store.hasWinLotto720) {
+            WinLottoTypeChip(
+                icon = R.drawable.icon_lotto720_rank_first,
+                winLottoType = LottoTypeFilter.Lotto720.kr,
+                winCount = store.getCountLotto720(),
+            )
 
-        Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(8.dp))
+        }
 
-        WinLottoTypeChip(
-            icon = R.drawable.icon_speetto_rank_first,
-            winLottoType = LottoTypeFilter.Speetto.kr,
-            winCount = store.getCountSpeetto(),
-        )
+        if (store.hasWinSpeetto) {
+            WinLottoTypeChip(
+                icon = R.drawable.icon_speetto_rank_first,
+                winLottoType = LottoTypeFilter.Speetto.kr,
+                winCount = store.getCountSpeetto(),
+            )
+        }
     }
 }
 
