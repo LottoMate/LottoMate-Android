@@ -1,8 +1,8 @@
 package com.lottomate.lottomate.domain.repository
 
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
-import com.lottomate.lottomate.presentation.screen.map.StoreListFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
+import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

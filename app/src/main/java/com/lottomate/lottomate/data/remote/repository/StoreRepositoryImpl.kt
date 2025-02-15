@@ -4,9 +4,9 @@ import com.lottomate.lottomate.data.mapper.StoreMapper
 import com.lottomate.lottomate.data.remote.api.StoreApi
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
-import com.lottomate.lottomate.presentation.screen.map.StoreListFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
+import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
