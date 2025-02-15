@@ -348,8 +348,6 @@ private fun StoreInfoListItem(
                 }
             }
 
-//            if (storeNameLineCount == 2) { Spacer(modifier = Modifier.height(4.dp)) }
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -394,30 +392,31 @@ private fun StoreInfoListItem(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                WinLottoTypeChipGroup(store = store)
-
-                Icon(
-                    painter = painterResource(id = if (expendStoreWinHistory) R.drawable.icon_arrow_up else R.drawable.icon_arrow_down),
-                    contentDescription = "Win Lotto History More Button Icon",
-                    tint = LottoMateGray80,
+            if (store.winCountOfLottoType.isNotEmpty()) {
+                Row(
                     modifier = Modifier
-                        .size(20.dp)
-                        .noInteractionClickable {
-                            if (isSelect) expendStoreWinHistory = !expendStoreWinHistory
-                            else onClickStore(store.key)
-                        },
-                )
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    WinLottoTypeChipGroup(store = store)
+
+                    if (!isSelect) {
+                        Icon(
+                            painter = painterResource(id = if (expendStoreWinHistory) R.drawable.icon_arrow_up else R.drawable.icon_arrow_down),
+                            contentDescription = "Win Lotto History More Button Icon",
+                            tint = LottoMateGray80,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .noInteractionClickable { expendStoreWinHistory = !expendStoreWinHistory },
+                        )
+                    }
+                }
             }
         }
 
-        if (expendStoreWinHistory) {
+        if (expendStoreWinHistory || isSelect) {
             val winHistories = store.winCountOfLottoType.flatMap { it.winningDetails }
 
             StoreWinHistory(
