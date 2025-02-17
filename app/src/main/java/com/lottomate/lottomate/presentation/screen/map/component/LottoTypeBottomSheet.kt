@@ -80,7 +80,7 @@ fun LottoTypeSelectorBottomSheet(
     ) {
         Column(modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 32.dp)
+            .padding(top = 24.dp)
             .padding(horizontal = 20.dp)
         ) {
             LottoMateText(
@@ -88,7 +88,7 @@ fun LottoTypeSelectorBottomSheet(
                 style = LottoMateTheme.typography.headline1,
             )
 
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             allLottoType.subList(1, 4).forEachIndexed { index, type ->
                 Row(
