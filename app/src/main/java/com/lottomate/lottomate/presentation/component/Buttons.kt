@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +55,44 @@ fun LottoMateSolidButton(
         modifier = modifier,
         text = text,
         textColor = textColor,
+        buttonColor = if (isPressed) pressedButtonColor
+        else if (isDisabled) LottoMateGray40
+        else buttonColor,
+        buttonBorder = BorderStroke(
+            width = 0.dp,
+            color = LottoMateTransparent
+        ),
+        buttonSize = buttonSize,
+        buttonShape = buttonShape,
+        enabled = !isDisabled,
+        interactionSource = interactionSource,
+        onClick = { onClick() }
+    )
+}
+
+
+@Composable
+fun LottoMateDialogSolidButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    textColor: Color = LottoMateWhite,
+    textStyle: TextStyle = LocalTextStyle.current,
+    buttonColor: Color = MaterialTheme.colorScheme.primary,
+    pressedButtonColor: Color = LottoMateRed70,
+    buttonSize: LottoMateButtonProperty.Size,
+    buttonType: LottoMateButtonProperty.Type = LottoMateButtonProperty.Type.ACTIVE,
+    buttonShape: LottoMateButtonProperty.Shape = LottoMateButtonProperty.Shape.NORMAL,
+    onClick: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val isDisabled = buttonType == LottoMateButtonProperty.Type.DISABLED
+
+    LottoMateDialogButton(
+        modifier = modifier,
+        text = text,
+        textColor = textColor,
+        textStyle = textStyle,
         buttonColor = if (isPressed) pressedButtonColor
         else if (isDisabled) LottoMateGray40
         else buttonColor,
@@ -149,6 +189,48 @@ fun LottoMateAssistiveButton(
 }
 
 @Composable
+fun LottoMateDialogAssistiveButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    textColor: Color = LottoMateBlack,
+    textStyle: TextStyle = LocalTextStyle.current,
+    buttonColor: Color = LottoMateTransparent,
+    buttonBorderColor: Color = LottoMateGray40,
+    pressedTextColor: Color = LottoMateBlack,
+    pressedButtonColor: Color = LottoMateGray20,
+    pressedBorderColor: Color = LottoMateGray40,
+    buttonSize: LottoMateButtonProperty.Size,
+    buttonType: LottoMateButtonProperty.Type = LottoMateButtonProperty.Type.ACTIVE,
+    buttonShape: LottoMateButtonProperty.Shape = LottoMateButtonProperty.Shape.NORMAL,
+    onClick: () -> Unit,
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val isDisabled = buttonType == LottoMateButtonProperty.Type.DISABLED
+
+    LottoMateDialogButton(
+        modifier = modifier,
+        text = text,
+        textColor = if (isPressed) pressedTextColor
+        else if (isDisabled) LottoMateGray40
+        else textColor,
+        textStyle = textStyle,
+        buttonColor = if (isPressed) pressedButtonColor else buttonColor,
+        buttonBorder = BorderStroke(
+            width = 1.dp,
+            color = if (isDisabled) LottoMateGray40
+            else if (isPressed) pressedBorderColor
+            else buttonBorderColor
+        ),
+        buttonSize = buttonSize,
+        buttonShape = buttonShape,
+        enabled = !isDisabled,
+        interactionSource = interactionSource,
+        onClick = { onClick() }
+    )
+}
+
+@Composable
 fun LottoMateTextButton(
     modifier: Modifier = Modifier,
     buttonText: String,
@@ -180,6 +262,7 @@ fun LottoMateTextButton(
         else if (isDisabled) LottoMateGray40
         else textColor,
         textAlign = textAlign,
+        modifier = Modifier.noInteractionClickable { onClick() }
     )
 
 //    Button(
@@ -219,7 +302,7 @@ private fun LottoMateBaseButton(
     }
 
     Button(
-        modifier = modifier.height(buttonHeight).wrapContentWidth(),
+        modifier = modifier.height(buttonHeight),
         contentPadding = PaddingValues(
             horizontal = when (buttonSize) {
                 LottoMateButtonProperty.Size.XSMALL -> 8.dp
@@ -256,6 +339,59 @@ private fun LottoMateBaseButton(
                 LottoMateButtonProperty.Size.XSMALL -> LottoMateTheme.typography.caption
                 else -> LottoMateTheme.typography.label1
             },
+        )
+    }
+}
+
+@Composable
+private fun LottoMateDialogButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    textColor: Color,
+    textStyle: TextStyle = LocalTextStyle.current,
+    buttonColor: Color,
+    buttonBorder: BorderStroke?,
+    buttonSize: LottoMateButtonProperty.Size,
+    buttonShape: LottoMateButtonProperty.Shape,
+    interactionSource: MutableInteractionSource,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) {
+    val buttonHeight = when (buttonSize) {
+        LottoMateButtonProperty.Size.LARGE -> 48.dp
+        LottoMateButtonProperty.Size.MEDIUM -> 40.dp
+        LottoMateButtonProperty.Size.SMALL -> 34.dp
+        LottoMateButtonProperty.Size.XSMALL -> 22.dp
+    }
+
+    Button(
+        modifier = modifier,
+        contentPadding = PaddingValues(
+            vertical = when (buttonSize) {
+                LottoMateButtonProperty.Size.LARGE -> 12.dp
+                LottoMateButtonProperty.Size.MEDIUM -> 8.dp
+                LottoMateButtonProperty.Size.SMALL -> 6.dp
+                LottoMateButtonProperty.Size.XSMALL -> 2.dp
+            }
+        ),
+        border = buttonBorder,
+        shape = when (buttonShape) {
+            LottoMateButtonProperty.Shape.NORMAL -> RoundedCornerShape(Dimens.RadiusSmall)
+            LottoMateButtonProperty.Shape.SMALL_ROUND -> RoundedCornerShape(Dimens.RadiusExtraSmall)
+            LottoMateButtonProperty.Shape.ROUND -> RoundedCornerShape(60.dp)
+        },
+        enabled = enabled,
+        interactionSource = interactionSource,
+        colors = ButtonDefaults.buttonColors(
+            disabledContainerColor = buttonColor,
+            containerColor = buttonColor,
+        ),
+        onClick = { onClick() },
+    ) {
+        LottoMateText(
+            text = text,
+            color = textColor,
+            style = textStyle,
         )
     }
 }

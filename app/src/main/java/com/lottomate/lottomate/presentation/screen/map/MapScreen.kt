@@ -59,6 +59,7 @@ import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.MapInitPopupBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
+import com.lottomate.lottomate.presentation.screen.map.component.checkLocationPermission
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
@@ -120,6 +121,8 @@ fun MapRoute(
             MapViewModel.DEFAULT_ZOOM_LEVEL
         )
     }
+
+    checkLocationPermission()
 
     var showLottoTypeSelectorBottomSheet by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -530,11 +533,18 @@ private fun BottomButtons(
         return roundedLat1 == roundedLat2 && roundedLon1 == roundedLon2
     }
     val isCurrentMoving = cameraPositionState.isMoving || isApproximatelyEqual(currentCameraPosition, cameraPositionState.position.target)
+    val density = LocalDensity.current
+    val selectedBottomSheetHeight = with(density) { bottomSheetHeight.toDp() }
 
     Row(
         modifier = modifier
-            .padding(horizontal = 20.dp)
-            .padding(bottom = 40.dp),
+            .padding(horizontal = Dimens.DefaultPadding20)
+            .padding(
+                bottom = selectedBottomSheetHeight
+                    .plus(28.dp)
+                    .plus(12.dp)
+                    .plus(20.dp)
+            ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Bottom,
     ) {
