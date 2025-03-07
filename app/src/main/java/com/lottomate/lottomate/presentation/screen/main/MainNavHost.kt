@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import com.lottomate.lottomate.presentation.screen.home.navigation.homeNavGraph
+import com.lottomate.lottomate.presentation.screen.login.navigation.loginNavGraph
+import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.map.navigation.mapNavGraph
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.pocketNavGraph
 
@@ -29,11 +31,17 @@ fun MainNavHost(
 
             mapNavGraph(
                 padding = padding,
-                navController = navigator.navController,
+                moveToLogin = { navigator.navController.navigateToLogin() },
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
 
             pocketNavGraph(
+                padding = padding,
+                navController = navigator.navController,
+                onShowErrorSnackBar = onShowErrorSnackBar,
+            )
+
+            loginNavGraph(
                 padding = padding,
                 navController = navigator.navController,
                 onShowErrorSnackBar = onShowErrorSnackBar,

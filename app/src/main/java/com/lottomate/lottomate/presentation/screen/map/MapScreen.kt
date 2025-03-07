@@ -28,6 +28,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -41,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -48,12 +50,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
+import com.lottomate.lottomate.presentation.screen.map.component.MapInitPopupBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
@@ -87,14 +91,18 @@ import java.math.RoundingMode
 
 private val LoadingBackgroundSize = 160.dp
 private val BottomSheetPeekHeight = 48.dp
+private val BOTTOM_BUTTON_DEFAULT_BOTTOM_PADDING = 76.dp
+
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class)
 @Composable
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
+    moveToLogin: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    val showInitPopup = LottoMateDataStore.mapInitPopupFlow?.collectAsState(initial = false)
     val context = LocalContext.current
     val currentPosition by vm.currentPosition
     val currentCameraPosition by vm.currentCameraPosition
@@ -115,6 +123,7 @@ fun MapRoute(
 
     var showLottoTypeSelectorBottomSheet by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(true) {
         vm.snackBarFlow.collectLatest { message ->
             snackBarHostState.showSnackbar(
@@ -139,6 +148,18 @@ fun MapRoute(
                 vm.changeLottoTypeState(it)
 
                 showLottoTypeSelectorBottomSheet = false
+            },
+        )
+    }
+
+    var hideInitPopupBottomSheet by remember { mutableStateOf(showInitPopup?.value ?: false) }
+
+    if (!hideInitPopupBottomSheet) {
+        MapInitPopupBottomSheet(
+            onDismiss = { hideInitPopupBottomSheet = false },
+            onClickRequestOpen = {
+                // TODO : 로그인 여부 체크 후, 로그인 페이지 이동(비로그인) or 요청 페이지 이동 (로그인)
+                moveToLogin()
             },
         )
     }
