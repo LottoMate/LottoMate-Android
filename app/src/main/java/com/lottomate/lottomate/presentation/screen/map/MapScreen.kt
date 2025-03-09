@@ -436,6 +436,17 @@ private fun MapScreen(
                                 )
                             }
                         }
+
+                        // 로또 판매점이 없을 경우
+                        if (stores.isEmpty()) {
+                            val density = LocalDensity.current
+                            val topButtonHeight = with(density) { bottomSheetTopPadding.toDp() }
+                            LottoMateSnackBar(
+                                message = "조건에 맞는 지점이 없어요",
+                                modifier = Modifier.align(Alignment.TopCenter)
+                                    .padding(top = Dimens.StatusBarHeight.plus(30.dp).plus(topButtonHeight))
+                            )
+                        }
                     }
 
                     MapButtons(
