@@ -32,6 +32,9 @@ room = "2.6.1"
 
 # DataStore
 datastore-preference = "1.1.2"
+# Permission
+permissions = "0.37.2"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -81,6 +84,9 @@ google-gms-play-services-location = { group = "com.google.android.gms", name = "
 
 # DataStore
 androidx-datastore-preference = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore-preference" }
+# Permissions
+com-google-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "permissions" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

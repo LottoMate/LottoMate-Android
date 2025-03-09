@@ -14,6 +14,8 @@ import androidx.core.content.ContextCompat
 object PermissionManager {
     private lateinit var requestPermissions: List<String>
 
+    const val LOCATION_REQUEST_CODE = 111
+
     fun requestLocation(context: Context) {
         if (ActivityCompat.checkSelfPermission(
             context,
@@ -26,7 +28,7 @@ object PermissionManager {
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
-                1
+                LOCATION_REQUEST_CODE
             )
         }
     }

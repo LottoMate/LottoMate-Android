@@ -56,6 +56,8 @@ import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
+import com.lottomate.lottomate.presentation.screen.map.component.LocationNoticeDialog
+import com.lottomate.lottomate.presentation.screen.map.component.LocationPermissionObserver
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.MapInitPopupBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
@@ -126,10 +128,14 @@ fun MapRoute(
         )
     }
 
-    checkLocationPermission()
-
     var showLottoTypeSelectorBottomSheet by remember { mutableStateOf(false) }
     val snackBarHostState = remember { SnackbarHostState() }
+
+    var showLocationNoticeDialog by remember { mutableStateOf(false) }
+    // 지도 진입 시, 위치 권한 확인 -> 다이얼로그 표시
+    checkLocationPermission(
+        onChangeState = { showLocationNoticeDialog = !it }
+    )
 
     LaunchedEffect(true) {
         vm.snackBarFlow.collectLatest { message ->
@@ -159,28 +165,11 @@ fun MapRoute(
         )
     }
 
+    // 지도 첫 진입 시, 초기 안내 팝업
     LaunchedEffect(showInitPopup) {
         showInitPopup?.let { showPopup ->
             if (!showPopup) showInitPopupBottomSheet = true
         }
-    }
-
-    if (showInitPopupBottomSheet) {
-        MapInitPopupBottomSheet(
-            onDismiss = {
-                coroutineScope.launch {
-                    LottoMateDataStore.changeMapInitPopupState()
-                }.invokeOnCompletion {
-                    showInitPopupBottomSheet = false
-                }
-            },
-            onClickRequestOpen = {
-                showInitPopupBottomSheet = false
-
-                // TODO : 로그인 여부 체크 후, 로그인 페이지 이동(비로그인) or 요청 페이지 이동 (로그인)
-                moveToLogin()
-            },
-        )
     }
 
     val leftTopPosition = GeoPositionCalculator.calculateLeftTopGeoPosition(
@@ -225,6 +214,40 @@ fun MapRoute(
         }
     }
 
+    // Activity의 라이플사이크를 관찰한 후, 사용자의 GPS를 가져옵니다.
+    LocationPermissionObserver(
+        onStartLocationPermissionGranted = {
+            LocationManager.getCurrentLocation()
+        },
+        onStartLocationPermissionDenied = { },
+    )
+
+    // 다이얼로그
+    when {
+        showInitPopupBottomSheet -> {
+            MapInitPopupBottomSheet(
+                onDismiss = {
+                    coroutineScope.launch {
+                        LottoMateDataStore.changeMapInitPopupState()
+                    }.invokeOnCompletion {
+                        showInitPopupBottomSheet = false
+                    }
+                },
+                onClickRequestOpen = {
+                    showInitPopupBottomSheet = false
+
+                    // TODO : 로그인 여부 체크 후, 로그인 페이지 이동(비로그인) or 요청 페이지 이동 (로그인)
+                    moveToLogin()
+                },
+            )
+        }
+        showLocationNoticeDialog -> {
+            LocationNoticeDialog(
+                onDismiss = { showLocationNoticeDialog = false },
+            )
+        }
+    }
+
     MapScreen(
         padding = padding,
         uiState = uiState,
@@ -247,9 +270,13 @@ fun MapRoute(
         },
         onClickStoreList = { vm.showStoreList() },
         onClickLocationFocus = {
-            LocationManager.updateLocation(context)
-            vm.changeCurrentPosition(Pair(userLocation.first, userLocation.second))
-                               },
+            if (LocationManager.hasLocationPermission(context)) {
+                LocationManager.updateLocation(context)
+                vm.changeCurrentPosition(Pair(userLocation.first, userLocation.second))
+            } else {
+                showLocationNoticeDialog = true
+            }
+        },
         onClickSelectStoreMarker = { vm.selectStoreMarker(it) },
         onClickUnSelectStoreMarker = { vm.unselectStoreMarker() },
         onShowSnackBar = { vm.sendSnackBar(it) },

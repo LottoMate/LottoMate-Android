@@ -115,6 +115,9 @@ dependencies {
     // DataStore - Preference
     implementation(libs.androidx.datastore.preference)
 
+    // Permission
+    implementation(libs.com.google.accompanist.permissions)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

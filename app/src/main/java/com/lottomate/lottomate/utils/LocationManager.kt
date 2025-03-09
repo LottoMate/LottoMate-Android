@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 
@@ -46,5 +47,25 @@ object LocationManager {
                 Log.d("LocationManager", "사용자 GPS Update 실패 : ${it.stackTraceToString()}")
 
             }
+    }
+
+    /**
+     * 위치 권한이 부여되었는지 확인하는 함수
+     *
+     * @param context 애플리케이션의 Context
+     * @return 위치 권한이 부여되었으면 true, 그렇지 않으면 false
+     */
+    fun hasLocationPermission(context: Context): Boolean {
+        return when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) -> true
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) -> true
+            else -> false
+        }
     }
 }
