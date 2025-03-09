@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
     private fun setHideSoftKey() {
         window.decorView.apply {
             systemUiVisibility = systemUiVisibility xor View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            systemUiVisibility = systemUiVisibility xor View.SYSTEM_UI_FLAG_FULLSCREEN
             systemUiVisibility = systemUiVisibility xor View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         }
     }
