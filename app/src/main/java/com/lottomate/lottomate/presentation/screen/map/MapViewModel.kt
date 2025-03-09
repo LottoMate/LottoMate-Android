@@ -17,12 +17,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -37,7 +39,8 @@ class MapViewModel @Inject constructor(
     private var rightBottomPosition = mutableStateOf(DEFAULT_LATLNG)
     var currentPosition = mutableStateOf(DEFAULT_LATLNG)
         private set
-
+    var currentCameraPosition = mutableStateOf(DEFAULT_LATLNG)
+        private set
     var currentZoomLevel = mutableDoubleStateOf(DEFAULT_ZOOM_LEVEL)
         private set
     var lottoTypeState = mutableStateListOf(LottoTypeFilter.All.kr)
@@ -49,6 +52,13 @@ class MapViewModel @Inject constructor(
 
     private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
     val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
+
+    val selectedStore = storeRepository.store
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null,
+        )
     private var _snackBarFlow = MutableSharedFlow<String>()
     val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
 
@@ -95,29 +105,27 @@ class MapViewModel @Inject constructor(
         rightBottomPosition.value = LatLng(newRightBottomPosition.first, newRightBottomPosition.second)
     }
 
-    fun fetchStoreList(position: LatLng? = null) {
+    /**
+     * 로또 판매점을 가져옵니다.
+     */
+    fun fetchStoreList() {
         viewModelScope.launch {
+            val type = getLottoType()
+
             val userLocationInfo = StoreInfoRequestBody(
-                leftLot = leftTopPosition.value.latitude,
-                leftLat = leftTopPosition.value.longitude,
-                rightLot = rightBottomPosition.value.latitude,
-                rightLat = rightBottomPosition.value.longitude,
+                leftLot = leftTopPosition.value.longitude,
+                leftLat = leftTopPosition.value.latitude,
+                rightLot = rightBottomPosition.value.longitude,
+                rightLat = rightBottomPosition.value.latitude,
                 personLot = currentPosition.value.longitude,
                 personLat = currentPosition.value.latitude,
             )
 
-            val type = when {
-                lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 6
-                lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 5
-                lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 4
-                lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 3
-                lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 2
-                lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) -> 1
-                lottoTypeState.contains(LottoTypeFilter.All.kr) -> 0
-                else -> 0
-            }
-
             storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
+
+            _uiState.update { MapUiState.Loading }
+
+            storeRepository.stores
                 .onStart {
                     // 처음으로 진입했을 때에만 로딩 화면 표시
                     if (isFirstLoading) {
@@ -125,12 +133,13 @@ class MapViewModel @Inject constructor(
                         isFirstLoading = false
                     }
                 }
-                .catch {
-                    Log.d("MapVM", it.stackTraceToString())
+                .catch {throwable ->
+                    Log.d("MapVM", throwable.stackTraceToString())
+                    _uiState.update { MapUiState.Failed("네트워크 오류가 발생했습니다.", throwable) }
                 }
                 .collectLatest { collectStoreInfo ->
                     _uiState.update {
-                        MapUiState.Success(collectStoreInfo.toList())
+                        MapUiState.Success(collectStoreInfo)
                     }
                 }
         }
@@ -160,6 +169,19 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    private fun getLottoType(): Int {
+        return when {
+            lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 6
+            lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 5
+            lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 4
+            lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 3
+            lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 2
+            lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) -> 1
+            lottoTypeState.contains(LottoTypeFilter.All.kr) -> 0
+            else -> 0
+        }
+    }
+
     companion object {
         val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
         const val DEFAULT_ZOOM_LEVEL = 17.0
@@ -169,4 +191,5 @@ class MapViewModel @Inject constructor(
 sealed interface MapUiState {
     data object Loading : MapUiState
     data class Success(val storeInfo: List<StoreInfo>) : MapUiState
+    data class Failed(val message: String, val throwable: Throwable?) : MapUiState
 }

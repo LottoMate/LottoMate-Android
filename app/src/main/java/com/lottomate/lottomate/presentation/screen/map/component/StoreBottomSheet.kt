@@ -20,11 +20,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.BottomSheetScaffoldState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
@@ -46,7 +48,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
@@ -85,14 +86,15 @@ private const val BOTTOM_SHEET_TOP_SPACER = 78
 @Composable
 fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
-    bottomSheetState: BottomSheetScaffoldState,
+    bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
     onShowSnackBar: (String) -> Unit,
+    onSizeChanged: (Int) -> Unit,
 ) {
     val context = LocalContext.current
 
-    val stores by vm.stores.collectAsStateWithLifecycle()
-    val store by vm.store.collectAsStateWithLifecycle()
+    val stores by vm.stores.collectAsState()
+    val store by vm.store.collectAsState()
 
     val selectStoreListFilter by vm.selectStoreListFilter
 
@@ -113,10 +115,11 @@ fun StoreBottomSheet(
                 onSuccess = { onShowSnackBar(it)}
             )
         },
+        onSizeChanged = onSizeChanged,
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun StoreInfoBottomSheetContent(
     modifier: Modifier = Modifier,
@@ -124,11 +127,12 @@ private fun StoreInfoBottomSheetContent(
     selectedStore: StoreInfo?,
     selectStoreListFilter: StoreListFilter,
     bottomSheetTopPadding: Int,
-    bottomSheetState: BottomSheetScaffoldState,
+    bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (StoreListFilter) -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
+    onSizeChanged: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
@@ -139,7 +143,7 @@ private fun StoreInfoBottomSheetContent(
 
     Column(
         modifier = modifier
-            .heightIn(max = bottomSheetHeight.dp)
+            .heightIn(max = bottomSheetHeight.dp, min = bottomSheetHeight.dp * 0.6f)
             .verticalScroll(rememberScrollState()),
     ) {
         Box(
@@ -180,7 +184,7 @@ private fun StoreInfoBottomSheetContent(
                     }
 
                     SelectStoreInfoContent(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().onSizeChanged { onSizeChanged(it.height) },
                         store = store,
                         onClickStoreLike = onClickStoreLike,
                         onClickStoreInfoCopy = onClickStoreInfoCopy,

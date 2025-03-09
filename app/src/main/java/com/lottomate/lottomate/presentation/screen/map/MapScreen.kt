@@ -115,6 +115,7 @@ fun MapRoute(
     val currentCameraPosition by vm.currentCameraPosition
     val currentZoomLevel by vm.currentZoomLevel
     val uiState by vm.uiState.collectAsStateWithLifecycle()
+    val selectedStore by vm.selectedStore.collectAsState(initial = null)
 
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
@@ -195,7 +196,7 @@ fun MapRoute(
     }
 
     LaunchedEffect(currentCameraPosition) {
-        vm.fetchStoreList(currentCameraPosition)
+        vm.fetchStoreList()
         cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
     }
 
@@ -251,11 +252,10 @@ fun MapRoute(
     MapScreen(
         padding = padding,
         uiState = uiState,
+        selectStore = selectedStore,
         cameraPositionState = cameraPositionState,
         currentPosition = currentPosition,
         currentCameraPosition = currentCameraPosition,
-        leftTopPosition = leftTopPosition,
-        rightBottomPosition = rightBottomPosition,
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
         favoriteStoreState = favoriteStoreState,
@@ -263,7 +263,7 @@ fun MapRoute(
         onClickLottoType = { showLottoTypeSelectorBottomSheet = true },
         onClickWinLottoStore = { vm.changeWinStoreState() },
         onClickFavoriteStore = { vm.changeFavoriteStoreState() },
-        onClickRefresh = { newPosition, newZoomLevel ->
+        onChangeCameraPositionWithZoom = { newPosition, newZoomLevel ->
             // 판매점 새로고침 -> 카메라 이동,
             vm.changeCurrentCameraPosition(newPosition)
             vm.changeCurrentZoomLevel(newZoomLevel)
@@ -296,9 +296,7 @@ fun MapRoute(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class,
-    ExperimentalMaterial3Api::class
-)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class,)
 @Composable
 private fun MapScreen(
     modifier: Modifier = Modifier,
@@ -306,8 +304,6 @@ private fun MapScreen(
     uiState: MapUiState,
     currentPosition: LatLng,
     currentCameraPosition: LatLng,
-    leftTopPosition: Pair<Double, Double>,
-    rightBottomPosition: Pair<Double, Double>,
     cameraPositionState: CameraPositionState,
     selectStore: StoreInfo? = null,
     lottoTypeState: String,
@@ -317,7 +313,7 @@ private fun MapScreen(
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
-    onClickRefresh: (Pair<Double, Double>, Double) -> Unit,
+    onChangeCameraPositionWithZoom: (Pair<Double, Double>, Double) -> Unit,
     onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
@@ -367,6 +363,10 @@ private fun MapScreen(
 
                 }
 
+                is MapUiState.Failed -> {
+                    // TODO : 데이터를 가져오는 중에 오류가 발생했을 때
+                }
+
                 is MapUiState.Success -> {
                     val stores = uiState.storeInfo
 
@@ -403,31 +403,13 @@ private fun MapScreen(
                                     else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
                                     else OverlayImage.fromResource(R.drawable.marker_win),
                                     onClick = {
+                                        val zoomLevel = cameraPositionState.position.zoom
                                         onClickSelectStoreMarker(store)
+                                        onChangeCameraPositionWithZoom(Pair(it.position.latitude, it.position.longitude), zoomLevel)
                                         true
                                     }
                                 )
                             }
-
-                            Marker(
-                                state = MarkerState(
-                                    position = LatLng(
-                                        leftTopPosition.first,
-                                        leftTopPosition.second
-                                    )
-                                ),
-                                icon = OverlayImage.fromResource(R.drawable.marker_like),
-                            )
-
-                            Marker(
-                                state = MarkerState(
-                                    position = LatLng(
-                                        rightBottomPosition.first,
-                                        rightBottomPosition.second
-                                    )
-                                ),
-                                icon = OverlayImage.fromResource(R.drawable.marker_win),
-                            )
 
                             if (LocationManager.hasGpsLocation()) {
                                 Marker(
@@ -443,8 +425,13 @@ private fun MapScreen(
                             val topButtonHeight = with(density) { bottomSheetTopPadding.toDp() }
                             LottoMateSnackBar(
                                 message = "조건에 맞는 지점이 없어요",
-                                modifier = Modifier.align(Alignment.TopCenter)
-                                    .padding(top = Dimens.StatusBarHeight.plus(30.dp).plus(topButtonHeight))
+                                modifier = Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(
+                                        top = Dimens.StatusBarHeight
+                                            .plus(30.dp)
+                                            .plus(topButtonHeight)
+                                    )
                             )
                         }
                     }
@@ -466,7 +453,7 @@ private fun MapScreen(
                             val cameraPosition = cameraPositionState.position.target
                             val zoomLevel = cameraPositionState.position.zoom
 
-                            onClickRefresh(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
+                            onChangeCameraPositionWithZoom(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
                         },
                         onClickStoreList = onClickStoreList,
                         onClickLocationFocus = onClickLocationFocus,
