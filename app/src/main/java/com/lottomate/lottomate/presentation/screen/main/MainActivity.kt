@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.utils.LocationManager
+import com.lottomate.lottomate.utils.PermissionManager
+import com.lottomate.lottomate.utils.PermissionManager.LOCATION_REQUEST_CODE
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,6 +23,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setHideSoftKey()
+        checkPermissions()
 
         setContent {
             val navigator: MainNavigator = rememberMainNavigator()
@@ -54,15 +58,9 @@ class MainActivity : ComponentActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == 1) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
             val hasPermissions = grantResults.all { true }
-
-            if (!hasPermissions) {
-                Toast.makeText(this@MainActivity, "위치 권한이 거부되었습니다.", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this@MainActivity, "위치 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
-                LocationManager.updateLocation(this@MainActivity)
-            }
+            if (hasPermissions) LocationManager.updateLocation(this@MainActivity)
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
