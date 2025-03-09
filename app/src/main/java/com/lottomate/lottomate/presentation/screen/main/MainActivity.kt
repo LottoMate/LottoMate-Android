@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.main
 
+import android.Manifest
 import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
@@ -50,7 +51,26 @@ class MainActivity : ComponentActivity() {
      * 위치 권한을 체크합니다.
      */
     private fun checkPermissions() {
-        PermissionManager.requestLocation(this@MainActivity)
+        when (
+            PermissionManager.hasPermissions(
+                context = this@MainActivity,
+                permissions = listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        ) {
+            true -> {
+                LocationManager.updateLocation(this@MainActivity)
+            }
+            false -> {
+                PermissionManager.requestPermissions(
+                    context = this@MainActivity,
+                    permissions = listOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    ),
+                    requestCode = LOCATION_REQUEST_CODE,
+                )
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(

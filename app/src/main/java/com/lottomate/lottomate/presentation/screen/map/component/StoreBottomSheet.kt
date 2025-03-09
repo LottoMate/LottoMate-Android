@@ -1,5 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.map.component
 
+import android.content.Intent
+import android.net.Uri
+import android.telephony.PhoneNumberUtils
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -76,6 +79,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMatePeach5
 import com.lottomate.lottomate.presentation.ui.LottoMatePeach50
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.utils.PermissionManager
 import com.lottomate.lottomate.utils.noInteractionClickable
 import com.naver.maps.geometry.LatLng
 import kotlinx.coroutines.launch
@@ -256,7 +260,6 @@ private fun StoreInfoListContent(
                 onClickStore = onClickStore,
                 onClickStoreLike = { onClickStoreLike(store.key) },
                 onClickStoreInfoCopy = onClickStoreInfoCopy,
-
             )
 
             if (index != stores.lastIndex) {
@@ -278,6 +281,7 @@ private fun StoreInfoListItem(
     onClickStoreLike: () -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
 ) {
+    val context = LocalContext.current
     var storeNameLineCount by remember { mutableIntStateOf(1) }
     var expendStoreWinHistory by remember { mutableStateOf(false) }
 
@@ -383,21 +387,19 @@ private fun StoreInfoListItem(
                     modifier = Modifier.size(12.dp),
                 )
 
-                Spacer(modifier = Modifier.width(8.dp))
-
                 LottoMateText(
                     text = store.address,
                     style = LottoMateTheme.typography.label2
-                        .copy(color = LottoMateGray100)
+                        .copy(color = LottoMateGray100),
+                    modifier = Modifier.padding(start = 4.dp),
                 )
-
-                Spacer(modifier = Modifier.width(8.dp))
 
                 Icon(
                     painter = painterResource(id = R.drawable.icon_copy),
                     contentDescription = "",
                     tint = LottoMateGray100,
                     modifier = Modifier
+                        .padding(start = 4.dp)
                         .size(12.dp)
                         .noInteractionClickable { onClickStoreInfoCopy(store) },
                 )
@@ -406,7 +408,30 @@ private fun StoreInfoListItem(
             Spacer(modifier = Modifier.height(2.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .noInteractionClickable {
+                        if (store.phone.isNotEmpty()) {
+                            when (PermissionManager.hasPermissions(context, listOf(android.Manifest.permission.CALL_PHONE))) {
+                                true -> {
+                                    val formattedPhoneNumber =
+                                        PhoneNumberUtils.formatNumber(store.phone, "KR")
+                                    val dialIntent = Intent(
+                                        Intent.ACTION_CALL,
+                                        Uri.parse("tel:$formattedPhoneNumber")
+                                    )
+                                    context.startActivity(dialIntent)
+                                }
+                                false -> {
+                                    // 권한 요청
+                                    PermissionManager.requestPermissions(
+                                        context = context,
+                                        permissions = listOf(android.Manifest.permission.CALL_PHONE),
+                                    )
+                                }
+                            }
+                        }
+                    },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(

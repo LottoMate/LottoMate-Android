@@ -10,65 +10,46 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.lottomate.lottomate.presentation.screen.main.MainActivity
 
 object PermissionManager {
-    private lateinit var requestPermissions: List<String>
-
     const val LOCATION_REQUEST_CODE = 111
-
-    fun requestLocation(context: Context) {
-        if (ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
-            || ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                context as Activity,
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                LOCATION_REQUEST_CODE
-            )
-        }
-    }
 
     /**
      * 권한을 가지고 있는지 확인
      */
-    fun hasPermission(
-        permissionTypes: List<PermissionType>,
-        context: Context
+    fun hasPermissions(
+        context: Context,
+        permissions: List<String>,
     ): Boolean {
-        val permissions = permissionTypes.flatMap { it.permissions }
-        requestPermissions = permissions
+        var hasPermission = false
 
-        return permissions.all { permission -> ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED }
+        permissions.forEach {  permission ->
+            hasPermission = when (ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED) {
+                true -> true
+                false -> false
+            }
+        }
+
+        return hasPermission
     }
 
     /**
      * 권한 요청
      */
     fun requestPermissions(
-        permissionLauncher: ActivityResultLauncher<Array<String>>
+        context: Context,
+        permissions: List<String>,
+        requestCode: Int = 1,
     ) {
-        permissionLauncher.launch(requestPermissions.toTypedArray())
-    }
-
-    /**
-     * 권한 요청하는 다이얼로그(런쳐) 호출
-     */
-    @Composable
-    fun rememberPermissionLauncher(
-        onLocationPermissionsResult: (Boolean) -> Unit,
-    ): ActivityResultLauncher<Array<String>> {
-        return rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            val resultPermissions = requestPermissions.all { permissions[it] == true }
-
-            onLocationPermissionsResult(resultPermissions)
-        }
+        ActivityCompat.requestPermissions(
+            context as MainActivity,
+            permissions.toTypedArray(),
+            requestCode,
+        )
     }
 }
 
