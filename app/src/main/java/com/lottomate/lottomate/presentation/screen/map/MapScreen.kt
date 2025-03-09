@@ -103,8 +103,12 @@ fun MapRoute(
     moveToLogin: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
-    val showInitPopup = LottoMateDataStore.mapInitPopupFlow?.collectAsState(initial = false)
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    val showInitPopup by LottoMateDataStore.mapInitPopupFlow.collectAsState(initial = null)
+    var showInitPopupBottomSheet by remember { mutableStateOf(false) }
+
     val currentPosition by vm.currentPosition
     val currentCameraPosition by vm.currentCameraPosition
     val currentZoomLevel by vm.currentZoomLevel
@@ -155,12 +159,24 @@ fun MapRoute(
         )
     }
 
-    var hideInitPopupBottomSheet by remember { mutableStateOf(showInitPopup?.value ?: false) }
+    LaunchedEffect(showInitPopup) {
+        showInitPopup?.let { showPopup ->
+            if (!showPopup) showInitPopupBottomSheet = true
+        }
+    }
 
-    if (!hideInitPopupBottomSheet) {
+    if (showInitPopupBottomSheet) {
         MapInitPopupBottomSheet(
-            onDismiss = { hideInitPopupBottomSheet = false },
+            onDismiss = {
+                coroutineScope.launch {
+                    LottoMateDataStore.changeMapInitPopupState()
+                }.invokeOnCompletion {
+                    showInitPopupBottomSheet = false
+                }
+            },
             onClickRequestOpen = {
+                showInitPopupBottomSheet = false
+
                 // TODO : 로그인 여부 체크 후, 로그인 페이지 이동(비로그인) or 요청 페이지 이동 (로그인)
                 moveToLogin()
             },

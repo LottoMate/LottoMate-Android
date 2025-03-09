@@ -112,6 +112,8 @@ dependencies {
 
     // Oauth
     implementation(libs.google.gms.play.services.auth)
+    // DataStore - Preference
+    implementation(libs.androidx.datastore.preference)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

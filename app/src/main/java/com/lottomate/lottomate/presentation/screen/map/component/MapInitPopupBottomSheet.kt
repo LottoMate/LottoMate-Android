@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -31,6 +32,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +41,7 @@ internal fun MapInitPopupBottomSheet(
     onDismiss: () -> Unit,
     onClickRequestOpen: () -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
@@ -54,8 +57,20 @@ internal fun MapInitPopupBottomSheet(
         windowInsets = WindowInsets.navigationBars
     ) {
         MapInitPopupBottomSheetContent(
-            onClickClose = onDismiss,
-            onClickRequestOpen = onClickRequestOpen,
+            onClickClose = {
+                coroutineScope.launch { 
+                    bottomSheetState.hide()
+                }.invokeOnCompletion {
+                    onDismiss()
+                }
+            },
+            onClickRequestOpen = {
+                coroutineScope.launch {
+                    bottomSheetState.hide()
+                }.invokeOnCompletion {
+                    onClickRequestOpen()
+                }
+            }
         )
     }
 }

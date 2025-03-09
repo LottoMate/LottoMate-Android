@@ -30,6 +30,8 @@ google-auth = "21.2.0"
 # Room
 room = "2.6.1"
 
+# DataStore
+datastore-preference = "1.1.2"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -77,6 +79,8 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 # GPS
 google-gms-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "google-services-location"}
 
+# DataStore
+androidx-datastore-preference = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore-preference" }
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
