@@ -162,7 +162,7 @@ class MapViewModel @Inject constructor(
 
     companion object {
         val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
-        const val DEFAULT_ZOOM_LEVEL = 14.0
+        const val DEFAULT_ZOOM_LEVEL = 17.0
     }
 }
 
