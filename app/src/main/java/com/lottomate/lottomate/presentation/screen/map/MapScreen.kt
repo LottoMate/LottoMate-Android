@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetScaffoldState
+import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
@@ -41,11 +42,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,7 +98,9 @@ private val BottomSheetPeekHeight = 48.dp
 private val BOTTOM_BUTTON_DEFAULT_BOTTOM_PADDING = 76.dp
 
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class,
+    ExperimentalMaterial3Api::class
+)
 @Composable
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
@@ -437,14 +440,12 @@ private fun MapScreen(
                     }
 
                     MapButtons(
-                        modifier = Modifier.fillMaxSize(),
                         lottoTypeState = lottoTypeState,
                         winStoreState = winStoreState,
                         favoriteStoreState = favoriteStoreState,
+                        bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
                         currentCameraPosition = currentCameraPosition,
-                        bottomSheetHeight = bottomSheetHeight,
                         cameraPositionState = cameraPositionState,
-                        bottomButtonPadding = 0.dp,
                         onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
                         onClickLottoType = onClickLottoType,
                         onClickWinLottoStore = onClickWinLottoStore,
@@ -464,17 +465,15 @@ private fun MapScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun MapButtons(
-    modifier: Modifier = Modifier,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
     currentCameraPosition: LatLng,
-    bottomSheetHeight: Int,
+    bottomSheetState: BottomSheetState,
     cameraPositionState: CameraPositionState,
-    bottomButtonPadding: Dp,
     onSizeBottomSheetHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
@@ -483,7 +482,7 @@ private fun MapButtons(
     onClickStoreList: () -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = Modifier.fillMaxSize()) {
         TopFilterButtons(
             modifier = Modifier.fillMaxWidth(),
             lottoTypeState = lottoTypeState,
@@ -496,10 +495,9 @@ private fun MapButtons(
         )
 
         BottomButtons(
-            modifier = Modifier.fillMaxSize(),
-            bottomButtonPadding = bottomButtonPadding,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            bottomSheetState = bottomSheetState,
             currentCameraPosition = currentCameraPosition,
-            bottomSheetHeight = bottomSheetHeight,
             cameraPositionState = cameraPositionState,
             onClickRefresh = onClickRefresh,
             onClickStoreList = onClickStoreList,
@@ -552,13 +550,12 @@ private fun TopFilterButtons(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun BottomButtons(
     modifier: Modifier = Modifier,
-    bottomButtonPadding: Dp,
     currentCameraPosition: LatLng,
-    bottomSheetHeight: Int,
+    bottomSheetState: BottomSheetState,
     cameraPositionState: CameraPositionState,
     onClickRefresh: () -> Unit,
     onClickStoreList: () -> Unit,
@@ -574,46 +571,39 @@ private fun BottomButtons(
         return roundedLat1 == roundedLat2 && roundedLon1 == roundedLon2
     }
     val isCurrentMoving = cameraPositionState.isMoving || isApproximatelyEqual(currentCameraPosition, cameraPositionState.position.target)
+
     val density = LocalDensity.current
-    val selectedBottomSheetHeight = with(density) { bottomSheetHeight.toDp() }
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
-    Row(
-        modifier = modifier
-            .padding(horizontal = Dimens.DefaultPadding20)
-            .padding(
-                bottom = selectedBottomSheetHeight
-                    .plus(28.dp)
-                    .plus(12.dp)
-                    .plus(20.dp)
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Bottom,
-    ) {
-        IconButton(
-            onClick = onClickLocationFocus,
-            modifier = Modifier
-                .dropShadow(
-                    shape = CircleShape,
-                    offsetX = 0.dp,
-                    offsetY = 0.dp,
-                    blur = 8.dp,
-                )
-                .background(
-                    color = LottoMateWhite,
-                    shape = CircleShape,
-                )
-                .size(40.dp),
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.icon_location),
-                contentDescription = stringResource(id = R.string.desc_refresh_icon_map),
-                tint = LottoMateGray100,
-            )
+    // BottomSheet의 높이를 실시간 관찰
+    val bottomSheetOffset by remember {
+        derivedStateOf {
+             with(density) { bottomSheetState.requireOffset().toDp() }
         }
+    }
 
-        Column {
+    // BottomSheet의 높이에 맞춰 버튼 하단 padding값 설정
+    val buttonBottomPadding by remember {
+        derivedStateOf { screenHeight - bottomSheetOffset }
+    }
+
+    // BottomSheet의 높이가 화면의 80%이상을 차지하면 버튼 숨기기
+    val shouldShowButtons by remember {
+        derivedStateOf { bottomSheetOffset > screenHeight * 0.2f }
+    }
+
+    if (shouldShowButtons) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = Dimens.DefaultPadding20)
+                .padding(bottom = buttonBottomPadding)
+            ,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom,
+        ) {
             IconButton(
-                onClick = onClickStoreList,
+                onClick = onClickLocationFocus,
                 modifier = Modifier
                     .dropShadow(
                         shape = CircleShape,
@@ -628,40 +618,65 @@ private fun BottomButtons(
                     .size(40.dp),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_list),
-                    contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
+                    painter = painterResource(id = R.drawable.icon_location),
+                    contentDescription = stringResource(id = R.string.desc_refresh_icon_map),
                     tint = LottoMateGray100,
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Column {
+                IconButton(
+                    onClick = onClickStoreList,
+                    modifier = Modifier
+                        .dropShadow(
+                            shape = CircleShape,
+                            offsetX = 0.dp,
+                            offsetY = 0.dp,
+                            blur = 8.dp,
+                        )
+                        .background(
+                            color = LottoMateWhite,
+                            shape = CircleShape,
+                        )
+                        .size(40.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_list),
+                        contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
+                        tint = LottoMateGray100,
+                    )
+                }
 
-            IconButton(
-                onClick = onClickRefresh,
-                modifier = Modifier
-                    .dropShadow(
-                        shape = CircleShape,
-                        offsetX = 0.dp,
-                        offsetY = 0.dp,
-                        blur = if (isCurrentMoving) 16.dp else 8.dp,
-                        color = if (isCurrentMoving) LottoMateBlue50.copy(
-                            alpha = 0.8f
-                        ) else LottoMateBlack.copy(alpha = 0.16f),
+                Spacer(modifier = Modifier.height(20.dp))
+
+                IconButton(
+                    onClick = onClickRefresh,
+                    modifier = Modifier
+                        .dropShadow(
+                            shape = CircleShape,
+                            offsetX = 0.dp,
+                            offsetY = 0.dp,
+                            blur = if (isCurrentMoving) 16.dp else 8.dp,
+                            color = if (isCurrentMoving) LottoMateBlue50.copy(
+                                alpha = 0.8f
+                            ) else LottoMateBlack.copy(alpha = 0.16f),
+                        )
+                        .background(
+                            color = LottoMateWhite,
+                            shape = CircleShape,
+                        )
+                        .size(40.dp),
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_refresh),
+                        contentDescription = stringResource(id = R.string.desc_location_focus_icon_map),
+                        tint = if (isCurrentMoving) LottoMateBlue50 else LottoMateGray100,
                     )
-                    .background(
-                        color = LottoMateWhite,
-                        shape = CircleShape,
-                    )
-                    .size(40.dp),
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_refresh),
-                    contentDescription = stringResource(id = R.string.desc_location_focus_icon_map),
-                    tint = if (isCurrentMoving) LottoMateBlue50 else LottoMateGray100,
-                )
+                }
             }
         }
     }
+
 }
 
 @Composable
