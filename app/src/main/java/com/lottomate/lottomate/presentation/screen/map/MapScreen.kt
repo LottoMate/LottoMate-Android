@@ -528,7 +528,7 @@ private fun TopFilterButtons(
             text = lottoTypeState,
             iconRes = R.drawable.icon_filter_12,
             iconDescription = stringResource(id = R.string.desc_filter_icon_map),
-            isSelected = lottoTypeState != LottoTypeFilter.All.kr,
+            isSelected = true,
             onClick = onClickLottoType,
         )
 
