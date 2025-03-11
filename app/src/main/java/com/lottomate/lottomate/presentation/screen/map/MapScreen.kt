@@ -2,6 +2,7 @@ package com.lottomate.lottomate.presentation.screen.map
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +57,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
+import com.lottomate.lottomate.presentation.component.LottoMateSnackBarWithButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
@@ -98,9 +102,7 @@ private val BottomSheetPeekHeight = 48.dp
 private val BOTTOM_BUTTON_DEFAULT_BOTTOM_PADDING = 76.dp
 
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalNaverMapApi::class,
-    ExperimentalMaterial3Api::class
-)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
@@ -153,10 +155,6 @@ fun MapRoute(
         bottomSheetState = rememberBottomSheetState(BottomSheetValue.Collapsed)
     )
 
-    val userLocation by remember {
-        derivedStateOf { LocationManager.getCurrentLocation() }
-    }
-
     if (showLottoTypeSelectorBottomSheet) {
         LottoTypeSelectorBottomSheet(
             selectedLottoTypes = lottoTypeState,
@@ -191,31 +189,6 @@ fun MapRoute(
     LaunchedEffect(leftTopPosition, rightBottomPosition) {
         vm.changeLeftTopPosition(leftTopPosition)
         vm.changeRightBottomPosition(rightBottomPosition)
-    }
-
-    LaunchedEffect(currentPosition) {
-        vm.fetchStoreList()
-        cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
-    }
-
-    LaunchedEffect(currentCameraPosition) {
-        vm.fetchStoreList()
-        cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
-    }
-
-    LaunchedEffect(userLocation) {
-        Log.d("MapScreen", "현재 GPS : $userLocation")
-
-        if (LocationManager.hasGpsLocation()) {
-            vm.changeCurrentPosition(userLocation)
-            cameraPositionState.animate(
-                update = CameraUpdate.toCameraPosition(
-                    CameraPosition(LatLng(userLocation.first, userLocation.second), cameraPositionState.position.zoom)
-                ),
-                animation = CameraAnimation.Easing,
-                durationMs = 1_000,
-            )
-        }
     }
 
     // Activity의 라이플사이크를 관찰한 후, 사용자의 GPS를 가져옵니다.
@@ -272,16 +245,26 @@ fun MapRoute(
             vm.changeCurrentZoomLevel(newZoomLevel)
         },
         onClickStoreList = { vm.showStoreList() },
-        onClickLocationFocus = {
+        onClickLocationFocus = { userLocationPosition ->
             if (LocationManager.hasLocationPermission(context)) {
                 LocationManager.updateLocation(context)
-                vm.changeCurrentPosition(Pair(userLocation.first, userLocation.second))
+                vm.changeCurrentPosition(Pair(userLocationPosition.latitude, userLocationPosition.longitude))
             } else {
                 showLocationNoticeDialog = true
             }
         },
         onClickSelectStoreMarker = { vm.selectStoreMarker(it) },
         onClickUnSelectStoreMarker = { vm.unselectStoreMarker() },
+        onClickJustLooking = {
+            vm.changeCurrentCameraPosition(Pair(MapViewModel.DEFAULT_LATLNG.latitude, MapViewModel.DEFAULT_LATLNG.longitude))
+        },
+        onClickRefresh = { isInSeoul ->
+            when (isInSeoul) {
+                true -> vm.fetchStoreList()
+                false -> vm.resetStoreList()
+            }
+        },
+        onChangeCurrentPosition = { vm.changeCurrentPosition(it) },
         onShowSnackBar = { vm.sendSnackBar(it) },
     )
 
@@ -313,14 +296,17 @@ private fun MapScreen(
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
+    onChangeCurrentPosition: (Pair<Double, Double>) -> Unit,
+    onClickRefresh: (Boolean) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
     onChangeCameraPositionWithZoom: (Pair<Double, Double>, Double) -> Unit,
     onClickStoreList: () -> Unit,
-    onClickLocationFocus: () -> Unit,
+    onClickLocationFocus: (LatLng) -> Unit,
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
     onClickUnSelectStoreMarker: () -> Unit,
+    onClickJustLooking: () -> Unit,
     onShowSnackBar: (String) -> Unit,
 ) {
     val mapUiSettings by remember {
@@ -335,6 +321,71 @@ private fun MapScreen(
     var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
     var bottomSheetHeight by remember { mutableIntStateOf(0) }
 
+    var showNonSeoulSnackBarAndButton by remember { mutableStateOf(false) }
+
+    val userLocation by remember {
+        derivedStateOf { LocationManager.getCurrentLocation() }
+    }
+
+    fun checkIsInSeoul(position: LatLng): Boolean {
+        val isInSeoul = position.latitude in (37.413294..37.715133) && position.longitude in (126.269311..127.734086)
+        showNonSeoulSnackBarAndButton = !isInSeoul
+
+        return isInSeoul
+    }
+
+    // 지도 이동 시, 서울 여부 확인 & BottomSheet 접기
+    LaunchedEffect(cameraPositionState.isMoving) {
+        val cameraPosition = cameraPositionState.position.target
+        checkIsInSeoul(cameraPosition)
+
+        bottomSheetScaffoldState.bottomSheetState.collapse()
+    }
+
+    val density = LocalDensity.current
+    val topButtonPadding = with(density) { PaddingValues(top = bottomSheetTopPadding.toDp())  }
+
+//    LaunchedEffect(currentPosition) {
+//
+//        onClickRefresh(true)
+////        if (checkIsInSeoul(currentPosition)) loadStoreList()
+//
+//            cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
+//
+//    }
+
+    /**
+     * 카메라 위치가 변경되었을 때 (새로고침)
+     *
+     * 1. 서울 여부 판단
+     */
+    LaunchedEffect(currentCameraPosition) {
+        // 현재 카메라 위치가 서울인 경우에만 로또 판매점 정보 조회
+        if (checkIsInSeoul(currentCameraPosition)) onClickRefresh(true)
+        // 서울이 아니므로 리스트 비워주어야 함
+        else onClickRefresh(false)
+
+        cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
+    }
+
+    // 지도 첫 진입 시, 사용자 GPS가 있을 경우 호출
+    LaunchedEffect(userLocation) {
+        Log.d("MapScreen", "현재 사용자 GPS : $userLocation")
+
+        if (LocationManager.hasGpsLocation()) {
+            onChangeCurrentPosition(userLocation)
+            checkIsInSeoul(LatLng(userLocation.first, userLocation.second))
+
+            cameraPositionState.animate(
+                update = CameraUpdate.toCameraPosition(
+                    CameraPosition(LatLng(userLocation.first, userLocation.second), cameraPositionState.position.zoom)
+                ),
+                animation = CameraAnimation.Easing,
+                durationMs = 1_000,
+            )
+        }
+    }
+
     BottomSheetScaffold(
         modifier = modifier
             .fillMaxSize()
@@ -347,6 +398,8 @@ private fun MapScreen(
                         bottomSheetState = bottomSheetScaffoldState,
                         bottomSheetTopPadding = bottomSheetTopPadding,
                         onShowSnackBar = onShowSnackBar,
+                        isInSeoul = checkIsInSeoul(currentCameraPosition),
+                        onClickJustLooking = onClickJustLooking,
                         onSizeChanged = { bottomSheetHeight = it }
                     )
                 }
@@ -422,10 +475,8 @@ private fun MapScreen(
                             }
                         }
 
-                        // 로또 판매점이 없을 경우
-                        if (stores.isEmpty()) {
-                            val density = LocalDensity.current
-                            val topButtonHeight = with(density) { bottomSheetTopPadding.toDp() }
+                        // 로또 판매점이 없을 경우 -> 서울일 경우에만 토스트 표시
+                        if (stores.isEmpty() && checkIsInSeoul(currentCameraPosition)) {
                             LottoMateSnackBar(
                                 message = "조건에 맞는 지점이 없어요",
                                 modifier = Modifier
@@ -433,7 +484,7 @@ private fun MapScreen(
                                     .padding(
                                         top = Dimens.StatusBarHeight
                                             .plus(30.dp)
-                                            .plus(topButtonHeight)
+                                            .plus(topButtonPadding.calculateTopPadding())
                                     )
                             )
                         }
@@ -457,9 +508,98 @@ private fun MapScreen(
                             onChangeCameraPositionWithZoom(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
                         },
                         onClickStoreList = onClickStoreList,
-                        onClickLocationFocus = onClickLocationFocus,
+                        onClickLocationFocus = { onClickLocationFocus(LatLng(userLocation.first, userLocation.second)) },
                     )
                 }
+            }
+
+            if (showNonSeoulSnackBarAndButton) {
+                NonSeoulSnackBarWithButton(
+                    topSnackBarPadding = topButtonPadding.calculateTopPadding(),
+                    bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
+                    onClickRequestOpen = {
+
+                    },
+                    onClickButton = onClickJustLooking,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 서울을 벗어났을 때 보여지는 상단 스낵바 & 하단 둘러보기 버튼
+ */
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun NonSeoulSnackBarWithButton(
+    topSnackBarPadding: Dp = 0.dp,
+    bottomSheetState: BottomSheetState,
+    onClickRequestOpen: () -> Unit,
+    onClickButton: () -> Unit = {},
+) {
+    val density = LocalDensity.current
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+
+    // BottomSheet의 높이 측정
+    val bottomSheetOffset by remember {
+        mutableStateOf(with(density) { bottomSheetState.requireOffset().toDp() })
+    }
+
+    // BottomSheet의 높이에 맞춰 버튼 하단 padding값 설정
+    val buttonBottomPadding by remember {
+        Log.d("MapScreen", "NonSeoulSnackBarWithButton: ${screenHeight - bottomSheetOffset}")
+        mutableStateOf(screenHeight - bottomSheetOffset)
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LottoMateSnackBarWithButton(
+            message = "조건에 맞는 지점이 없어요",
+            buttonText = "오픈 요청하기",
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(
+                    top = Dimens.StatusBarHeight
+                        .plus(30.dp)
+                        .plus(topSnackBarPadding)
+                ),
+            onClick = {
+                // TODO : 지도 오픈 요청 페이지 이동
+                onClickRequestOpen()
+            }
+        )
+
+        // BottomSheet가 확장되지 않은 상태에서만 보이도록 설정
+        if (bottomSheetState.isCollapsed) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = buttonBottomPadding.plus(BottomSheetPeekHeight))
+                    .dropShadow(
+                        shape = RoundedCornerShape(30.dp),
+                        offsetX = 0.dp,
+                        offsetY = 0.dp,
+                        blur = 8.dp,
+                    )
+                    .clip(RoundedCornerShape(30.dp))
+                    .clickable { onClickButton() }
+                    .background(LottoMateWhite, RoundedCornerShape(30.dp))
+                    .padding(horizontal = Dimens.RadiusLarge, vertical = Dimens.RadiusSmall),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                LottoMateText(
+                    text = "로또 지도 둘러보기",
+                    style = LottoMateTheme.typography.label2,
+                )
+
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_arrow_right),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(12.dp),
+                )
             }
         }
     }
@@ -578,7 +718,7 @@ private fun BottomButtons(
     // BottomSheet의 높이를 실시간 관찰
     val bottomSheetOffset by remember {
         derivedStateOf {
-             with(density) { bottomSheetState.requireOffset().toDp() }
+            with(density) { bottomSheetState.requireOffset().toDp() }
         }
     }
 
@@ -587,9 +727,9 @@ private fun BottomButtons(
         derivedStateOf { screenHeight - bottomSheetOffset }
     }
 
-    // BottomSheet의 높이가 화면의 80%이상을 차지하면 버튼 숨기기
+    // BottomSheet의 높이가 화면의 60%이상을 차지하면 버튼 숨기기
     val shouldShowButtons by remember {
-        derivedStateOf { bottomSheetOffset > screenHeight * 0.2f }
+        derivedStateOf { bottomSheetOffset > screenHeight * 0.4f }
     }
 
     if (shouldShowButtons) {
@@ -597,7 +737,7 @@ private fun BottomButtons(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(horizontal = Dimens.DefaultPadding20)
-                .padding(bottom = buttonBottomPadding)
+                .padding(bottom = buttonBottomPadding.plus(BottomSheetPeekHeight))
             ,
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom,

@@ -54,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
+import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTextButton
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -92,10 +93,13 @@ fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
     bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
+    isInSeoul: Boolean,
+    onClickJustLooking: () -> Unit,
     onShowSnackBar: (String) -> Unit,
     onSizeChanged: (Int) -> Unit,
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     val stores by vm.stores.collectAsState()
     val store by vm.store.collectAsState()
@@ -107,6 +111,7 @@ fun StoreBottomSheet(
         stores = stores,
         selectedStore = store,
         selectStoreListFilter = selectStoreListFilter,
+        isInSeoul = isInSeoul,
         bottomSheetTopPadding = bottomSheetTopPadding,
         bottomSheetState = bottomSheetState,
         onClickStore = { vm.selectStore(it) },
@@ -119,6 +124,13 @@ fun StoreBottomSheet(
                 onSuccess = { onShowSnackBar(it)}
             )
         },
+        onClickJustLooking = {
+            coroutineScope.launch {
+                bottomSheetState.bottomSheetState.collapse()
+            }.invokeOnCompletion {
+                onClickJustLooking()
+            }
+        },
         onSizeChanged = onSizeChanged,
     )
 }
@@ -130,12 +142,14 @@ private fun StoreInfoBottomSheetContent(
     stores: List<StoreInfo>,
     selectedStore: StoreInfo?,
     selectStoreListFilter: StoreListFilter,
+    isInSeoul: Boolean,
     bottomSheetTopPadding: Int,
     bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     onClickStore: (Int) -> Unit,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (StoreListFilter) -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
+    onClickJustLooking: () -> Unit,
     onSizeChanged: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -176,9 +190,21 @@ private fun StoreInfoBottomSheetContent(
                         style = LottoMateTheme.typography.body2
                             .copy(color = LottoMateGray100),
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(top = 8.dp),
                     )
+
+                    // 서울이 아니면 BottomSheet에 둘러보기 버튼 표시 (농협 본점으로 이동)
+                    if (!isInSeoul) {
+                        LottoMateSolidButton(
+                            text = "로또 지도 둘러보기",
+                            buttonSize = LottoMateButtonProperty.Size.SMALL,
+                            buttonShape = LottoMateButtonProperty.Shape.ROUND,
+                            onClick = onClickJustLooking,
+                            modifier = Modifier.padding(top = 20.dp),
+                        )
+                    }
                 }
             }
             else -> {
@@ -188,7 +214,9 @@ private fun StoreInfoBottomSheetContent(
                     }
 
                     SelectStoreInfoContent(
-                        modifier = Modifier.fillMaxWidth().onSizeChanged { onSizeChanged(it.height) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onSizeChanged { onSizeChanged(it.height) },
                         store = store,
                         onClickStoreLike = onClickStoreLike,
                         onClickStoreInfoCopy = onClickStoreInfoCopy,
@@ -412,7 +440,10 @@ private fun StoreInfoListItem(
                     .fillMaxWidth()
                     .noInteractionClickable {
                         if (store.phone.isNotEmpty()) {
-                            when (PermissionManager.hasPermissions(context, listOf(android.Manifest.permission.CALL_PHONE))) {
+                            when (PermissionManager.hasPermissions(
+                                context,
+                                listOf(android.Manifest.permission.CALL_PHONE)
+                            )) {
                                 true -> {
                                     val formattedPhoneNumber =
                                         PhoneNumberUtils.formatNumber(store.phone, "KR")
@@ -422,6 +453,7 @@ private fun StoreInfoListItem(
                                     )
                                     context.startActivity(dialIntent)
                                 }
+
                                 false -> {
                                     // 권한 요청
                                     PermissionManager.requestPermissions(
@@ -469,7 +501,9 @@ private fun StoreInfoListItem(
                             tint = LottoMateGray80,
                             modifier = Modifier
                                 .size(20.dp)
-                                .noInteractionClickable { expendStoreWinHistory = !expendStoreWinHistory },
+                                .noInteractionClickable {
+                                    expendStoreWinHistory = !expendStoreWinHistory
+                                },
                         )
                     }
                 }
