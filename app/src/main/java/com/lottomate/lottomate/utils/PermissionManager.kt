@@ -4,13 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.lottomate.lottomate.presentation.screen.main.MainActivity
 
 object PermissionManager {
     const val LOCATION_REQUEST_CODE = 111
@@ -41,12 +36,12 @@ object PermissionManager {
      * 권한 요청
      */
     fun requestPermissions(
-        context: Context,
+        context: Activity,
         permissions: List<String>,
         requestCode: Int = 1,
     ) {
         ActivityCompat.requestPermissions(
-            context as MainActivity,
+            context,
             permissions.toTypedArray(),
             requestCode,
         )
