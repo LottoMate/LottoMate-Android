@@ -16,6 +16,7 @@ import com.lottomate.lottomate.presentation.screen.pocket.navigation.pocketNavGr
 fun MainNavHost(
     navigator: MainNavigator,
     padding: PaddingValues,
+    onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -34,6 +35,7 @@ fun MainNavHost(
                 moveToLogin = { navigator.navController.navigateToLogin() },
                 onShowErrorSnackBar = onShowErrorSnackBar,
             )
+            onShowFullScreen = onShowFullScreen,
 
             pocketNavGraph(
                 padding = padding,

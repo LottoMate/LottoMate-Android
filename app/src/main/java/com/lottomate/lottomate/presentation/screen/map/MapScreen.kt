@@ -60,6 +60,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarWithButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
 import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LocationNoticeDialog
 import com.lottomate.lottomate.presentation.screen.map.component.LocationPermissionObserver
@@ -71,7 +72,6 @@ import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
-import com.lottomate.lottomate.presentation.ui.LottoMateDim
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -97,10 +97,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-private val LoadingBackgroundSize = 160.dp
-private val BottomSheetPeekHeight = 48.dp
-private val BOTTOM_BUTTON_DEFAULT_BOTTOM_PADDING = 76.dp
-
+private const val BottomSheetPeekHeight = 48
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -108,8 +105,14 @@ fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToLogin: () -> Unit,
+    onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    // 지도 진입 시, 로딩 화면 표시
+    LaunchedEffect(true) {
+        onShowFullScreen(FullScreenType.MAP_LOADING)
+    }
+
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -816,87 +819,4 @@ private fun BottomButtons(
             }
         }
     }
-
 }
-
-@Composable
-private fun MapLoadingScreen(
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.background(LottoMateDim),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
-                modifier = Modifier
-                    .size(LoadingBackgroundSize)
-                    .dropShadow(
-                        shape = CircleShape,
-                        blur = 8.dp,
-                        offsetY = 0.dp,
-                        offsetX = 0.dp,
-                    )
-                    .clip(CircleShape)
-                    .background(LottoMateWhite)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            LottoMateText(
-                text = stringResource(id = R.string.map_loading_text),
-                style = LottoMateTheme.typography.title3
-                    .copy(
-                        color = LottoMateWhite,
-                        shadow = Shadow(
-                            color = LottoMateBlack.copy(0.16f),
-                            blurRadius = 0.8f
-                        )
-                    ),
-            )
-
-            LottoMateText(
-                text = stringResource(id = R.string.map_loading_sub_text),
-                style = LottoMateTheme.typography.headline2
-                    .copy(
-                        color = LottoMateWhite,
-                        shadow = Shadow(
-                            color = LottoMateBlack.copy(0.16f),
-                            blurRadius = 0.8f
-                        )
-                    ),
-            )
-        }
-    }
-}
-
-//@OptIn(ExperimentalMaterialApi::class)
-//@Preview(showBackground = true)
-//@Composable
-//private fun MapScreenPreview() {
-//    LottoMateTheme {
-//        val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
-//
-//        MapScreen(
-//            uiState = MapUiState.Success(StoreInfoMocks),
-//            selectStore = null,
-//            lottoTypeState = "복권 전체",
-//            winStoreState = true,
-//            favoriteStoreState = true,
-//            onClickLottoType = {},
-//            onClickWinLottoStore = {},
-//            onClickFavoriteStore = {},
-//            onClickRefresh = { newPosition, newZoomLevel -> },
-//            onClickStoreList = {},
-//            onClickLocationFocus = {},
-//            onClickSelectStoreMarker = {},
-//            onClickUnSelectStoreMarker = {},
-//            padding = PaddingValues(32.dp),
-//            leftTopPosition = Pair(0.0, 0.0),
-//            rightBottomPosition = Pair(0.0, 0.0),
-//            currentPosition = LatLng(37.566499, 126.968555),
-//            bottomSheetScaffoldState = bottomSheetScaffoldState,
-//            onShowSnackBar = {},
-//        )
-//    }
-//}
