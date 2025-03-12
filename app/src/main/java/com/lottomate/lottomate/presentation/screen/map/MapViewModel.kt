@@ -15,17 +15,11 @@ import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +28,19 @@ class MapViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val storeRepository: StoreRepository,
 ) : ViewModel() {
+    val stores: StateFlow<List<StoreInfo>> = storeRepository.stores
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList(),
+        )
+    val selectedStore = storeRepository.store
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null,
+        )
+
     private var isFirstLoading = true
     private var leftTopPosition = mutableStateOf(DEFAULT_LATLNG)
     private var rightBottomPosition = mutableStateOf(DEFAULT_LATLNG)
@@ -50,15 +57,6 @@ class MapViewModel @Inject constructor(
     var favoriteStoreState = mutableStateOf(false)
         private set
 
-    private var _uiState = MutableStateFlow<MapUiState>(MapUiState.Loading)
-    val uiState: StateFlow<MapUiState> get() = _uiState.asStateFlow()
-
-    val selectedStore = storeRepository.store
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null,
-        )
     private var _snackBarFlow = MutableSharedFlow<String>()
     val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
 
@@ -123,30 +121,57 @@ class MapViewModel @Inject constructor(
 
             storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
 
-            _uiState.update { MapUiState.Loading }
-
-            storeRepository.stores
-                .onStart {
-                    // 처음으로 진입했을 때에만 로딩 화면 표시
-                    if (isFirstLoading) {
-                        _uiState.update { MapUiState.Loading }
-                        isFirstLoading = false
-                    }
-                }
-                .catch {throwable ->
-                    Log.d("MapVM", throwable.stackTraceToString())
-                    _uiState.update { MapUiState.Failed("네트워크 오류가 발생했습니다.", throwable) }
-                }
-                .collectLatest { collectStoreInfo ->
-                    _uiState.update {
-                        MapUiState.Success(collectStoreInfo)
-                    }
-                }
+//            _uiState.update { MapUiState.Loading }
+//
+//            storeRepository.stores
+//                .onStart {
+//                    // 처음으로 진입했을 때에만 로딩 화면 표시
+//                    if (isFirstLoading) {
+//                        _uiState.update { MapUiState.Loading }
+//                        isFirstLoading = false
+//                    }
+//                }
+//                .catch {throwable ->
+//                    Log.d("MapVM", throwable.stackTraceToString())
+//                    _uiState.update { MapUiState.Failed("네트워크 오류가 발생했습니다.", throwable) }
+//                }
+//                .collectLatest { collectStoreInfo ->
+//                    _uiState.update {
+//                        MapUiState.Success(collectStoreInfo)
+//                    }
+//                }
         }
     }
 
+    fun resetStoreList() {
+//        viewModelScope.launch {
+//            storeRepository.resetStoreList()
+//
+//            storeRepository.stores
+//                .onStart {
+//                    // 처음으로 진입했을 때에만 로딩 화면 표시
+//                    if (isFirstLoading) {
+//                        _uiState.update { MapUiState.Loading }
+//                        isFirstLoading = false
+//                    }
+//                }
+//                .catch {throwable ->
+//                    Log.d("MapVM", throwable.stackTraceToString())
+//                    _uiState.update { MapUiState.Failed("네트워크 오류가 발생했습니다.", throwable) }
+//                }
+//                .collectLatest { collectStoreInfo ->
+//                    _uiState.update {
+//                        MapUiState.Success(collectStoreInfo)
+//                    }
+//                }
+//        }
+    }
+
+    /**
+     * 사용자의 GPS 위치를 변경합니다.
+     */
     fun changeCurrentPosition(newCurrentPosition: Pair<Double, Double>) {
-        Log.d("MapVM", "변경된 사용자 GPS 위치 : ${newCurrentPosition.first} / ${newCurrentPosition.second}")
+        Log.d("MapScreen(VM)", "변경된 사용자 GPS 위치 : ${newCurrentPosition.first} / ${newCurrentPosition.second}")
 
         currentPosition.value = LatLng(newCurrentPosition.first, newCurrentPosition.second)
 
@@ -154,7 +179,7 @@ class MapViewModel @Inject constructor(
     }
 
     fun changeCurrentCameraPosition(newCurrentCameraPosition: Pair<Double, Double>) {
-        Log.d("MapVM", "카메라 GPS 위치 변경 : ${newCurrentCameraPosition.first} / ${newCurrentCameraPosition.second}")
+        Log.d("MapScreen(VM)", "카메라 GPS 위치 변경 : ${newCurrentCameraPosition.first} / ${newCurrentCameraPosition.second}")
 
         currentCameraPosition.value = LatLng(newCurrentCameraPosition.first, newCurrentCameraPosition.second)
     }
@@ -188,8 +213,8 @@ class MapViewModel @Inject constructor(
     }
 }
 
-sealed interface MapUiState {
-    data object Loading : MapUiState
-    data class Success(val storeInfo: List<StoreInfo>) : MapUiState
-    data class Failed(val message: String, val throwable: Throwable?) : MapUiState
-}
+//sealed interface MapUiState {
+//    data object Loading : MapUiState
+//    data class Success(val storeInfo: List<StoreInfo>) : MapUiState
+//    data class Failed(val message: String, val throwable: Throwable?) : MapUiState
+//}

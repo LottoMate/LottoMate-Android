@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
@@ -58,7 +57,6 @@ import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTextButton
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 import com.lottomate.lottomate.presentation.screen.map.StoreBottomSheetViewModel
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
@@ -85,12 +83,11 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 import com.naver.maps.geometry.LatLng
 import kotlinx.coroutines.launch
 
-private const val BOTTOM_SHEET_TOP_SPACER = 78
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
     bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
     isInSeoul: Boolean,
@@ -107,7 +104,7 @@ fun StoreBottomSheet(
     val selectStoreListFilter by vm.selectStoreListFilter
 
     StoreInfoBottomSheetContent(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         stores = stores,
         selectedStore = store,
         selectStoreListFilter = selectStoreListFilter,
@@ -153,20 +150,13 @@ private fun StoreInfoBottomSheetContent(
     onSizeChanged: (Int) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val bottomSheetTopPaddingToDp = pixelsToDp(pixels = bottomSheetTopPadding)
-    val bottomSheetHeight = LocalConfiguration.current.screenHeightDp
-        .minus(Dimens.StatusBarHeight.value)
-        .minus(BOTTOM_SHEET_TOP_SPACER)
-        .minus(bottomSheetTopPaddingToDp.value)
 
     Column(
-        modifier = modifier
-            .heightIn(max = bottomSheetHeight.dp, min = bottomSheetHeight.dp * 0.6f)
-            .verticalScroll(rememberScrollState()),
+        modifier = modifier,
     ) {
         Box(
             modifier = Modifier
-                .padding(top = 12.dp)
+                .padding(top = 12.dp, bottom = 20.dp)
                 .background(LottoMateGray30, RoundedCornerShape(8.dp))
                 .size(width = 40.dp, height = 4.dp)
                 .align(Alignment.CenterHorizontally)
@@ -175,13 +165,13 @@ private fun StoreInfoBottomSheetContent(
         when {
             stores.isEmpty() -> {
                 Column(
-                    modifier = Modifier.padding(bottom = 118.dp),
+                    modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.img_pochi_black),
                         contentDescription = null,
-                        modifier = Modifier.padding(top = 100.dp)
                     )
 
                     LottoMateText(
@@ -268,9 +258,7 @@ private fun StoreInfoListContent(
     onClickFilter: (StoreListFilter) -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
 ) {
-    Column(modifier = modifier) {
-        Spacer(modifier = Modifier.height(20.dp))
-
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         FilterRow(
             modifier = Modifier.fillMaxWidth(),
             filters = stringArrayResource(id = R.array.map_store_info_top_filters),
@@ -536,11 +524,12 @@ private fun StoreWinHistory(
     if (histories.isEmpty()) {
         Box(
             modifier = modifier
+                .fillMaxSize()
                 .background(LottoMateGray10),
             contentAlignment = Alignment.Center,
         ) {
             Column(
-                modifier = Modifier.padding(vertical = 57.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(

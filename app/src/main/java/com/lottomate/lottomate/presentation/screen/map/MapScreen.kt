@@ -1,32 +1,20 @@
 package com.lottomate.lottomate.presentation.screen.map
 
 import android.util.Log
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetScaffoldState
-import androidx.compose.material.BottomSheetState
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,44 +28,30 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
-import com.lottomate.lottomate.presentation.component.LottoMateSnackBarWithButton
-import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
-import com.lottomate.lottomate.presentation.screen.map.component.FilterButton
 import com.lottomate.lottomate.presentation.screen.map.component.LocationNoticeDialog
 import com.lottomate.lottomate.presentation.screen.map.component.LocationPermissionObserver
 import com.lottomate.lottomate.presentation.screen.map.component.LottoTypeSelectorBottomSheet
+import com.lottomate.lottomate.presentation.screen.map.component.MapButtons
 import com.lottomate.lottomate.presentation.screen.map.component.MapInitPopupBottomSheet
+import com.lottomate.lottomate.presentation.screen.map.component.ShowNonSeoulSnackBarWithButton
 import com.lottomate.lottomate.presentation.screen.map.component.StoreBottomSheet
 import com.lottomate.lottomate.presentation.screen.map.component.checkLocationPermission
-import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
+import com.lottomate.lottomate.presentation.screen.map.model.StoreBottomSheetExpendedType
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
-import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
-import com.lottomate.lottomate.presentation.ui.LottoMateGray100
-import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.GeoPositionCalculator
 import com.lottomate.lottomate.utils.LocationManager
-import com.lottomate.lottomate.utils.dropShadow
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -94,17 +68,14 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.overlay.OverlayImage
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.math.RoundingMode
 
-private const val BottomSheetPeekHeight = 48
+const val BottomSheetPeekHeight = 48
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
-    moveToLogin: () -> Unit,
     onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
@@ -122,7 +93,8 @@ fun MapRoute(
     val currentPosition by vm.currentPosition
     val currentCameraPosition by vm.currentCameraPosition
     val currentZoomLevel by vm.currentZoomLevel
-    val uiState by vm.uiState.collectAsStateWithLifecycle()
+
+    val stores by vm.stores.collectAsState()
     val selectedStore by vm.selectedStore.collectAsState(initial = null)
 
     val lottoTypeState = vm.lottoTypeState
@@ -216,8 +188,7 @@ fun MapRoute(
                 onClickRequestOpen = {
                     showInitPopupBottomSheet = false
 
-                    // TODO : 로그인 여부 체크 후, 로그인 페이지 이동(비로그인) or 요청 페이지 이동 (로그인)
-                    moveToLogin()
+                    // TODO : 요청폼으로 이동
                 },
             )
         }
@@ -230,7 +201,7 @@ fun MapRoute(
 
     MapScreen(
         padding = padding,
-        uiState = uiState,
+        stores = stores,
         selectStore = selectedStore,
         cameraPositionState = cameraPositionState,
         currentPosition = currentPosition,
@@ -290,7 +261,7 @@ fun MapRoute(
 private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
-    uiState: MapUiState,
+    stores: List<StoreInfo>,
     currentPosition: LatLng,
     currentCameraPosition: LatLng,
     cameraPositionState: CameraPositionState,
@@ -337,25 +308,31 @@ private fun MapScreen(
         return isInSeoul
     }
 
+    val screenHeightDp = LocalConfiguration.current.screenHeightDp.minus(62)
+    // BottomSheet Height 설정
+    var expendedType by remember {
+        mutableStateOf(StoreBottomSheetExpendedType.COLLAPSED)
+    }
+    val storeBottomSheetHeight by animateIntAsState(
+        targetValue = when (expendedType) {
+            // 화면의 60%
+            StoreBottomSheetExpendedType.HALF -> (screenHeightDp * 0.6f).toInt()
+            // 화면의 90%
+            StoreBottomSheetExpendedType.FULL -> (screenHeightDp * 0.9f).toInt()
+            StoreBottomSheetExpendedType.COLLAPSED -> BottomSheetPeekHeight
+        }, label = ""
+    )
+
     // 지도 이동 시, 서울 여부 확인 & BottomSheet 접기
     LaunchedEffect(cameraPositionState.isMoving) {
         val cameraPosition = cameraPositionState.position.target
         checkIsInSeoul(cameraPosition)
 
-        bottomSheetScaffoldState.bottomSheetState.collapse()
+        expendedType = StoreBottomSheetExpendedType.COLLAPSED
     }
 
     val density = LocalDensity.current
     val topButtonPadding = with(density) { PaddingValues(top = bottomSheetTopPadding.toDp())  }
-
-//    LaunchedEffect(currentPosition) {
-//
-//        onClickRefresh(true)
-////        if (checkIsInSeoul(currentPosition)) loadStoreList()
-//
-//            cameraPositionState.move(CameraUpdate.toCameraPosition(CameraPosition(LatLng(currentCameraPosition.latitude, currentCameraPosition.longitude), cameraPositionState.position.zoom)))
-//
-//    }
 
     /**
      * 카메라 위치가 변경되었을 때 (새로고침)
@@ -395,428 +372,141 @@ private fun MapScreen(
             .padding(bottom = padding.calculateBottomPadding()),
         scaffoldState = bottomSheetScaffoldState,
         sheetContent = {
-            when (uiState) {
-                is MapUiState.Success -> {
-                    StoreBottomSheet(
-                        bottomSheetState = bottomSheetScaffoldState,
-                        bottomSheetTopPadding = bottomSheetTopPadding,
-                        onShowSnackBar = onShowSnackBar,
-                        isInSeoul = checkIsInSeoul(currentCameraPosition),
-                        onClickJustLooking = onClickJustLooking,
-                        onSizeChanged = { bottomSheetHeight = it }
-                    )
-                }
+            var isUpdated = false
 
-                else -> {}
-            }
+            StoreBottomSheet(
+                modifier = Modifier
+                    .height(storeBottomSheetHeight.dp)
+                    .pointerInput(Unit) {
+                        detectVerticalDragGestures(
+                            onVerticalDrag = { change, dragAmount ->
+                                change.consume()
+                                if (!isUpdated) {
+                                    expendedType = when {
+                                        // 위로 드래그 (확장)
+                                        dragAmount < 0 && expendedType == StoreBottomSheetExpendedType.COLLAPSED -> StoreBottomSheetExpendedType.HALF
+                                        dragAmount < 0 && expendedType == StoreBottomSheetExpendedType.HALF && stores.isEmpty() -> StoreBottomSheetExpendedType.HALF
+                                        dragAmount < 0 && expendedType == StoreBottomSheetExpendedType.HALF && stores.isNotEmpty() -> StoreBottomSheetExpendedType.FULL
+                                        // 아래로 드래그 (축소)
+                                        dragAmount > 0 && expendedType == StoreBottomSheetExpendedType.FULL -> StoreBottomSheetExpendedType.HALF
+                                        dragAmount > 0 && expendedType == StoreBottomSheetExpendedType.HALF -> StoreBottomSheetExpendedType.COLLAPSED
+                                        else -> StoreBottomSheetExpendedType.COLLAPSED
+                                    }
+                                }
+                                isUpdated = true
+                            },
+                            onDragEnd = { isUpdated = false }
+                        )
+                    },
+                bottomSheetState = bottomSheetScaffoldState,
+                bottomSheetTopPadding = bottomSheetTopPadding,
+                onShowSnackBar = onShowSnackBar,
+                isInSeoul = checkIsInSeoul(currentCameraPosition),
+                onClickJustLooking = onClickJustLooking,
+                onSizeChanged = { bottomSheetHeight = it }
+            )
         },
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-        sheetPeekHeight = BottomSheetPeekHeight,
+        sheetPeekHeight = storeBottomSheetHeight.dp,
     ) {
-        Box(
-            modifier = modifier.fillMaxSize()
-        ) {
-            when (uiState) {
-                MapUiState.Loading -> {
-                    MapLoadingScreen(modifier = Modifier.fillMaxSize())
-
-                }
-
-                is MapUiState.Failed -> {
-                    // TODO : 데이터를 가져오는 중에 오류가 발생했을 때
-                }
-
-                is MapUiState.Success -> {
-                    val stores = uiState.storeInfo
-
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        NaverMap(
-                            modifier = Modifier.fillMaxSize(),
-                            uiSettings = mapUiSettings,
-                            properties = MapProperties(
-                                locationTrackingMode = LocationTrackingMode.Follow,
-                            ),
-                            cameraPositionState = cameraPositionState,
-                        ) {
-                            selectStore?.let { store ->
-                                Marker(
-                                    state = MarkerState(position = store.latLng),
-                                    icon = OverlayImage.fromResource(R.drawable.marker_select),
-                                    onClick = {
-                                        onClickUnSelectStoreMarker()
-
-                                        coroutineScope.launch {
-                                            bottomSheetScaffoldState.bottomSheetState.collapse()
-                                        }
-                                        true
-                                    }
-                                )
-                            }
-
-                            stores.forEach { store ->
-                                Marker(
-                                    state = MarkerState(position = store.latLng),
-                                    icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(
-                                        R.drawable.marker_default
-                                    )
-                                    else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
-                                    else OverlayImage.fromResource(R.drawable.marker_win),
-                                    onClick = {
-                                        val zoomLevel = cameraPositionState.position.zoom
-                                        onClickSelectStoreMarker(store)
-                                        onChangeCameraPositionWithZoom(Pair(it.position.latitude, it.position.longitude), zoomLevel)
-                                        true
-                                    }
-                                )
-                            }
-
-                            if (LocationManager.hasGpsLocation()) {
-                                Marker(
-                                    state = MarkerState(position = currentPosition),
-                                    icon = OverlayImage.fromResource(R.drawable.icon_current_location),
-                                )
-                            }
-                        }
-
-                        // 로또 판매점이 없을 경우 -> 서울일 경우에만 토스트 표시
-                        if (stores.isEmpty() && checkIsInSeoul(currentCameraPosition)) {
-                            LottoMateSnackBar(
-                                message = "조건에 맞는 지점이 없어요",
-                                modifier = Modifier
-                                    .align(Alignment.TopCenter)
-                                    .padding(
-                                        top = Dimens.StatusBarHeight
-                                            .plus(30.dp)
-                                            .plus(topButtonPadding.calculateTopPadding())
-                                    )
-                            )
-                        }
-                    }
-
-                    MapButtons(
-                        lottoTypeState = lottoTypeState,
-                        winStoreState = winStoreState,
-                        favoriteStoreState = favoriteStoreState,
-                        bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
-                        currentCameraPosition = currentCameraPosition,
-                        cameraPositionState = cameraPositionState,
-                        onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
-                        onClickLottoType = onClickLottoType,
-                        onClickWinLottoStore = onClickWinLottoStore,
-                        onClickFavoriteStore = onClickFavoriteStore,
-                        onClickRefresh = {
-                            val cameraPosition = cameraPositionState.position.target
-                            val zoomLevel = cameraPositionState.position.zoom
-
-                            onChangeCameraPositionWithZoom(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
-                        },
-                        onClickStoreList = onClickStoreList,
-                        onClickLocationFocus = { onClickLocationFocus(LatLng(userLocation.first, userLocation.second)) },
-                    )
-                }
-            }
-
-            if (showNonSeoulSnackBarAndButton) {
-                NonSeoulSnackBarWithButton(
-                    topSnackBarPadding = topButtonPadding.calculateTopPadding(),
-                    bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
-                    onClickRequestOpen = {
-
-                    },
-                    onClickButton = onClickJustLooking,
-                )
-            }
-        }
-    }
-}
-
-/**
- * 서울을 벗어났을 때 보여지는 상단 스낵바 & 하단 둘러보기 버튼
- */
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun NonSeoulSnackBarWithButton(
-    topSnackBarPadding: Dp = 0.dp,
-    bottomSheetState: BottomSheetState,
-    onClickRequestOpen: () -> Unit,
-    onClickButton: () -> Unit = {},
-) {
-    val density = LocalDensity.current
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-
-
-    // BottomSheet의 높이 측정
-    val bottomSheetOffset by remember {
-        mutableStateOf(with(density) { bottomSheetState.requireOffset().toDp() })
-    }
-
-    // BottomSheet의 높이에 맞춰 버튼 하단 padding값 설정
-    val buttonBottomPadding by remember {
-        Log.d("MapScreen", "NonSeoulSnackBarWithButton: ${screenHeight - bottomSheetOffset}")
-        mutableStateOf(screenHeight - bottomSheetOffset)
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        LottoMateSnackBarWithButton(
-            message = "조건에 맞는 지점이 없어요",
-            buttonText = "오픈 요청하기",
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(
-                    top = Dimens.StatusBarHeight
-                        .plus(30.dp)
-                        .plus(topSnackBarPadding)
+        Box(modifier = Modifier.fillMaxSize()) {
+            NaverMap(
+                modifier = Modifier.fillMaxSize(),
+                uiSettings = mapUiSettings,
+                properties = MapProperties(
+                    locationTrackingMode = LocationTrackingMode.Follow,
                 ),
-            onClick = {
-                // TODO : 지도 오픈 요청 페이지 이동
-                onClickRequestOpen()
-            }
-        )
-
-        // BottomSheet가 확장되지 않은 상태에서만 보이도록 설정
-        if (bottomSheetState.isCollapsed) {
-            Row(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = buttonBottomPadding.plus(BottomSheetPeekHeight))
-                    .dropShadow(
-                        shape = RoundedCornerShape(30.dp),
-                        offsetX = 0.dp,
-                        offsetY = 0.dp,
-                        blur = 8.dp,
-                    )
-                    .clip(RoundedCornerShape(30.dp))
-                    .clickable { onClickButton() }
-                    .background(LottoMateWhite, RoundedCornerShape(30.dp))
-                    .padding(horizontal = Dimens.RadiusLarge, vertical = Dimens.RadiusSmall),
-                verticalAlignment = Alignment.CenterVertically,
+                cameraPositionState = cameraPositionState,
             ) {
-                LottoMateText(
-                    text = "로또 지도 둘러보기",
-                    style = LottoMateTheme.typography.label2,
-                )
+                // 선택한 복권 판매점 표시
+                selectStore?.let { store ->
+                    Marker(
+                        state = MarkerState(position = store.latLng),
+                        icon = OverlayImage.fromResource(R.drawable.marker_select),
+                        onClick = {
+                            onClickUnSelectStoreMarker()
 
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_arrow_right),
-                    contentDescription = null,
+                            coroutineScope.launch {
+                                bottomSheetScaffoldState.bottomSheetState.collapse()
+                            }
+                            true
+                        }
+                    )
+                }
+
+                // 복권 판매점 목록
+                stores.forEach { store ->
+                    Marker(
+                        state = MarkerState(position = store.latLng),
+                        icon = if (store.winCountOfLottoType.isEmpty()) OverlayImage.fromResource(
+                            R.drawable.marker_default
+                        )
+                        else if (store.isLike) OverlayImage.fromResource(R.drawable.marker_like)
+                        else OverlayImage.fromResource(R.drawable.marker_win),
+                        onClick = {
+                            val zoomLevel = cameraPositionState.position.zoom
+                            onClickSelectStoreMarker(store)
+                            onChangeCameraPositionWithZoom(Pair(it.position.latitude, it.position.longitude), zoomLevel)
+                            true
+                        }
+                    )
+                }
+
+                // 현재 위치 표시 마커
+                if (LocationManager.hasGpsLocation()) {
+                    Marker(
+                        state = MarkerState(position = currentPosition),
+                        icon = OverlayImage.fromResource(R.drawable.icon_current_location),
+                    )
+                }
+            }
+
+            // 로또 판매점이 없을 경우 -> 서울일 경우에만 토스트 표시
+            if (stores.isEmpty() && checkIsInSeoul(currentCameraPosition)) {
+                LottoMateSnackBar(
+                    message = "조건에 맞는 지점이 없어요",
                     modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(12.dp),
+                        .align(Alignment.TopCenter)
+                        .padding(
+                            top = Dimens.StatusBarHeight
+                                .plus(30.dp)
+                                .plus(topButtonPadding.calculateTopPadding())
+                        )
                 )
             }
         }
-    }
-}
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun MapButtons(
-    lottoTypeState: String,
-    winStoreState: Boolean,
-    favoriteStoreState: Boolean,
-    currentCameraPosition: LatLng,
-    bottomSheetState: BottomSheetState,
-    cameraPositionState: CameraPositionState,
-    onSizeBottomSheetHeight: (Int) -> Unit,
-    onClickLottoType: () -> Unit,
-    onClickWinLottoStore: () -> Unit,
-    onClickFavoriteStore: () -> Unit,
-    onClickRefresh: () -> Unit,
-    onClickStoreList: () -> Unit,
-    onClickLocationFocus: () -> Unit,
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        TopFilterButtons(
-            modifier = Modifier.fillMaxWidth(),
+        MapButtons(
             lottoTypeState = lottoTypeState,
             winStoreState = winStoreState,
             favoriteStoreState = favoriteStoreState,
-            onSizeBottomSheetHeight = onSizeBottomSheetHeight,
+            bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
+            currentCameraPosition = currentCameraPosition,
+            cameraPositionState = cameraPositionState,
+            onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
             onClickLottoType = onClickLottoType,
             onClickWinLottoStore = onClickWinLottoStore,
             onClickFavoriteStore = onClickFavoriteStore,
-        )
+            onClickRefresh = {
+                val cameraPosition = cameraPositionState.position.target
+                val zoomLevel = cameraPositionState.position.zoom
 
-        BottomButtons(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            bottomSheetState = bottomSheetState,
-            currentCameraPosition = currentCameraPosition,
-            cameraPositionState = cameraPositionState,
-            onClickRefresh = onClickRefresh,
+                onChangeCameraPositionWithZoom(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
+            },
             onClickStoreList = onClickStoreList,
-            onClickLocationFocus = onClickLocationFocus,
-        )
-    }
-}
-
-@Composable
-private fun TopFilterButtons(
-    modifier: Modifier = Modifier,
-    lottoTypeState: String,
-    winStoreState: Boolean,
-    favoriteStoreState: Boolean,
-    onSizeBottomSheetHeight: (Int) -> Unit,
-    onClickLottoType: () -> Unit,
-    onClickWinLottoStore: () -> Unit,
-    onClickFavoriteStore: () -> Unit,
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 20.dp)
-            .padding(top = Dimens.StatusBarHeight.plus(8.dp))
-            .onSizeChanged { onSizeBottomSheetHeight(it.height) },
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        FilterButton(
-            text = lottoTypeState,
-            iconRes = R.drawable.icon_filter_12,
-            iconDescription = stringResource(id = R.string.desc_filter_icon_map),
-            isSelected = true,
-            onClick = onClickLottoType,
+            onClickLocationFocus = { onClickLocationFocus(LatLng(userLocation.first, userLocation.second)) },
         )
 
-        Row {
-            FilterButton(
-                text = stringResource(id = R.string.map_win_store_filter_button),
-                isSelected = winStoreState,
-                onClick = onClickWinLottoStore,
+        // 서울이 아닌 경우 스낵바 + 하단 버튼 표시
+        if (showNonSeoulSnackBarAndButton) {
+            ShowNonSeoulSnackBarWithButton(
+                topSnackBarPadding = topButtonPadding.calculateTopPadding(),
+                bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
+                onClickRequestOpen = {
+
+                },
+                onClickButton = onClickJustLooking,
             )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            FilterButton(
-                text = stringResource(id = R.string.map_favorite_store_filter_button),
-                isSelected = favoriteStoreState,
-                onClick = onClickFavoriteStore,
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun BottomButtons(
-    modifier: Modifier = Modifier,
-    currentCameraPosition: LatLng,
-    bottomSheetState: BottomSheetState,
-    cameraPositionState: CameraPositionState,
-    onClickRefresh: () -> Unit,
-    onClickStoreList: () -> Unit,
-    onClickLocationFocus: () -> Unit,
-) {
-    fun isApproximatelyEqual(coord1: LatLng, coord2: LatLng): Boolean {
-        val roundedLat1 = BigDecimal(coord1.latitude).setScale(6, RoundingMode.HALF_UP).toDouble()
-        val roundedLon1 = BigDecimal(coord1.longitude).setScale(6, RoundingMode.HALF_UP).toDouble()
-
-        val roundedLat2 = BigDecimal(coord2.latitude).setScale(6, RoundingMode.HALF_UP).toDouble()
-        val roundedLon2 = BigDecimal(coord2.longitude).setScale(6, RoundingMode.HALF_UP).toDouble()
-
-        return roundedLat1 == roundedLat2 && roundedLon1 == roundedLon2
-    }
-    val isCurrentMoving = cameraPositionState.isMoving || isApproximatelyEqual(currentCameraPosition, cameraPositionState.position.target)
-
-    val density = LocalDensity.current
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-
-    // BottomSheet의 높이를 실시간 관찰
-    val bottomSheetOffset by remember {
-        derivedStateOf {
-            with(density) { bottomSheetState.requireOffset().toDp() }
-        }
-    }
-
-    // BottomSheet의 높이에 맞춰 버튼 하단 padding값 설정
-    val buttonBottomPadding by remember {
-        derivedStateOf { screenHeight - bottomSheetOffset }
-    }
-
-    // BottomSheet의 높이가 화면의 60%이상을 차지하면 버튼 숨기기
-    val shouldShowButtons by remember {
-        derivedStateOf { bottomSheetOffset > screenHeight * 0.4f }
-    }
-
-    if (shouldShowButtons) {
-        Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = Dimens.DefaultPadding20)
-                .padding(bottom = buttonBottomPadding.plus(BottomSheetPeekHeight))
-            ,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom,
-        ) {
-            IconButton(
-                onClick = onClickLocationFocus,
-                modifier = Modifier
-                    .dropShadow(
-                        shape = CircleShape,
-                        offsetX = 0.dp,
-                        offsetY = 0.dp,
-                        blur = 8.dp,
-                    )
-                    .background(
-                        color = LottoMateWhite,
-                        shape = CircleShape,
-                    )
-                    .size(40.dp),
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_location),
-                    contentDescription = stringResource(id = R.string.desc_refresh_icon_map),
-                    tint = LottoMateGray100,
-                )
-            }
-
-            Column {
-                IconButton(
-                    onClick = onClickStoreList,
-                    modifier = Modifier
-                        .dropShadow(
-                            shape = CircleShape,
-                            offsetX = 0.dp,
-                            offsetY = 0.dp,
-                            blur = 8.dp,
-                        )
-                        .background(
-                            color = LottoMateWhite,
-                            shape = CircleShape,
-                        )
-                        .size(40.dp),
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_list),
-                        contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
-                        tint = LottoMateGray100,
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                IconButton(
-                    onClick = onClickRefresh,
-                    modifier = Modifier
-                        .dropShadow(
-                            shape = CircleShape,
-                            offsetX = 0.dp,
-                            offsetY = 0.dp,
-                            blur = if (isCurrentMoving) 16.dp else 8.dp,
-                            color = if (isCurrentMoving) LottoMateBlue50.copy(
-                                alpha = 0.8f
-                            ) else LottoMateBlack.copy(alpha = 0.16f),
-                        )
-                        .background(
-                            color = LottoMateWhite,
-                            shape = CircleShape,
-                        )
-                        .size(40.dp),
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_refresh),
-                        contentDescription = stringResource(id = R.string.desc_location_focus_icon_map),
-                        tint = if (isCurrentMoving) LottoMateBlue50 else LottoMateGray100,
-                    )
-                }
-            }
         }
     }
 }

@@ -19,14 +19,12 @@ fun NavController.navigateToMap() {
 
 fun NavGraphBuilder.mapNavGraph(
     padding: PaddingValues,
-    moveToLogin: () -> Unit,
     onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     composable<BottomTabRoute.Map> {
         MapRoute(
             padding = padding,
-            moveToLogin = moveToLogin,
             onShowFullScreen = onShowFullScreen,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
