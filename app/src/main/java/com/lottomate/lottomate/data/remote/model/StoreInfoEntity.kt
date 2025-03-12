@@ -3,7 +3,7 @@ package com.lottomate.lottomate.data.remote.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class StoreInfoEntity(
+data class StoreDetail(
     val storeNo: Int,
     val storeNm: String,
     val storeTel: String,
@@ -15,10 +15,10 @@ data class StoreInfoEntity(
 
 @Serializable
 data class StoreInfoRequestBody(
-    val leftLot: Double = 127.017424,
-    val leftLat: Double = 37.499954,
-    val rightLot: Double = 127.038351,
-    val rightLat: Double = 37.494208,
-    val personLot: Double = 127.027619,
-    val personLat: Double = 37.497952,
+    val leftLot: Double,
+    val leftLat: Double,
+    val rightLot: Double,
+    val rightLat: Double,
+    val personLot: Double,
+    val personLat: Double,
 )

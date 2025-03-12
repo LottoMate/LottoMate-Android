@@ -1,17 +1,30 @@
 package com.lottomate.lottomate.presentation.screen.main
 
+import android.Manifest
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
+import com.lottomate.lottomate.utils.LocationManager
+import com.lottomate.lottomate.utils.PermissionManager
+import com.lottomate.lottomate.utils.PermissionManager.LOCATION_REQUEST_CODE
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    override fun onStart() {
+        super.onStart()
+        LocationManager.updateLocation(this@MainActivity)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        setHideSoftKey()
+        checkPermissions()
 
         setContent {
             val navigator: MainNavigator = rememberMainNavigator()
@@ -22,5 +35,53 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    /**
+     * 하단 소프트키 보이지 않도록 설정합니다.
+     */
+    private fun setHideSoftKey() {
+        window.decorView.apply {
+            systemUiVisibility = systemUiVisibility xor View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+            systemUiVisibility = systemUiVisibility xor View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+        }
+    }
+
+    /**
+     * 위치 권한을 체크합니다.
+     */
+    private fun checkPermissions() {
+        when (
+            PermissionManager.hasPermissions(
+                context = this@MainActivity,
+                permissions = listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        ) {
+            true -> {
+                LocationManager.updateLocation(this@MainActivity)
+            }
+            false -> {
+                PermissionManager.requestPermissions(
+                    context = this@MainActivity,
+                    permissions = listOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                    ),
+                    requestCode = LOCATION_REQUEST_CODE,
+                )
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == LOCATION_REQUEST_CODE) {
+            val hasPermissions = grantResults.all { true }
+            if (hasPermissions) LocationManager.updateLocation(this@MainActivity)
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 }

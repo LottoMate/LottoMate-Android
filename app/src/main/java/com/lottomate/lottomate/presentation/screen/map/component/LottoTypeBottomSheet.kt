@@ -47,14 +47,20 @@ fun LottoTypeSelectorBottomSheet(
     val bottomSheetState = rememberModalBottomSheetState()
 
     val allLottoType = LottoTypeFilter.toList()
-        .slice(LottoTypeFilter.Lotto645.ordinal..LottoTypeFilter.Speetto.ordinal)
+        .slice(LottoTypeFilter.All.ordinal..LottoTypeFilter.Speetto.ordinal)
 
     val selectLottoTypeState = remember {
         mutableStateListOf(
-            mutableStateOf(selectedLottoTypes.contains(allLottoType[0])),
             mutableStateOf(selectedLottoTypes.contains(allLottoType[1])),
             mutableStateOf(selectedLottoTypes.contains(allLottoType[2])),
+            mutableStateOf(selectedLottoTypes.contains(allLottoType[3])),
         )
+    }
+
+    if (selectedLottoTypes.contains(allLottoType[0])) {
+        selectLottoTypeState[0].value = true
+        selectLottoTypeState[1].value = true
+        selectLottoTypeState[2].value = true
     }
 
     ModalBottomSheet(
@@ -74,7 +80,7 @@ fun LottoTypeSelectorBottomSheet(
     ) {
         Column(modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 32.dp)
+            .padding(top = 24.dp)
             .padding(horizontal = 20.dp)
         ) {
             LottoMateText(
@@ -82,9 +88,9 @@ fun LottoTypeSelectorBottomSheet(
                 style = LottoMateTheme.typography.headline1,
             )
 
-            Spacer(modifier = Modifier.height(26.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            allLottoType.forEachIndexed { index, type ->
+            allLottoType.subList(1, 4).forEachIndexed { index, type ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -117,7 +123,9 @@ fun LottoTypeSelectorBottomSheet(
                     text = stringResource(id = R.string.map_lotto_type_selection_button_cancel),
                     buttonSize = LottoMateButtonProperty.Size.LARGE,
                     buttonShape = LottoMateButtonProperty.Shape.NORMAL,
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     onClick = onDismiss,
                 )
 
@@ -129,7 +137,9 @@ fun LottoTypeSelectorBottomSheet(
                     buttonShape = LottoMateButtonProperty.Shape.NORMAL,
                     buttonType = if (selectLottoTypeState.all { !it.value }) LottoMateButtonProperty.Type.DISABLED
                     else LottoMateButtonProperty.Type.ACTIVE ,
-                    modifier = Modifier.fillMaxWidth().weight(1f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
                     onClick = { onSelectLottoTypes(selectLottoTypeState.map { it.value }) }
                 )
             }

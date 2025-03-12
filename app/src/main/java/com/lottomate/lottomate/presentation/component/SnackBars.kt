@@ -13,6 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -23,6 +28,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateRed40
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import kotlinx.coroutines.delay
 
 @Composable
 fun LottoMateSnackBarHost(
@@ -105,18 +111,27 @@ fun LottoMateSnackBar(
     modifier: Modifier = Modifier,
     message: String,
 ) {
-    Box(
-        modifier = modifier
-            .background(LottoMateBlack.copy(alpha = 0.68f), RoundedCornerShape(Dimens.RadiusSmall)),
-        contentAlignment = Alignment.Center,
-    ) {
-        LottoMateText(
-            text = message,
-            style = LottoMateTheme.typography.label2
-                .copy(color = LottoMateWhite),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp)
-        )
+    var isVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        delay(3_000)
+        isVisible = false
+    }
+
+    if (isVisible) {
+        Box(
+            modifier = modifier
+                .background(LottoMateBlack.copy(alpha = 0.68f), RoundedCornerShape(Dimens.RadiusSmall)),
+            contentAlignment = Alignment.Center,
+        ) {
+            LottoMateText(
+                text = message,
+                style = LottoMateTheme.typography.label2
+                    .copy(color = LottoMateWhite),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp)
+            )
+        }
     }
 }
 

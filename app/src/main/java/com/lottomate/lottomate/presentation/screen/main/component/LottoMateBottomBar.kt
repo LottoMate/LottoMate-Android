@@ -30,7 +30,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
-private val BOTTOM_BAR_CONTAINER_HEIGHT = 50.dp
+private val BOTTOM_BAR_CONTAINER_HEIGHT = 62.dp
 
 @Composable
 fun LottoMateBottomBar(
