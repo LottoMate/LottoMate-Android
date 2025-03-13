@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import com.lottomate.lottomate.presentation.screen.home.navigation.homeNavGraph
+import com.lottomate.lottomate.presentation.screen.intro.navigation.introNavGraph
 import com.lottomate.lottomate.presentation.screen.login.navigation.loginNavGraph
 import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
 import com.lottomate.lottomate.presentation.screen.map.navigation.mapNavGraph
@@ -20,6 +21,11 @@ fun MainNavHost(
         navController = navigator.navController,
         startDestination = navigator.startDestination,
     ) {
+        introNavGraph(
+            navController = navigator.navController,
+            onShowErrorSnackBar = onShowErrorSnackBar,
+        )
+
         homeNavGraph(
             padding = padding,
             navController = navigator.navController,

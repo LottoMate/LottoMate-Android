@@ -4,6 +4,13 @@ import com.lottomate.lottomate.data.model.LottoType
 import kotlinx.serialization.Serializable
 
 sealed interface LottoMateRoute {
+    // 인트로
+    @Serializable data object Intro : LottoMateRoute
+    // 온보딩
+    @Serializable data object Onboarding : LottoMateRoute
+    // 권한 확인
+    @Serializable data object PermissionNotice : LottoMateRoute
+
     // 로또 상세
     @Serializable data class LottoDetail(val type: LottoType, val round: Int) : LottoMateRoute
     // 인터뷰

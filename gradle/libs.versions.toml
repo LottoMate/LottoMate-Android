@@ -39,6 +39,9 @@ barcode-scanner = "4.3.0"
 # Permission
 permissions = "0.37.2"
 
+# Lottie
+lottie = "6.6.3"
+
 # Splash
 splash = "1.0.0"
 
@@ -97,6 +100,9 @@ com-journeyapps-zxing = { group = "com.journeyapps", name = "zxing-android-embed
 
 # Permissions
 com-google-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "permissions" }
+
+# Lottie
+com-airbnb-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 
 # Splash
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }

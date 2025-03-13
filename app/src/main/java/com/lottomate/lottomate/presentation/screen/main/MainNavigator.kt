@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHomeTab
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigateToPocketTab
@@ -20,7 +21,7 @@ class MainNavigator(
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
-    val startDestination = MainBottomTab.HOME.route
+    val startDestination = LottoMateRoute.Intro
 
     val isInMainBottomTab
         @Composable get() = currentTab != null
