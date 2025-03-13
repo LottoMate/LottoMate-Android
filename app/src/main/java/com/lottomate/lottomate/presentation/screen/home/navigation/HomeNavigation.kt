@@ -14,6 +14,7 @@ import com.lottomate.lottomate.presentation.screen.home.SettingPage
 import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
+import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 
 fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
@@ -31,6 +32,10 @@ fun NavController.navigateToLottoDetail(type: LottoType, round: Int) {
     navigate(LottoMateRoute.LottoDetail(type, round))
 }
 
+fun NavController.navigateToLottoScan() {
+    navigate(LottoMateRoute.LottoScan)
+}
+
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     navController: NavController,
@@ -42,6 +47,7 @@ fun NavGraphBuilder.homeNavGraph(
             moveToLottoInfo = { type, round -> navController.navigateToLottoDetail(type, round) },
             moveToSetting = { navController.navigateToSetting() },
             moveToMap = { navController.navigateToMap() },
+            moveToScan = { navController.navigateToLottoScan() },
             moveToInterviewDetail = { navController.navigateToInterviewDetail(it) },
             onShowErrorSnackBar = onShowErrorSnackBar
         )
@@ -78,4 +84,14 @@ fun NavGraphBuilder.homeNavGraph(
             onBackPressed = { navController.navigateUp() },
         )
     }
+
+    // 복권 스캔 화면
+    composable<LottoMateRoute.LottoScan> {
+        LottoScanRoute(
+            padding = padding,
+            moveToLottoScanResult = { navController.navigateToLottoScanResult(it) },
+            onBackPressed = { navController.popBackStack() },
+        )
+    }
+
 }

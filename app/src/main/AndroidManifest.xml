@@ -36,9 +36,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presentation.screen.onboarding.OnboardingActivity"
+            android:name=".presentation.screen.scan.LottoScanActivity"
             android:exported="true"
             android:theme="@style/Theme.Lottomate">
+            android:screenOrientation="portrait" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

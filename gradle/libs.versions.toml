@@ -10,6 +10,7 @@ lifecycleRuntimeCompose = "2.6.2"
 activityCompose = "1.9.0"
 composeBom = "2023.08.00"
 composeNavigation = "2.8.6"
+constraintlayout = "2.2.1"
 
 ksp = "1.9.0-1.0.12"
 hilt = "2.51.1"
@@ -64,6 +65,7 @@ androidx-material = { group = "androidx.compose.material", name = "material" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigation" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
