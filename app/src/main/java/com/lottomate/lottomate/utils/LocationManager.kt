@@ -34,7 +34,6 @@ object LocationManager {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
             return
         }
         locationService.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
