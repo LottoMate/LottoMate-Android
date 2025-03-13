@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Lottomate" parent="android:Theme.Material.Light.NoActionBar" >
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 
-    <style name="Theme.Lottomate" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.Lottomate.Splash" parent="Theme.SplashScreen" >
+        <!-- 액션 바 숨기기 -->
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="android:windowActionBar">false</item>
+
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="s">@color/white</item>
+        <item name="postSplashScreenTheme">@style/Theme.Lottomate</item>
+    </style>
 </resources>
