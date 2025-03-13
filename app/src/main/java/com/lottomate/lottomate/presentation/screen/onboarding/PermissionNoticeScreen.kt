@@ -1,6 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.onboarding
 
-import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -16,12 +18,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
+import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
@@ -31,17 +34,45 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.utils.PermissionManager
+import kotlinx.coroutines.launch
 
 @Composable
-fun PermissionScreen() {
-    val context = LocalContext.current
+fun PermissionNoticeRoute(
+    moveToHome: () -> Unit,
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        coroutineScope.launch {
+            LottoMateDataStore.changeOnBoardingState()
+        }.invokeOnCompletion { moveToHome() }
+    }
 
+    PermissionNoticeScreen(
+        onClickRequestPermission = {
+            permissionLauncher.launch(
+                input = when {
+                    Build.VERSION_CODES.TIRAMISU >= Build.VERSION.SDK_INT -> {
+                        com.lottomate.lottomate.utils.PermissionType.AllPermissionAPI33.permissions.toTypedArray()
+                    }
+                    else -> com.lottomate.lottomate.utils.PermissionType.AllPermission.permissions.toTypedArray()
+                }
+            )
+        },
+    )
+}
+@Composable
+private fun PermissionNoticeScreen(
+    onClickRequestPermission: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .padding(
-                top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding(),
-                bottom = WindowInsets . navigationBars . asPaddingValues ().calculateBottomPadding(),
+                top = WindowInsets.statusBars
+                    .asPaddingValues()
+                    .calculateTopPadding(),
+                bottom = WindowInsets.navigationBars
+                    .asPaddingValues()
+                    .calculateBottomPadding(),
             )
             .fillMaxSize()
             .background(LottoMateWhite)
@@ -64,15 +95,15 @@ fun PermissionScreen() {
                     .background(LottoMateGray10, RoundedCornerShape(10.dp))
                     .padding(horizontal = 28.dp),
             ) {
-                PermissionItem(
+                PermissionNoticeItem(
                     type = PermissionType.CAMERA,
                 )
 
-                PermissionItem(
+                PermissionNoticeItem(
                     type = PermissionType.CALL,
                 )
 
-                PermissionItem(
+                PermissionNoticeItem(
                     type = PermissionType.LOCATION
                 )
 
@@ -92,23 +123,13 @@ fun PermissionScreen() {
                 .padding(bottom = 36.dp),
             text = "확인",
             buttonSize = LottoMateButtonProperty.Size.LARGE,
-            onClick = {
-                PermissionManager.requestPermissions(
-                    context = context as OnboardingActivity,
-                    permissions = listOf(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.CALL_PHONE,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                    )
-                )
-            }
+            onClick = onClickRequestPermission,
         )
     }
 }
 
 @Composable
-private fun PermissionItem(
+private fun PermissionNoticeItem(
     type: PermissionType,
 ) {
     Row(
