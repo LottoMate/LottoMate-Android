@@ -36,6 +36,10 @@ fun NavController.navigateToLottoScan() {
     navigate(LottoMateRoute.LottoScan)
 }
 
+fun NavController.navigateToLottoScanResult(data: String) {
+    navigate(LottoMateRoute.LottoScanResult(data))
+}
+
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     navController: NavController,
@@ -94,4 +98,21 @@ fun NavGraphBuilder.homeNavGraph(
         )
     }
 
+    // 복권 스캔 결과 화면
+    composable<LottoMateRoute.LottoScanResult> { navBackStackEntry ->
+        val data = navBackStackEntry.toRoute<LottoMateRoute.LottoScanResult>().data
+
+        LottoScanResultRoute(
+            padding = padding,
+            data = data,
+            moveToHome = {
+                val navOptions = NavOptions.Builder().apply {
+                    setPopUpTo<BottomTabRoute.Home>(true)
+                }.build()
+
+                navController.navigateToHomeTab(navOptions)
+            },
+            onBackPressed = { navController.popBackStack() },
+        )
+    }
 }

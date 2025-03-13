@@ -116,6 +116,11 @@ dependencies {
 
     // Oauth
     implementation(libs.google.gms.play.services.auth)
+    implementation(libs.google.identity.googleid)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.androidx.credentials.credentials)
+    implementation("androidx.browser:browser:1.5.0")
+
     // QR Scanner
     implementation(libs.com.journeyapps.zxing)
 

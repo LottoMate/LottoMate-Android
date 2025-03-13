@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.lottomate.lottomate.BuildConfig
 import com.lottomate.lottomate.data.remote.api.InterviewApi
 import com.lottomate.lottomate.data.remote.api.LoginApi
+import com.lottomate.lottomate.data.remote.api.LottoApi
 import com.lottomate.lottomate.data.remote.api.LottoInfoApi
 import com.lottomate.lottomate.data.remote.api.StoreApi
 import dagger.Module
@@ -15,16 +16,37 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import javax.inject.Qualifier
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     private const val BASE_URL: String = BuildConfig.DATABASE_BASE_URL
+    private const val DHLOTTERY_BASE_URL = "https://www.dhlottery.co.kr/"
+
+    @Qualifier
+    @Retention(AnnotationRetention.BINARY)
+    annotation class DHLottery
+
+
 
     private val jsonOptions = Json {
         ignoreUnknownKeys = true
         coerceInputValues = true
+    }
+
+    @Provides
+    @Singleton
+    @DHLottery
+    fun provideRetrofitForDHLottery(
+        okHttpClient: OkHttpClient,
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(DHLOTTERY_BASE_URL)
+            .client(okHttpClient)
+            .addConverterFactory(jsonOptions.asConverterFactory("application/json; charset=UTF8".toMediaType()))
+            .build()
     }
 
     @Provides
@@ -70,4 +92,9 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideInterviewApi(retrofit: Retrofit): InterviewApi = retrofit.create(InterviewApi::class.java)
+
+    @Provides
+    @Singleton
+    @DHLottery
+    fun provideLottoApi(@DHLottery retrofit: Retrofit): LottoApi = retrofit.create(LottoApi::class.java)
 }

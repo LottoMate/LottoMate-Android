@@ -6,14 +6,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 
 @Composable
 fun LottoScanRoute(
-    vm: LottoScanViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToLottoScanResult: (String) -> Unit,
     onBackPressed: () -> Unit,

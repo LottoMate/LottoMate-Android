@@ -38,8 +38,11 @@
         <activity
             android:name=".presentation.screen.scan.LottoScanActivity"
             android:exported="true"
-            android:theme="@style/Theme.Lottomate">
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".presentation.screen.login.GoogleLoginActivity"
+            android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
