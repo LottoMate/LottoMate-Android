@@ -118,6 +118,9 @@ dependencies {
     // Permission
     implementation(libs.com.google.accompanist.permissions)
 
+    // Splash Screen
+    implementation(libs.androidx.splash)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

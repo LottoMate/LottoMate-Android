@@ -59,9 +59,11 @@ sealed interface PermissionType {
     /**
      * API 33 이상인 경우, ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION 권한을 요청
      */
-    data object LocationPermissionAPI33 : PermissionType {
+    data object AllPermissionAPI33 : PermissionType {
         override val permissions: List<String>
             get() = listOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.CALL_PHONE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
             )
@@ -70,9 +72,11 @@ sealed interface PermissionType {
     /**
      * API 33 미만인 경우, ACCESS_FINE_LOCATION 권한을 요청
      */
-    data object LocationPermission : PermissionType {
+    data object AllPermission : PermissionType {
         override val permissions: List<String>
             get() = listOf(
+                Manifest.permission.CAMERA,
+                Manifest.permission.CALL_PHONE,
                 Manifest.permission.ACCESS_FINE_LOCATION,
             )
     }

@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -29,7 +27,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
@@ -42,27 +39,14 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
 @Composable
 fun OnboardingRoute(
-    moveToHome: () -> Unit,
+    moveToPermissionNotice: () -> Unit,
 ) {
-    val onboardingState by LottoMateDataStore.onBoardingFlow.collectAsState(initial = null)
-    var showPermission by remember { mutableStateOf(false) }
-
-    // TODO : 스플래시 화면 만들면 스플래시 화면에서 onboardingState 확인 후 넘어가도록 변경
-    onboardingState?.let { isOnboardingCompleted ->
-        when (isOnboardingCompleted) {
-            true -> moveToHome()
-            false -> {
-                OnboardingScreen(
-                    modifier = Modifier.padding(
-                        bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-                    ),
-                    showPermission = { showPermission = true }
-                )
-            }
-        }
-    }
-
-    if (showPermission) PermissionScreen()
+    OnboardingScreen(
+        modifier = Modifier.padding(
+            bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+        ),
+        showPermission = moveToPermissionNotice,
+    )
 }
 
 @Composable
