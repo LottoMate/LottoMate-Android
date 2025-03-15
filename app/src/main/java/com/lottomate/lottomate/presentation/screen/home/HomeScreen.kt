@@ -49,6 +49,7 @@ fun HomeRoute(
     moveToSetting: () -> Unit,
     moveToMap: () -> Unit,
     moveToInterviewDetail: (Int) -> Unit,
+    moveToScan: () -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -66,11 +67,11 @@ fun HomeRoute(
         onClickInterview = moveToInterviewDetail,
         moveToSetting = moveToSetting,
         moveToMap = moveToMap,
+        moveToScan = moveToScan,
         moveToLottoInfo = { type, round -> moveToLottoInfo(type, round) },
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -82,6 +83,7 @@ private fun HomeScreen(
     onClickInterview: (Int) -> Unit,
     moveToLottoInfo: (LottoType, Int) -> Unit,
     moveToMap: () -> Unit,
+    moveToScan: () -> Unit,
     moveToSetting: () -> Unit,
 ) {
     var showLottoInfoBottomSheet by remember { mutableStateOf(false) }
@@ -137,6 +139,7 @@ private fun HomeScreen(
                     WishWinCardsSection(
                         modifier = Modifier.padding(top = 36.dp),
                         onClickMap = moveToMap,
+                        onClickScan = moveToScan,
                     )
 
                     WinInterviewCardsSection(
@@ -192,6 +195,7 @@ private fun HomeScreenPreview() {
             moveToSetting = {},
             moveToLottoInfo = { _, _ -> },
             moveToMap = {},
+            moveToScan = {},
             onClickInterview = {},
             onClickNextLottoInfo = { _, _ -> },
             onClickPrevLottoInfo = { _, _ -> },

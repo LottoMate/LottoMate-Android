@@ -1,10 +1,10 @@
 package com.lottomate.lottomate.data.mapper
 
-import android.icu.text.DecimalFormat
 import com.lottomate.lottomate.data.model.Lotto645InfoEntity
 import com.lottomate.lottomate.data.model.Lotto720InfoEntity
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
+import com.lottomate.lottomate.utils.StringUtils.formatNumberWithCommas
 
 object LottoInfoMapper {
     private const val LOTTO_645_TOTAL_RANK_COUNT = 5
@@ -62,15 +62,5 @@ object LottoInfoMapper {
             lottoBonusNum = lottoInfoEntity.lottoBonusNum,
             lottoWinnerNum = lottoWinnerCntList.map { formatNumberWithCommas(it) },
         )
-    }
-
-    private fun formatNumberWithCommas(num: Long): String {
-        val formatter = DecimalFormat("#,###")
-        return formatter.format(num)
-    }
-
-    private fun formatNumberWithCommas(num: Int): String {
-        val formatter = DecimalFormat("#,###")
-        return formatter.format(num)
     }
 }

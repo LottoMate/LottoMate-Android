@@ -22,6 +22,8 @@ sealed interface LottoMateRoute {
     // 보관소
     @Serializable data object PocketStorage : LottoMateRoute
     @Serializable data object PocketDrawRandomNumbers : LottoMateRoute
+    @Serializable data object LottoScan : LottoMateRoute
+    @Serializable data class LottoScanResult(val data: String) : LottoMateRoute
 
     @Serializable data object Setting : LottoMateRoute
 }

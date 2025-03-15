@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.home.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 internal fun WishWinCardsSection(
     modifier: Modifier = Modifier,
     onClickMap: () -> Unit,
+    onClickScan: () -> Unit,
 ) {
     Column(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
@@ -41,7 +43,38 @@ internal fun WishWinCardsSection(
                 modifier = Modifier.weight(1f),
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20, vertical = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onClickMap() }
+                        .padding(horizontal = Dimens.DefaultPadding20, vertical = 16.dp),
+                ) {
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.img_home_win_map),
+                        contentDescription = null,
+                    )
+
+                    LottoMateText(
+                        text = "로또 사러 어디로 가지?",
+                        style = LottoMateTheme.typography.caption
+                            .copy(color = LottoMateGray100),
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+
+                    LottoMateText(
+                        text = "근처 명당 보기",
+                        style = LottoMateTheme.typography.headline1,
+                    )
+                }
+            }
+
+            LottoMateCard(
+                modifier = Modifier.weight(1f),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onClickScan() }
+                        .padding(horizontal = Dimens.DefaultPadding20, vertical = 16.dp),
 
                     ) {
                     Image(
@@ -58,34 +91,6 @@ internal fun WishWinCardsSection(
 
                     LottoMateText(
                         text = "당첨 확인하기",
-                        style = LottoMateTheme.typography.headline1,
-                    )
-                }
-            }
-
-            LottoMateCard(
-                modifier = Modifier.weight(1f),
-            ) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = Dimens.DefaultPadding20, vertical = 16.dp)
-                        .noInteractionClickable { onClickMap() },
-
-                    ) {
-                    Image(
-                        bitmap = ImageBitmap.imageResource(id = R.drawable.img_home_win_map),
-                        contentDescription = null,
-                    )
-
-                    LottoMateText(
-                        text = "로또 사러 어디로 가지?",
-                        style = LottoMateTheme.typography.caption
-                            .copy(color = LottoMateGray100),
-                        modifier = Modifier.padding(top = 8.dp),
-                    )
-
-                    LottoMateText(
-                        text = "근처 명당 보기",
                         style = LottoMateTheme.typography.headline1,
                     )
                 }

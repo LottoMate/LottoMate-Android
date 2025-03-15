@@ -54,6 +54,9 @@ android {
         compose = true
         buildConfig = true
     }
+    viewBinding {
+        enable = true
+    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
     }
@@ -75,6 +78,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.constraintlayout)
 
     // Compose
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -112,6 +116,14 @@ dependencies {
 
     // Oauth
     implementation(libs.google.gms.play.services.auth)
+    implementation(libs.google.identity.googleid)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.androidx.credentials.credentials)
+    implementation("androidx.browser:browser:1.5.0")
+
+    // QR Scanner
+    implementation(libs.com.journeyapps.zxing)
+
     // DataStore - Preference
     implementation(libs.androidx.datastore.preference)
 
