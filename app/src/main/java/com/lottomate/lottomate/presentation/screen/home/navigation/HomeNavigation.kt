@@ -15,6 +15,7 @@ import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
+import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
 
 fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
