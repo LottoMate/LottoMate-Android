@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.scanResult
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.model.LottoType
@@ -13,6 +14,10 @@ import kotlinx.coroutines.flow.update
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -25,6 +30,9 @@ class LottoScanResultViewModel @Inject constructor(
 ) : ViewModel() {
     private var _lottoWinResultInfo = MutableStateFlow<LottoScanResultUiState>(LottoScanResultUiState.Loading)
     val lottoWinResultInfo: StateFlow<LottoScanResultUiState> get() = _lottoWinResultInfo.asStateFlow()
+
+    private var _errorFlow = MutableSharedFlow<String>()
+    val errorFlow: SharedFlow<String> get() = _errorFlow.asSharedFlow()
 
     fun getLottoResultByRound(data: String) {
         viewModelScope.launch {
@@ -42,6 +50,9 @@ class LottoScanResultViewModel @Inject constructor(
                     _lottoWinResultInfo.update {
                         LottoScanResultUiState.Loading
                     }
+                }
+                .catch {
+                    sendErrorMsg("오류가 발생하였습니다.", it)
                 }
                 .collectLatest { collectData ->
                     val winResultInfo = collectData as Lotto645Info
@@ -98,6 +109,11 @@ class LottoScanResultViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    private suspend fun sendErrorMsg(msg: String, throwable: Throwable) {
+        _errorFlow.emit(msg)
+        Log.d("LottoScanResultVM", throwable.stackTraceToString())
     }
 }
 
