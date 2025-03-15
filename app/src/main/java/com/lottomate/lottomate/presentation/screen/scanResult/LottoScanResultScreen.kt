@@ -159,13 +159,16 @@ private fun LottoScanResultNotYet(
 
             // 남은 일수
             val daysLeft = if (DateUtils.getDaysUntilNextSaturday() == 0) {
-                DateUtils.getHoursUntilTargetTime(20, 45)
-            } else DateUtils.getDaysUntilNextSaturday()
+                val time = DateUtils.getHoursUntilTargetTime(20, 45)
+                time.toString().plus("시간")
+            } else DateUtils.getDaysUntilNextSaturday().toString().plus("일")
 
             val message = pluralStringResource(id = R.plurals.lotto_result_days_left, count = 1, daysLeft)
 
+            val startIndex = 9
+            val endIndex = 9.plus(daysLeft.length)
             val annotatedMessage = AnnotatedString.Builder(message).apply {
-                addStyle(SpanStyle(color = LottoMateRed50), 9, 11)
+                addStyle(SpanStyle(color = LottoMateRed50), startIndex, endIndex)
             }.toAnnotatedString()
 
             LottoMateAnnotatedText(
