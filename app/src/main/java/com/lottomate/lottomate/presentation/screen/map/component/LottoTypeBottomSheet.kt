@@ -31,7 +31,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
-import com.lottomate.lottomate.presentation.ui.LottoMateDim
+import com.lottomate.lottomate.presentation.ui.LottoMateDim1
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
@@ -75,7 +75,7 @@ fun LottoTypeSelectorBottomSheet(
         ),
         containerColor = LottoMateWhite,
         dragHandle = null,
-        scrimColor = LottoMateDim,
+        scrimColor = LottoMateDim1,
         windowInsets = WindowInsets.navigationBars
     ) {
         Column(modifier = Modifier

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateDim
+import com.lottomate.lottomate.presentation.ui.LottoMateDim1
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
@@ -46,7 +46,7 @@ fun MapLoadingScreen(
 
     if (showLoading) {
         Box(
-            modifier = modifier.background(LottoMateDim),
+            modifier = modifier.background(LottoMateDim1),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

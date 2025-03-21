@@ -3,7 +3,6 @@ package com.lottomate.lottomate.presentation.component
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -29,10 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
-import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.noInteractionClickable
 
 private val topAppBarHorizontalPadding = 13.dp
 
@@ -40,7 +38,8 @@ private val topAppBarHorizontalPadding = 13.dp
 fun LottoMateTopAppBar(
     @StringRes titleRes: Int,
     hasNavigation: Boolean,
-    navigationColor: Color = LottoMateBlack,
+    isTitleCenter: Boolean = true,
+    navigationColor: Color = LottoMateGray100,
     backgroundColor: Color = LottoMateWhite.copy(alpha = 0.8f),
     onBackPressed: () -> Unit = {},
     actionButtons: @Composable () -> Unit = {},
@@ -75,8 +74,11 @@ fun LottoMateTopAppBar(
 
             LottoMateText(
                 text = stringResource(id = titleRes),
-                textAlign = TextAlign.Center,
+                textAlign = if (isTitleCenter) TextAlign.Center else TextAlign.Start,
                 style = LottoMateTheme.typography.headline1,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
             )
 
             Row(
@@ -105,7 +107,7 @@ fun LottoMateIconButton(
         tint = color,
         modifier = modifier
             .clip(CircleShape)
-            .clickable { onClick() }
+            .noInteractionClickable { onClick() }
     )
 }
 

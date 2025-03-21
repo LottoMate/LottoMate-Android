@@ -27,6 +27,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerCard
+import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
@@ -50,6 +51,7 @@ fun HomeRoute(
     moveToMap: () -> Unit,
     moveToInterviewDetail: (Int) -> Unit,
     moveToScan: () -> Unit,
+    onClickBanner: (BannerType) -> Unit,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -69,6 +71,7 @@ fun HomeRoute(
         moveToMap = moveToMap,
         moveToScan = moveToScan,
         moveToLottoInfo = { type, round -> moveToLottoInfo(type, round) },
+        onClickBanner = onClickBanner,
     )
 }
 
@@ -85,6 +88,7 @@ private fun HomeScreen(
     moveToMap: () -> Unit,
     moveToScan: () -> Unit,
     moveToSetting: () -> Unit,
+    onClickBanner: (BannerType) -> Unit,
 ) {
     var showLottoInfoBottomSheet by remember { mutableStateOf(false) }
 
@@ -153,9 +157,7 @@ private fun HomeScreen(
                 modifier = Modifier
                     .padding(top = 40.dp)
                     .padding(horizontal = Dimens.DefaultPadding20),
-                onClickBanner = {
-
-                },
+                onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
             )
 
             MateVoteSection(
@@ -199,6 +201,7 @@ private fun HomeScreenPreview() {
             onClickInterview = {},
             onClickNextLottoInfo = { _, _ -> },
             onClickPrevLottoInfo = { _, _ -> },
+            onClickBanner = {},
         )
     }
 }

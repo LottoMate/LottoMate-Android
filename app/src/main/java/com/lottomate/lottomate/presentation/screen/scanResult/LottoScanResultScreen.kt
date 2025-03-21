@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -31,6 +32,7 @@ import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateAnnotatedText
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
+import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -42,6 +44,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.DateUtils
 import com.lottomate.lottomate.utils.StringUtils
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LottoScanResultRoute(
@@ -49,9 +52,17 @@ fun LottoScanResultRoute(
     padding: PaddingValues,
     data: String,
     moveToHome: () -> Unit,
+    moveToWinningGuide: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val uiState by vm.lottoWinResultInfo.collectAsStateWithLifecycle()
+    var showErrorDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        vm.errorFlow.collectLatest {
+            showErrorDialog = true
+        }
+    }
 
     LaunchedEffect(Unit) {
         val parseResult = data.split("?v=")[1]
@@ -64,13 +75,29 @@ fun LottoScanResultRoute(
         uiState = uiState,
         moveToHome = moveToHome,
         onBackPressed = onBackPressed,
+        onClickBanner = moveToWinningGuide,
     )
+
+    when {
+        showErrorDialog -> {
+            LottoMateDialog(
+                title = "오류가 발생하였습니다.",
+                confirmText = "확인",
+                onConfirm = {
+                    showErrorDialog = false
+                    onBackPressed()
+                },
+                onDismiss = { showErrorDialog = false }
+            )
+        }
+    }
 }
 
 @Composable
 private fun LottoScanResultScreen(
     modifier: Modifier = Modifier,
     uiState: LottoScanResultUiState,
+    onClickBanner: () -> Unit,
     onBackPressed: () -> Unit,
     moveToHome: () -> Unit,
 ) {
@@ -97,6 +124,7 @@ private fun LottoScanResultScreen(
                 LottoScanResultNotYet(
                     moveToHome = moveToHome,
                     onClick = onBackPressed,
+                    onClickBanner = onClickBanner,
                 )
             }
 
@@ -117,6 +145,7 @@ private fun LottoScanResultScreen(
                                 rank = -1,
                                 isLast = true,
                                 onComplete = { onBackPressed() },
+                                onClickBanner = onClickBanner,
                             )
                         }
                         false -> {
@@ -140,6 +169,7 @@ private fun LottoScanResultScreen(
                                     }
                                 },
                                 onComplete = { onBackPressed() },
+                                onClickBanner = onClickBanner,
                             )
                         }
                     }
@@ -154,6 +184,7 @@ private fun LottoScanResultNotYet(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     moveToHome: () -> Unit,
+    onClickBanner: () -> Unit,
 ) {
     Column(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
@@ -216,9 +247,7 @@ private fun LottoScanResultNotYet(
             modifier = Modifier.padding(bottom = 36.dp),
         ) {
             BannerCard(
-                onClickBanner = {
-
-                },
+                onClickBanner = onClickBanner,
             )
 
             LottoMateSolidButton(
@@ -243,6 +272,7 @@ private fun LottoScanResultWin(
     isLast: Boolean,
     onNext: (() -> Unit)? = null,
     onComplete: () -> Unit,
+    onClickBanner: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -332,9 +362,7 @@ private fun LottoScanResultWin(
         modifier = Modifier.padding(bottom = 36.dp),
     ) {
         BannerCard(
-            onClickBanner = {
-
-            },
+            onClickBanner = onClickBanner,
         )
 
         LottoMateSolidButton(
