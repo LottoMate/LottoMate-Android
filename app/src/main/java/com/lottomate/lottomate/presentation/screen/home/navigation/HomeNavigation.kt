@@ -7,6 +7,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.HomeRoute
@@ -16,6 +17,8 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
+import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
+import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.navigateToWinnerGuide
 
 fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
@@ -41,6 +44,10 @@ fun NavController.navigateToLottoScanResult(data: String) {
     navigate(LottoMateRoute.LottoScanResult(data))
 }
 
+fun NavController.navigateToBanner(bannerType: BannerType) {
+    navigate(bannerType.route)
+}
+
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     navController: NavController,
@@ -54,6 +61,7 @@ fun NavGraphBuilder.homeNavGraph(
             moveToMap = { navController.navigateToMap() },
             moveToScan = { navController.navigateToLottoScan() },
             moveToInterviewDetail = { navController.navigateToInterviewDetail(it) },
+            onClickBanner = { navController.navigateToBanner(it) },
             onShowErrorSnackBar = onShowErrorSnackBar
         )
     }
@@ -112,6 +120,17 @@ fun NavGraphBuilder.homeNavGraph(
                 }.build()
 
                 navController.navigateToHomeTab(navOptions)
+            },
+            moveToWinningGuide = { navController.navigateToWinnerGuide() },
+            onBackPressed = { navController.popBackStack() },
+        )
+    }
+
+    // 당첨자 가이드 화면 (배너)
+    composable<LottoMateRoute.LottoWinnerGuide> {
+        WinnerGuideRoute(
+            onClickBanner = {
+                // TODO : 지도로 이동
             },
             onBackPressed = { navController.popBackStack() },
         )

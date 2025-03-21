@@ -52,6 +52,7 @@ fun LottoScanResultRoute(
     padding: PaddingValues,
     data: String,
     moveToHome: () -> Unit,
+    moveToWinningGuide: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val uiState by vm.lottoWinResultInfo.collectAsStateWithLifecycle()
@@ -74,6 +75,7 @@ fun LottoScanResultRoute(
         uiState = uiState,
         moveToHome = moveToHome,
         onBackPressed = onBackPressed,
+        onClickBanner = moveToWinningGuide,
     )
 
     when {
@@ -95,6 +97,7 @@ fun LottoScanResultRoute(
 private fun LottoScanResultScreen(
     modifier: Modifier = Modifier,
     uiState: LottoScanResultUiState,
+    onClickBanner: () -> Unit,
     onBackPressed: () -> Unit,
     moveToHome: () -> Unit,
 ) {
@@ -121,6 +124,7 @@ private fun LottoScanResultScreen(
                 LottoScanResultNotYet(
                     moveToHome = moveToHome,
                     onClick = onBackPressed,
+                    onClickBanner = onClickBanner,
                 )
             }
 
@@ -141,6 +145,7 @@ private fun LottoScanResultScreen(
                                 rank = -1,
                                 isLast = true,
                                 onComplete = { onBackPressed() },
+                                onClickBanner = onClickBanner,
                             )
                         }
                         false -> {
@@ -164,6 +169,7 @@ private fun LottoScanResultScreen(
                                     }
                                 },
                                 onComplete = { onBackPressed() },
+                                onClickBanner = onClickBanner,
                             )
                         }
                     }
@@ -178,6 +184,7 @@ private fun LottoScanResultNotYet(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     moveToHome: () -> Unit,
+    onClickBanner: () -> Unit,
 ) {
     Column(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
@@ -240,9 +247,7 @@ private fun LottoScanResultNotYet(
             modifier = Modifier.padding(bottom = 36.dp),
         ) {
             BannerCard(
-                onClickBanner = {
-
-                },
+                onClickBanner = onClickBanner,
             )
 
             LottoMateSolidButton(
@@ -267,6 +272,7 @@ private fun LottoScanResultWin(
     isLast: Boolean,
     onNext: (() -> Unit)? = null,
     onComplete: () -> Unit,
+    onClickBanner: () -> Unit,
 ) {
     Column(
         modifier = modifier,
@@ -356,9 +362,7 @@ private fun LottoScanResultWin(
         modifier = Modifier.padding(bottom = 36.dp),
     ) {
         BannerCard(
-            onClickBanner = {
-
-            },
+            onClickBanner = onClickBanner,
         )
 
         LottoMateSolidButton(
