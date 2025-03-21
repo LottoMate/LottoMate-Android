@@ -25,7 +25,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.ui.LottoMateDim
+import com.lottomate.lottomate.presentation.ui.LottoMateDim1
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -46,7 +46,7 @@ internal fun LottoTypeInfoBottomSheet(
         sheetState = bottomSheetState,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         containerColor = LottoMateWhite,
-        scrimColor = LottoMateDim,
+        scrimColor = LottoMateDim1,
         dragHandle = null,
         windowInsets = WindowInsets.navigationBars
     ) {
@@ -56,7 +56,7 @@ internal fun LottoTypeInfoBottomSheet(
     }
 }
 @Composable
-private fun LottoTypeInfoBottomSheetContent(
+fun LottoTypeInfoBottomSheetContent(
     modifier: Modifier = Modifier,
     onClickClose: () -> Unit,
 ) {

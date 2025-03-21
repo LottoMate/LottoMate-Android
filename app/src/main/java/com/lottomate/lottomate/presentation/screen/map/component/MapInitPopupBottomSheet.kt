@@ -27,7 +27,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
-import com.lottomate.lottomate.presentation.ui.LottoMateDim
+import com.lottomate.lottomate.presentation.ui.LottoMateDim1
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -52,7 +52,7 @@ internal fun MapInitPopupBottomSheet(
         sheetState = bottomSheetState,
         shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
         containerColor = LottoMateWhite,
-        scrimColor = LottoMateDim,
+        scrimColor = LottoMateDim1,
         dragHandle = null,
         windowInsets = WindowInsets.navigationBars
     ) {
