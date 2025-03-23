@@ -28,6 +28,7 @@ sealed interface LottoMateRoute {
     @Serializable data class LottoScanResult(val data: String) : LottoMateRoute
 
     @Serializable data object Setting : LottoMateRoute
+    @Serializable data object MyPage : LottoMateRoute
 }
 
 /**

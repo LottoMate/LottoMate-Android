@@ -10,6 +10,7 @@ import com.lottomate.lottomate.presentation.screen.login.navigation.loginNavGrap
 import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
 import com.lottomate.lottomate.presentation.screen.map.navigation.mapNavGraph
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.pocketNavGraph
+import com.lottomate.lottomate.presentation.screen.setting.navigation.settingNavGraph
 
 @Composable
 fun MainNavHost(
@@ -46,6 +47,12 @@ fun MainNavHost(
         )
 
         loginNavGraph(
+            padding = padding,
+            navController = navigator.navController,
+            onShowErrorSnackBar = onShowErrorSnackBar,
+        )
+
+        settingNavGraph(
             padding = padding,
             navController = navigator.navController,
             onShowErrorSnackBar = onShowErrorSnackBar,
