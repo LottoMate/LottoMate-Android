@@ -16,6 +16,12 @@
     <!-- 설정 -->
     <string name="setting_title">설정</string>
 
+    <!-- 내 계정 관리 -->
+    <string name="mypage_title">내 계정 관리</string>
+    <string name="mypage_menu_logout">로그아웃</string>
+    <string name="mypage_menu_signout">회원탈퇴</string>
+    <string name="mypage_logout_title">로그아웃 하시겠어요?</string>
+
     <!-- 로또 정보 상세 -->
     <string name="top_app_bar_title_lotto_info">당첨 정보 상세</string>
     <string name="lotto_info_per_person">1인당</string>
@@ -118,6 +124,8 @@
     <string name="common_complete">완료</string>
     <string name="common_extend">더보기</string>
     <string name="common_collapse">접기</string>
+    <string name="common_confirm">확인</string>
+    <string name="common_cancel">취소</string>
 
     <string name="desc_common_extend_or_collapse_icon">더보기 혹은 접기 아이콘</string>
     <string name="desc_common_copy_icon">복사 아이콘</string>
