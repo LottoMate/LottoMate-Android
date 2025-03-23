@@ -1,5 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.map
 
+import android.content.Intent
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -36,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
+import com.lottomate.lottomate.data.error.LottoMateErrorType
+import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -51,7 +55,7 @@ import com.lottomate.lottomate.presentation.screen.map.component.checkLocationPe
 import com.lottomate.lottomate.presentation.screen.map.model.StoreBottomSheetExpendedType
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.utils.GeoPositionCalculator
-import com.lottomate.lottomate.utils.LocationManager
+import com.lottomate.lottomate.utils.LocationStateManager
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
@@ -77,11 +81,20 @@ fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
     onShowFullScreen: (FullScreenType) -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
+    val locationState by LocationStateManager.shouldRequestEnableLocation.collectAsState()
+    var showLocationSettingDialog by remember { mutableStateOf(false) }
+
     // 지도 진입 시, 로딩 화면 표시
     LaunchedEffect(true) {
         onShowFullScreen(FullScreenType.MAP_LOADING)
+
+        vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
+    }
+
+    LaunchedEffect(locationState) {
+        if (locationState) showLocationSettingDialog = true
     }
 
     val context = LocalContext.current
@@ -104,7 +117,7 @@ fun MapRoute(
     val cameraPositionState: CameraPositionState = rememberCameraPositionState {
         // 카메라 초기 위치를 설정합니다.
         position = CameraPosition(
-            if (!LocationManager.hasGpsLocation()) { MapViewModel.DEFAULT_LATLNG } else currentPosition,
+            if (!LocationStateManager.hasGpsLocation()) { MapViewModel.DEFAULT_LATLNG } else currentPosition,
             MapViewModel.DEFAULT_ZOOM_LEVEL
         )
     }
@@ -169,7 +182,7 @@ fun MapRoute(
     // Activity의 라이플사이크를 관찰한 후, 사용자의 GPS를 가져옵니다.
     LocationPermissionObserver(
         onStartLocationPermissionGranted = {
-            LocationManager.getCurrentLocation()
+            LocationStateManager.getCurrentLocation() ?: LocationStateManager.updateLocation()
         },
         onStartLocationPermissionDenied = { },
     )
@@ -197,6 +210,29 @@ fun MapRoute(
                 onDismiss = { showLocationNoticeDialog = false },
             )
         }
+        // TODO : 추후 관련 기획이 나오면 변경 예정
+        showLocationSettingDialog -> {
+            LottoMateDialog(
+                title = """
+                    내 위치를 보려면
+                    설정 > 위치 사용을 허용해야
+                    확인할 수 있어요
+                """.trimIndent(),
+                cancelText = "취소",
+                confirmText = "설정으로 이동",
+                onDismiss = {
+                    LocationStateManager.setRequestEnableLocationState()
+                    showLocationSettingDialog = false
+                },
+                onConfirm = {
+                    LocationStateManager.setRequestEnableLocationState()
+                    showLocationSettingDialog = false
+
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
+                },
+            )
+        }
     }
 
     MapScreen(
@@ -220,8 +256,8 @@ fun MapRoute(
         },
         onClickStoreList = { vm.showStoreList() },
         onClickLocationFocus = { userLocationPosition ->
-            if (LocationManager.hasLocationPermission(context)) {
-                LocationManager.updateLocation(context)
+            if (LocationStateManager.hasLocationPermission(context)) {
+                LocationStateManager.updateLocation()
                 vm.changeCurrentPosition(Pair(userLocationPosition.latitude, userLocationPosition.longitude))
             } else {
                 showLocationNoticeDialog = true
@@ -298,7 +334,7 @@ private fun MapScreen(
     var showNonSeoulSnackBarAndButton by remember { mutableStateOf(false) }
 
     val userLocation by remember {
-        derivedStateOf { LocationManager.getCurrentLocation() }
+        derivedStateOf { LocationStateManager.getCurrentLocation() }
     }
 
     fun checkIsInSeoul(position: LatLng): Boolean {
@@ -352,17 +388,19 @@ private fun MapScreen(
     LaunchedEffect(userLocation) {
         Log.d("MapScreen", "현재 사용자 GPS : $userLocation")
 
-        if (LocationManager.hasGpsLocation()) {
-            onChangeCurrentPosition(userLocation)
-            checkIsInSeoul(LatLng(userLocation.first, userLocation.second))
+        if (LocationStateManager.hasGpsLocation()) {
+            userLocation?.let { location ->
+                onChangeCurrentPosition(location)
+                checkIsInSeoul(LatLng(location.first, location.second))
 
-            cameraPositionState.animate(
-                update = CameraUpdate.toCameraPosition(
-                    CameraPosition(LatLng(userLocation.first, userLocation.second), cameraPositionState.position.zoom)
-                ),
-                animation = CameraAnimation.Easing,
-                durationMs = 1_000,
-            )
+                cameraPositionState.animate(
+                    update = CameraUpdate.toCameraPosition(
+                        CameraPosition(LatLng(location.first, location.second), cameraPositionState.position.zoom)
+                    ),
+                    animation = CameraAnimation.Easing,
+                    durationMs = 1_000,
+                )
+            }
         }
     }
 
@@ -453,7 +491,7 @@ private fun MapScreen(
                 }
 
                 // 현재 위치 표시 마커
-                if (LocationManager.hasGpsLocation()) {
+                if (LocationStateManager.hasGpsLocation()) {
                     Marker(
                         state = MarkerState(position = currentPosition),
                         icon = OverlayImage.fromResource(R.drawable.icon_current_location),
@@ -494,7 +532,11 @@ private fun MapScreen(
                 onChangeCameraPositionWithZoom(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
             },
             onClickStoreList = onClickStoreList,
-            onClickLocationFocus = { onClickLocationFocus(LatLng(userLocation.first, userLocation.second)) },
+            onClickLocationFocus = {
+                userLocation?.let { location ->
+                    onClickLocationFocus(LatLng(location.first, location.second))
+                } ?: LocationStateManager.updateLocation()
+            },
         )
 
         // 서울이 아닌 경우 스낵바 + 하단 버튼 표시

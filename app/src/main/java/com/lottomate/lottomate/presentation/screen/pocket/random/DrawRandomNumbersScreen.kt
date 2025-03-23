@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
@@ -53,7 +54,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun DrawRandomNumbersRoute(
     vm: DrawRandomNumbersViewModel = hiltViewModel(),
     padding: PaddingValues,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val uiState by vm.randomNumbers.collectAsStateWithLifecycle()
@@ -65,6 +66,8 @@ fun DrawRandomNumbersRoute(
                 message = message,
             )
         }
+
+        vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
     }
 
     DrawRandomNumbersScreen(

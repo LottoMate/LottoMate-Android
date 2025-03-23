@@ -4,9 +4,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,8 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class PocketViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    errorHandler: LottoMateErrorHandler,
     private val randomLottoRepository: RandomLottoRepository,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     var currentTabIndex = mutableIntStateOf(0)
 
     private var _snackBarFlow = MutableSharedFlow<String>()
@@ -82,6 +85,7 @@ class PocketViewModel @Inject constructor(
     private fun fetchDrewRandomNumbers() {
         viewModelScope.launch {
             randomLottoRepository.fetchAllRandomLottoOnlyNumbers()
+                .catch { handleException(it) }
                 .collectLatest { collect ->
                     _drewRandomNumbers.update { collect.toList() }
                 }

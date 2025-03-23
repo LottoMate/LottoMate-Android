@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateText
@@ -42,7 +43,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun RandomNumbersStorageRoute(
     vm: RandomNumbersStorageViewModel = hiltViewModel(),
     padding: PaddingValues,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }

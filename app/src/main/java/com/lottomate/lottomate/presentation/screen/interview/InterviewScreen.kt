@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateIconButton
@@ -71,14 +72,14 @@ fun InterviewRoute(
     vm: InterviewViewModel = hiltViewModel(),
     no: Int,
     onClickBanner: () -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val interviewUiState by vm.interview.collectAsStateWithLifecycle()
     val winnerInterviewsUiState by vm.winnerInterviews.collectAsStateWithLifecycle()
 
     LaunchedEffect(true) {
-        vm.errorFlow.collectLatest{ throwable -> onShowErrorSnackBar(throwable) }
+        vm.errorFlow.collectLatest{ error -> onShowErrorSnackBar(error) }
     }
 
     InterviewScreen(

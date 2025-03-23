@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.LottoMateAnnotatedText
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
@@ -54,14 +55,12 @@ fun LottoScanResultRoute(
     moveToHome: () -> Unit,
     moveToWinningGuide: () -> Unit,
     onBackPressed: () -> Unit,
+    onShowErrorSnackBar: (LottoMateErrorType) -> Unit,
 ) {
     val uiState by vm.lottoWinResultInfo.collectAsStateWithLifecycle()
-    var showErrorDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(true) {
-        vm.errorFlow.collectLatest {
-            showErrorDialog = true
-        }
+        vm.errorFlow.collectLatest { onShowErrorSnackBar(it) }
     }
 
     LaunchedEffect(Unit) {
@@ -77,20 +76,6 @@ fun LottoScanResultRoute(
         onBackPressed = onBackPressed,
         onClickBanner = moveToWinningGuide,
     )
-
-    when {
-        showErrorDialog -> {
-            LottoMateDialog(
-                title = "오류가 발생하였습니다.",
-                confirmText = "확인",
-                onConfirm = {
-                    showErrorDialog = false
-                    onBackPressed()
-                },
-                onDismiss = { showErrorDialog = false }
-            )
-        }
-    }
 }
 
 @Composable

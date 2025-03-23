@@ -128,4 +128,9 @@
     <string name="desc_refresh_icon_map">The Refresh Icon on the Map</string>
     <string name="desc_location_focus_icon_map">The Current Location Icon on the Map</string>
     <string name="desc_lotto_store_list_icon_map">The Store List Icon on the Map</string>
+
+    <!-- Error -->
+    <string name="error_message_network">네트워크 연결을 확인해주세요</string>
+    <string name="error_message_location_update">GPS 정보를 가져오는데 실패했습니다</string>
+    <string name="error_message_unknown">오류가 발생하였습니다</string>
 </resources>

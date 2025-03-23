@@ -2,12 +2,13 @@ package com.lottomate.lottomate.presentation.screen.home
 
 import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
 import com.lottomate.lottomate.domain.repository.InterviewRepository
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto645Info
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto720Info
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLottoInfo
@@ -30,9 +31,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    errorHandler: LottoMateErrorHandler,
     private val lottoInfoRepository: LottoInfoRepository,
     private val interviewRepository: InterviewRepository,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     private var _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState get() = _uiState.asStateFlow()
 
@@ -50,10 +52,14 @@ class HomeViewModel @Inject constructor(
      */
     private fun loadAllData() {
         viewModelScope.launch {
-            fetchLatestLottoInfo()
-            val interviewNumbers = fetchInterviewNumbers()
+            runCatching {
+                fetchLatestLottoInfo()
+                val interviewNumbers = fetchInterviewNumbers()
 
-            observeLottoAndInterviews(interviewNumbers)
+                observeLottoAndInterviews(interviewNumbers)
+            }.onFailure {
+                handleException(it)
+            }
         }
     }
 
