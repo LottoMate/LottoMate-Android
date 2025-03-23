@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 
 object LocationManager {
     private var latitude by mutableDoubleStateOf(0.0)
@@ -24,28 +25,38 @@ object LocationManager {
     }
 
     fun updateLocation(context: Context) {
-        val locationService = LocationServices.getFusedLocationProviderClient(context)
+        try {
+            val locationService = LocationServices.getFusedLocationProviderClient(context)
 
-        if (ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+            locationService.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
+                .addOnSuccessListener { location ->
+                    try {
+                        Log.d("LocationManager", "사용자 GPS Update 성공 : ${location.latitude} / ${location.longitude}")
+
+                        latitude = location.latitude
+                        longitude = location.longitude
+                    } catch (exception: Exception) {
+                        Log.d("LocationManager(onSuccess)", "사용자 GPS Update 필요")
+                        latitude = 0.0
+                        longitude = 0.0
+                    }
+                }
+                .addOnFailureListener {
+                    Log.d("LocationManager", "사용자 GPS Update 실패 : ${it.stackTraceToString()}")
+                }
+        } catch (exception: Exception) {
+            Log.d("LocationManager", "사용자 GPS Update 실패 : ${exception.stackTraceToString()}")
         }
-        locationService.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
-            .addOnSuccessListener { location ->
-                Log.d("LocationManager", "사용자 GPS Update 성공 : ${location.latitude} / ${location.longitude}")
-                latitude = location.latitude
-                longitude = location.longitude
-            }
-            .addOnFailureListener {
-                Log.d("LocationManager", "사용자 GPS Update 실패 : ${it.stackTraceToString()}")
-
-            }
     }
 
     /**
