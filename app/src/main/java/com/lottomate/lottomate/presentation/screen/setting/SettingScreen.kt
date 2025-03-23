@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.home
+package com.lottomate.lottomate.presentation.screen.setting
 
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -42,9 +42,19 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
-internal fun SettingPage(
+fun SettingRoute(
     vm: LoginViewModel = hiltViewModel(),
     padding: PaddingValues,
+    onBackPressed: () -> Unit,
+) {
+    SettingScreen(
+        onBackPressed = onBackPressed,
+    )
+}
+
+@Composable
+private fun SettingScreen(
+    modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -63,9 +73,8 @@ internal fun SettingPage(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite),
     ) {
         Column(
@@ -239,8 +248,7 @@ internal fun SettingPage(
 @Composable
 private fun SettingPagePreview() {
     LottoMateTheme {
-        SettingPage(
-            padding = PaddingValues(0.dp),
+        SettingScreen(
             onBackPressed = {},
         )
     }

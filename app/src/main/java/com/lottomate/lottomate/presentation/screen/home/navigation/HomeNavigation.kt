@@ -12,12 +12,12 @@ import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.HomeRoute
-import com.lottomate.lottomate.presentation.screen.home.SettingPage
 import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
+import com.lottomate.lottomate.presentation.screen.setting.SettingRoute
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
 import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.navigateToWinnerGuide
 
@@ -93,7 +93,7 @@ fun NavGraphBuilder.homeNavGraph(
 
     // 설정 화면
     composable<LottoMateRoute.Setting> {
-        SettingPage(
+        SettingRoute(
             padding = padding,
             onBackPressed = { navController.navigateUp() },
         )
