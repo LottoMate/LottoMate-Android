@@ -2,17 +2,16 @@ package com.lottomate.lottomate.presentation.screen.lottoinfo
 
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoMockDatas
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -23,8 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LottoInfoViewModel @Inject constructor(
+    errorHandler: LottoMateErrorHandler,
     private val lottoInfoRepository: LottoInfoRepository,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     var currentTabMenu = mutableIntStateOf(LottoType.L645.ordinal)
         private set
     var hasPreLottoRound = mutableStateOf(true)
@@ -34,11 +34,11 @@ class LottoInfoViewModel @Inject constructor(
 
     private val _lottoInfo = MutableStateFlow<LottoInfoUiState>(LottoInfoUiState.Loading)
     val lottoInfo get() = _lottoInfo.asStateFlow()
-    private val _errorFlow = MutableSharedFlow<Throwable>()
-    val errorFlow get() = _errorFlow.asSharedFlow()
 
     init {
-        loadLatestLottoInfo()
+        runCatching {
+            loadLatestLottoInfo()
+        }.onFailure { handleException(it) }
     }
 
     fun changeTabMenu(index: Int) {
@@ -58,6 +58,7 @@ class LottoInfoViewModel @Inject constructor(
             LottoType.L645, LottoType.L720 -> {
                 viewModelScope.launch {
                     lottoInfoRepository.fetchLottoInfo(lottoType.num, lottoRndOrPageNum)
+                        .catch { handleException(it) }
                         .collectLatest { lottoInfo ->
                             lottoInfo.lottoRound?.let { round ->
                                 judgePreOrNextLottoRound(round)
@@ -87,7 +88,7 @@ class LottoInfoViewModel @Inject constructor(
         viewModelScope.launch {
             lottoInfoRepository.fetchLottoInfo(lottoType.num)
                 .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
-                .catch { throwable -> _errorFlow.emit(throwable) }
+                .catch { throwable -> handleException(throwable) }
                 .collectLatest { lottoInfo ->
                     lottoInfo.lottoRound?.let { round ->
                         judgePreOrNextLottoRound(round)
@@ -125,7 +126,7 @@ class LottoInfoViewModel @Inject constructor(
                     lottoRndNum = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType.num)
                 )
                     .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
-                    .catch { throwable -> _errorFlow.emit(throwable) }
+                    .catch { throwable -> handleException(throwable) }
                     .collectLatest { info ->
                         _lottoInfo.update { LottoInfoUiState.Success(info) }
                     }

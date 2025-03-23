@@ -10,15 +10,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.Scope
 import com.lottomate.lottomate.BuildConfig
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.remote.api.LoginApi
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    errorHandler: LottoMateErrorHandler,
     private val loginApi: LoginApi,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     var latestLoginType = mutableStateOf(LatestLoginType.GOOGLE)
         private set
 

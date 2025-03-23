@@ -1,38 +1,33 @@
 package com.lottomate.lottomate.presentation.screen.scanResult
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.domain.repository.LottoRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import com.lottomate.lottomate.domain.repository.LottoInfoRepository
-import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
-import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LottoScanResultViewModel @Inject constructor(
+    errorHandler: LottoMateErrorHandler,
     private val lottoRepository: LottoRepository,
     private val lottoInfoRepository: LottoInfoRepository,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     private var _lottoWinResultInfo = MutableStateFlow<LottoScanResultUiState>(LottoScanResultUiState.Loading)
     val lottoWinResultInfo: StateFlow<LottoScanResultUiState> get() = _lottoWinResultInfo.asStateFlow()
-
-    private var _errorFlow = MutableSharedFlow<String>()
-    val errorFlow: SharedFlow<String> get() = _errorFlow.asSharedFlow()
 
     fun getLottoResultByRound(data: String) {
         viewModelScope.launch {
@@ -51,9 +46,7 @@ class LottoScanResultViewModel @Inject constructor(
                         LottoScanResultUiState.Loading
                     }
                 }
-                .catch {
-                    sendErrorMsg("오류가 발생하였습니다.", it)
-                }
+                .catch { handleException(it) }
                 .collectLatest { collectData ->
                     val winResultInfo = collectData as Lotto645Info
 
@@ -109,11 +102,6 @@ class LottoScanResultViewModel @Inject constructor(
                     }
                 }
         }
-    }
-
-    private suspend fun sendErrorMsg(msg: String, throwable: Throwable) {
-        _errorFlow.emit(msg)
-        Log.d("LottoScanResultVM", throwable.stackTraceToString())
     }
 }
 

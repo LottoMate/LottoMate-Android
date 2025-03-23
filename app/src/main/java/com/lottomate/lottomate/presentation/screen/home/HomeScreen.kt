@@ -10,14 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,9 +26,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.ErrorMessageProvider
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.BannerType
+import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
@@ -41,6 +45,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeRoute(
@@ -52,9 +57,15 @@ fun HomeRoute(
     moveToInterviewDetail: (Int) -> Unit,
     moveToScan: () -> Unit,
     onClickBanner: (BannerType) -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(true) {
+        vm.errorFlow.collectLatest { error ->
+            onShowErrorSnackBar(error)
+        }
+    }
 
     val latestLotto645Round by vm.latestLotto645Round
     val latestLotto720Round by vm.latestLotto720Round

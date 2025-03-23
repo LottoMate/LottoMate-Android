@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
@@ -48,7 +49,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun PocketRoute(
     vm: PocketViewModel = hiltViewModel(),
     padding: PaddingValues,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
 ) {
@@ -66,6 +67,8 @@ fun PocketRoute(
                 message = message,
             )
         }
+
+        vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
     }
 
     PocketScreen(

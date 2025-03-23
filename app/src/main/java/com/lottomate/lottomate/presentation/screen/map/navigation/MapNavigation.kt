@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
 import com.lottomate.lottomate.presentation.screen.map.MapRoute
@@ -20,7 +21,7 @@ fun NavController.navigateToMap() {
 fun NavGraphBuilder.mapNavGraph(
     padding: PaddingValues,
     onShowFullScreen: (FullScreenType) -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Map> {
         MapRoute(

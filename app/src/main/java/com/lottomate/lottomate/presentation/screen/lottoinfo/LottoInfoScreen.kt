@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
@@ -82,9 +83,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun LottoInfoRoute(
     vm: LottoInfoViewModel = hiltViewModel(),
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
     onBackPressed: () -> Unit,
     onClickBottomBanner: () -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     val lottoInfoUiState by vm.lottoInfo.collectAsStateWithLifecycle()
     val pickerState = rememberPickerState()
@@ -93,7 +94,7 @@ fun LottoInfoRoute(
     val hasNextRound by rememberSaveable { vm.hasNextLottoRound }
 
     LaunchedEffect(true) {
-        vm.errorFlow.collectLatest{ throwable -> onShowErrorSnackBar(throwable) }
+        vm.errorFlow.collectLatest{ error -> onShowErrorSnackBar(error) }
     }
 
     LottoInfoScreen(
@@ -741,7 +742,7 @@ private fun BottomBannerSection(
             }
 
             Image(
-                bitmap = ImageBitmap.imageResource(id = R.drawable.bn_pochi_lotto_info),
+                bitmap = ImageBitmap.imageResource(id = R.drawable.img_banner_map),
                 contentDescription = "Lotto Info Bottom Banner Image",
                 modifier = Modifier.padding(bottom = 7.dp),
             )

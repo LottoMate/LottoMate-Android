@@ -13,7 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import com.lottomate.lottomate.data.error.ErrorMessageProvider
+import com.lottomate.lottomate.data.error.LottoMateErrorType
+import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.screen.main.component.LottoMateBottomBar
 import com.lottomate.lottomate.presentation.screen.main.component.ShowFullScreen
 import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
@@ -48,7 +52,10 @@ private fun MainScreenContent(
     snackBarHostState: SnackbarHostState,
     onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
+    val context = LocalContext.current
+
     var showFullScreen by remember { mutableStateOf<FullScreenType?>(null) }
+    var showErrorDialog by remember { mutableStateOf<LottoMateErrorType?>(null) }
 
     Scaffold(
         modifier = modifier,
@@ -68,8 +75,17 @@ private fun MainScreenContent(
                     navigator = navigator,
                     padding = innerPadding,
                     onShowFullScreen = { showFullScreen = it },
-                    onShowErrorSnackBar = onShowErrorSnackBar
+                    onShowErrorSnackBar = { showErrorDialog = it }
                 )
+
+                showErrorDialog?.let {
+                    LottoMateDialog(
+                        title = ErrorMessageProvider.getErrorMessage(context, it),
+                        confirmText = "확인",
+                        onDismiss = { showErrorDialog = null },
+                        onConfirm = { showErrorDialog = null },
+                    )
+                }
             }
         },
         snackbarHost = { SnackbarHost(snackBarHostState) },

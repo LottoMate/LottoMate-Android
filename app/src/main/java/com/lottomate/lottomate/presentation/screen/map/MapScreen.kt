@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -77,11 +78,13 @@ fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
     onShowFullScreen: (FullScreenType) -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     // 지도 진입 시, 로딩 화면 표시
     LaunchedEffect(true) {
         onShowFullScreen(FullScreenType.MAP_LOADING)
+
+        vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
     }
 
     val context = LocalContext.current

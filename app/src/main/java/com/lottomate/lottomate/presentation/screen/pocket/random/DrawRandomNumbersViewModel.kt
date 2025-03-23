@@ -1,9 +1,9 @@
 package com.lottomate.lottomate.presentation.screen.pocket.random
 
-import android.util.Log
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,8 +18,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DrawRandomNumbersViewModel @Inject constructor(
+    errorHandler: LottoMateErrorHandler,
     private val randomLottoRepository: RandomLottoRepository,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     private var _randomNumbers = MutableStateFlow<DrawRandomNumbersUiState>(DrawRandomNumbersUiState.Loading)
     val randomNumbers: StateFlow<DrawRandomNumbersUiState> get() = _randomNumbers.asStateFlow()
     private var _snackBarFlow = MutableSharedFlow<String>()
@@ -51,11 +52,9 @@ class DrawRandomNumbersViewModel @Inject constructor(
 
     private fun saveRandomLotto(numbers: List<Int>) {
         viewModelScope.launch {
-            try {
+            runCatching {
                 randomLottoRepository.insertRandomLotto(numbers)
-            } catch (exception: Exception) {
-                Log.d("DrawRandomNumbersVM(saveRandomLotto)", exception.message.toString())
-            }
+            }.onFailure { handleException(it) }
         }
     }
 

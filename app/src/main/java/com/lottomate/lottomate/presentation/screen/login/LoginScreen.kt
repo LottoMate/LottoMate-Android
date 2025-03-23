@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,18 +32,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun LoginRoute(
     vm: LoginViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToLoginSuccess: () -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     val context = LocalContext.current
     val latestLoginType by vm.latestLoginType
@@ -59,6 +62,10 @@ fun LoginRoute(
                 }
             }
         }
+    }
+
+    LaunchedEffect(true) {
+        vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
     }
 
 

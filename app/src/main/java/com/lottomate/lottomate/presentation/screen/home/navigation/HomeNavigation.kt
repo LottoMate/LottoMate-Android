@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
@@ -51,7 +52,7 @@ fun NavController.navigateToBanner(bannerType: BannerType) {
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     navController: NavController,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Home> {
         HomeRoute(
@@ -123,6 +124,7 @@ fun NavGraphBuilder.homeNavGraph(
             },
             moveToWinningGuide = { navController.navigateToWinnerGuide() },
             onBackPressed = { navController.popBackStack() },
+            onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }
 

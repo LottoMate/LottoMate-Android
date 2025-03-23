@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
@@ -26,7 +27,7 @@ fun NavController.navigateToDrawRandomNumbers() {
 fun NavGraphBuilder.pocketNavGraph(
     padding: PaddingValues,
     navController: NavController,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Pocket> {
         PocketRoute(

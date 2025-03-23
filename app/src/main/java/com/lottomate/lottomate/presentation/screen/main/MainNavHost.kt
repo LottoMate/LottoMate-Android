@@ -3,6 +3,7 @@ package com.lottomate.lottomate.presentation.screen.main
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
+import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.screen.home.navigation.homeNavGraph
 import com.lottomate.lottomate.presentation.screen.intro.navigation.introNavGraph
 import com.lottomate.lottomate.presentation.screen.login.navigation.loginNavGraph
@@ -15,7 +16,7 @@ fun MainNavHost(
     navigator: MainNavigator,
     padding: PaddingValues,
     onShowFullScreen: (FullScreenType) -> Unit,
-    onShowErrorSnackBar: (throwable: Throwable?) -> Unit,
+    onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     NavHost(
         navController = navigator.navController,

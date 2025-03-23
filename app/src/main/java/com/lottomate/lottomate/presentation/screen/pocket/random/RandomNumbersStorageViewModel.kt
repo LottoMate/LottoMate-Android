@@ -3,8 +3,9 @@ package com.lottomate.lottomate.presentation.screen.pocket.random
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class RandomNumbersStorageViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-) : ViewModel() {
+    errorHandler: LottoMateErrorHandler,
+) : BaseViewModel(errorHandler) {
     private var _snackBarFlow = MutableSharedFlow<String>()
     val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
 

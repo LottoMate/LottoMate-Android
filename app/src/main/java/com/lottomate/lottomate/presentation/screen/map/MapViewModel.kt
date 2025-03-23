@@ -1,19 +1,18 @@
 package com.lottomate.lottomate.presentation.screen.map
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,9 +24,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    errorHandler: LottoMateErrorHandler,
     private val storeRepository: StoreRepository,
-) : ViewModel() {
+) : BaseViewModel(errorHandler) {
     val stores: StateFlow<List<StoreInfo>> = storeRepository.stores
         .stateIn(
             scope = viewModelScope,
@@ -119,7 +118,9 @@ class MapViewModel @Inject constructor(
                 personLat = currentPosition.value.latitude,
             )
 
-            storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
+            runCatching {
+                storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
+            }.onFailure { handleException(it) }
 
 //            _uiState.update { MapUiState.Loading }
 //
