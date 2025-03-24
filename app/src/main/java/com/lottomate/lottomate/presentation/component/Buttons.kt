@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -264,21 +263,6 @@ fun LottoMateTextButton(
         textAlign = textAlign,
         modifier = Modifier.noInteractionClickable { onClick() }
     )
-
-//    Button(
-//        modifier = modifier.height(buttonHeight),
-//        onClick = { onClick() },
-//        shape = RoundedCornerShape(Dimens.RadiusExtraSmall),
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = if (isPressed) pressedButtonColor else buttonColor,
-//            disabledContainerColor = buttonColor
-//        ),
-//        interactionSource = interactionSource,
-//        contentPadding = PaddingValues(horizontal = 8.dp),
-//        enabled = !isDisabled
-//    ) {
-//
-//    }
 }
 
 @Composable
@@ -294,13 +278,6 @@ private fun LottoMateBaseButton(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    val buttonHeight = when (buttonSize) {
-        LottoMateButtonProperty.Size.LARGE -> 48.dp
-        LottoMateButtonProperty.Size.MEDIUM -> 40.dp
-        LottoMateButtonProperty.Size.SMALL -> 34.dp
-        LottoMateButtonProperty.Size.XSMALL -> 22.dp
-    }
-
     Button(
         modifier = modifier,
         contentPadding = PaddingValues(
@@ -311,10 +288,10 @@ private fun LottoMateBaseButton(
                 LottoMateButtonProperty.Size.LARGE -> 40.dp
             },
             vertical = when (buttonSize) {
-                LottoMateButtonProperty.Size.LARGE -> 12.dp
-                LottoMateButtonProperty.Size.MEDIUM -> 8.dp
-                LottoMateButtonProperty.Size.SMALL -> 6.dp
                 LottoMateButtonProperty.Size.XSMALL -> 2.dp
+                LottoMateButtonProperty.Size.SMALL -> 6.dp
+                LottoMateButtonProperty.Size.MEDIUM -> 8.dp
+                LottoMateButtonProperty.Size.LARGE -> 12.dp
             }
         ),
         border = buttonBorder,
@@ -335,10 +312,13 @@ private fun LottoMateBaseButton(
             text = text,
             color = textColor,
             style = when (buttonSize) {
-                LottoMateButtonProperty.Size.SMALL -> LottoMateTheme.typography.label2
                 LottoMateButtonProperty.Size.XSMALL -> LottoMateTheme.typography.caption
+                LottoMateButtonProperty.Size.SMALL -> LottoMateTheme.typography.label2
+                LottoMateButtonProperty.Size.LARGE -> LottoMateTheme.typography.headline1
                 else -> LottoMateTheme.typography.label1
             },
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -557,7 +537,7 @@ private fun LottoMateAssistiveButtonPreview() {
                 .padding(16.dp)
         ) {
             LottoMateAssistiveButton(
-                text = "Large Assistive Button",
+                text = "취소",
                 buttonSize = LottoMateButtonProperty.Size.LARGE,
                 buttonType = LottoMateButtonProperty.Type.ACTIVE,
                 buttonShape = LottoMateButtonProperty.Shape.NORMAL,
