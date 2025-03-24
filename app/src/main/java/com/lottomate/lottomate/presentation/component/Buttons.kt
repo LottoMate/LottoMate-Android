@@ -66,7 +66,7 @@ fun LottoMateSolidButton(
         buttonShape = buttonShape,
         enabled = !isDisabled,
         interactionSource = interactionSource,
-        onClick = { onClick() }
+        onClick = { if (!isDisabled) onClick() }
     )
 }
 
@@ -302,7 +302,7 @@ private fun LottoMateBaseButton(
     }
 
     Button(
-        modifier = modifier.height(buttonHeight),
+        modifier = modifier,
         contentPadding = PaddingValues(
             horizontal = when (buttonSize) {
                 LottoMateButtonProperty.Size.XSMALL -> 8.dp

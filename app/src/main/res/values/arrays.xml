@@ -46,4 +46,11 @@
         <item>내 번호</item>
         <item>랜덤 번호</item>
     </string-array>
+
+    <string-array name="signout_reason_items">
+        <item>@string/signout_reason_content01</item>
+        <item>@string/signout_reason_content02</item>
+        <item>@string/signout_reason_content03</item>
+        <item>@string/signout_reason_content04</item>
+    </string-array>
 </resources>

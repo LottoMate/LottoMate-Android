@@ -22,6 +22,17 @@
     <string name="mypage_menu_signout">회원탈퇴</string>
     <string name="mypage_logout_title">로그아웃 하시겠어요?</string>
 
+    <!-- 회원탈퇴 -->
+    <string name="signout_title">회원탈퇴</string>
+    <string name="signout_reason_title">탈퇴 이유를 알려주세요</string>
+    <string name="signout_reason_content02">자주 사용하지 않아요</string>
+    <string name="signout_reason_content03">로또 명당을 찾기가 어려워요</string>
+    <string name="signout_reason_content01">오류가 많아서 사용하기 불편해요</string>
+    <string name="signout_reason_content04">로또 당첨이 돼서 더 이상 필요하지 않아요</string>
+    <string name="signout_goodbye_title">마지막 인사</string>
+    <string name="signout_goodbye_content_placeholder">텍스트를 입력하세요.</string>
+    <string name="signout_dialog_title">회원 탈퇴가 완료되었어요\n행운을 빌어요!</string>
+
     <!-- 로또 정보 상세 -->
     <string name="top_app_bar_title_lotto_info">당첨 정보 상세</string>
     <string name="lotto_info_per_person">1인당</string>

@@ -29,6 +29,7 @@ sealed interface LottoMateRoute {
 
     @Serializable data object Setting : LottoMateRoute
     @Serializable data object MyPage : LottoMateRoute
+    @Serializable data object SignOut : LottoMateRoute
 }
 
 /**

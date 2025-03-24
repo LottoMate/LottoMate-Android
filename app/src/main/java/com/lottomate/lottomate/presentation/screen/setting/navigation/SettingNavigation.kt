@@ -11,6 +11,7 @@ import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHomeTab
 import com.lottomate.lottomate.presentation.screen.setting.SettingRoute
 import com.lottomate.lottomate.presentation.screen.setting.page.MyPageRoute
+import com.lottomate.lottomate.presentation.screen.setting.page.SignOutRoute
 
 fun NavController.navigateToSetting() {
     navigate(LottoMateRoute.Setting)
@@ -18,6 +19,10 @@ fun NavController.navigateToSetting() {
 
 fun NavController.navigateToMyPage() {
     navigate(LottoMateRoute.MyPage)
+}
+
+fun NavController.navigateToSignOut() {
+    navigate(LottoMateRoute.SignOut)
 }
 
 fun NavGraphBuilder.settingNavGraph(
@@ -45,8 +50,23 @@ fun NavGraphBuilder.settingNavGraph(
 
                 navController.navigateToHomeTab(navOptions)
             },
-            moveToSignOut = {},
+            moveToSignOut = { navController.navigateToSignOut() },
             onBackPressed = { navController.navigateUp() },
+        )
+    }
+
+    // 회원탈퇴 화면
+    composable<LottoMateRoute.SignOut> {
+        SignOutRoute(
+            padding = padding,
+            moveToHome = {
+                val navOptions = NavOptions.Builder().apply {
+                    setPopUpTo<BottomTabRoute.Home>(true)
+                }.build()
+
+                navController.navigateToHomeTab(navOptions)
+            },
+            onBackPressed = { navController.popBackStack() },
         )
     }
 }
