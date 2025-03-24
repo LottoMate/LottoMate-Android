@@ -56,6 +56,7 @@ fun LottoMateCheckBoxWithText(
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(modifier = Modifier
             .size(20.dp)
