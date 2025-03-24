@@ -48,6 +48,7 @@ fun PocketRoute(
     vm: PocketViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToLottoScan: () -> Unit,
+    moveToSetting: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
@@ -81,6 +82,7 @@ fun PocketRoute(
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
         onClickSaveRandomNumbers = {  },
         onClickQRScan = moveToLottoScan,
+        onClickSetting = moveToSetting,
     )
 }
 
@@ -96,6 +98,7 @@ private fun PocketScreen(
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
     onClickQRScan: () -> Unit,
+    onClickSetting: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -144,7 +147,7 @@ private fun PocketScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.icon_setting),
                     contentDescription = stringResource(id = R.string.desc_setting_icon),
-                    modifier = Modifier.noInteractionClickable {  }
+                    modifier = Modifier.noInteractionClickable { onClickSetting() }
                 )
             }
         )
@@ -217,6 +220,7 @@ private fun PocketScreenPreview() {
         PocketRoute(
             padding = PaddingValues(0.dp),
             moveToLottoScan = {},
+            moveToSetting = {},
             onShowErrorSnackBar = {},
             onClickDrawRandomNumbers = {},
             onClickStorageOfRandomNumbers = {},
