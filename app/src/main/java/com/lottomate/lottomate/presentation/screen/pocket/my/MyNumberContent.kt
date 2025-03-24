@@ -2,6 +2,7 @@ package com.lottomate.lottomate.presentation.screen.pocket.my
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,27 +14,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerCard
+import com.lottomate.lottomate.presentation.component.BannerType
+import com.lottomate.lottomate.presentation.component.LottoMateAnnotatedText
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateOutLineButton
-import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTextButton
 import com.lottomate.lottomate.presentation.res.Dimens
@@ -42,26 +46,31 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall
 import com.lottomate.lottomate.presentation.screen.pocket.model.LottoCondition
 import com.lottomate.lottomate.presentation.screen.pocket.model.LottoDetail
 import com.lottomate.lottomate.presentation.screen.pocket.model.mockLottoDetails
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateError
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray60
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMatePositive
-import com.lottomate.lottomate.presentation.ui.LottoMateRed100
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.utils.noInteractionClickable
-import dagger.Lazy
+import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.DateUtils
+import java.util.Calendar
+import kotlin.math.roundToInt
 
 @Composable
 fun MyNumberContent(
     modifier: Modifier = Modifier,
     onClickQRScan: () -> Unit,
     onClickSaveNumbers: () -> Unit,
+    onClickLottoInfo: () -> Unit,
+    onClickBanner: (BannerType) -> Unit,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.background(LottoMateWhite),
     ) {
         Row(
             modifier = Modifier
@@ -76,7 +85,7 @@ fun MyNumberContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp, bottom = 16.dp),
+                        .padding(vertical = Dimens.DefaultPadding20),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     LottoMateText(
@@ -85,20 +94,19 @@ fun MyNumberContent(
                         style = LottoMateTheme.typography.headline2,
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.img_rounge_cony2),
                         contentDescription = stringResource(id = R.string.pocket_desc_my_number_top_left_image),
-                        modifier = Modifier.size(76.dp),
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                            .size(70.dp),
                     )
-
-                    Spacer(modifier = Modifier.height(10.dp))
 
                     LottoMateAssistiveButton(
                         text = stringResource(id = R.string.pocket_text_my_number_scan),
                         buttonSize = LottoMateButtonProperty.Size.SMALL,
                         onClick = onClickQRScan,
+                        modifier = Modifier.padding(top = 12.dp),
                     )
                 }
             }
@@ -112,7 +120,7 @@ fun MyNumberContent(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 24.dp, bottom = 16.dp),
+                        .padding(vertical = Dimens.DefaultPadding20),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     LottoMateText(
@@ -121,48 +129,80 @@ fun MyNumberContent(
                         style = LottoMateTheme.typography.headline2,
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
-
                     Image(
                         bitmap = ImageBitmap.imageResource(id = R.drawable.img_rounge_cony),
                         contentDescription = stringResource(id = R.string.pocket_desc_my_number_top_right_image),
-                        modifier = Modifier.size(76.dp),
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                            .size(70.dp),
                     )
-
-                    Spacer(modifier = Modifier.height(10.dp))
 
                     LottoMateAssistiveButton(
                         text = stringResource(id = R.string.pocket_text_my_number_save_number),
                         buttonSize = LottoMateButtonProperty.Size.SMALL,
                         onClick = onClickSaveNumbers,
+                        modifier = Modifier.padding(top = 12.dp),
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        MyLottoSituation(
+        MyLottoSituationSection(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimens.DefaultPadding20),
+                .padding(top = 40.dp)
+                .padding(horizontal = Dimens.DefaultPadding20),
+            onClickLottoInfo = onClickLottoInfo,
         )
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        MyLottoHistory(
-            modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20),
-            myLottoHistories = mockLottoDetails,
+        MyLottoHistorySection(
             onClickEdit = {},
             onClickCheckWin = {},
+            onClickBanner = onClickBanner,
         )
     }
 }
 
 @Composable
-private fun MyLottoEmpty(
+private fun MyLottoHistorySection(
     modifier: Modifier = Modifier,
-    onClickDrawNumber: () -> Unit,
+    myLottoHistories: List<LottoDetail> = emptyList(),
+    onClickEdit: () -> Unit,
+    onClickCheckWin: () -> Unit,
+    onClickBanner: (BannerType) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+    ) {
+        LottoMateText(
+            text = stringResource(id = R.string.pocket_title_my_number_history),
+            style = LottoMateTheme.typography.headline1,
+            modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20)
+        )
+
+        when {
+            myLottoHistories.isEmpty() -> {
+                MyLottoHistory(
+                    myLottoHistories = mockLottoDetails,
+                    onClickEdit = onClickEdit,
+                    onClickCheckWin = onClickCheckWin
+                )
+            }
+            else -> {
+                MyLottoHistoryEmpty(
+                    modifier = Modifier.padding(top = 12.dp),
+                    onClickBanner = onClickBanner,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MyLottoHistoryEmpty(
+    modifier: Modifier = Modifier,
+    onClickBanner: (BannerType) -> Unit,
 ) {
     Column {
         Box(
@@ -171,11 +211,9 @@ private fun MyLottoEmpty(
                 .background(color = LottoMateGray10)
         ) {
             Column(
+                modifier = Modifier.align(Alignment.Center)
+                    .padding(top = 50.dp, bottom = 50.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 56.dp, bottom = 49.dp),
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.pocket_venus),
@@ -183,134 +221,347 @@ private fun MyLottoEmpty(
                     modifier = Modifier.size(100.dp),
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 LottoMateText(
-                    text = "아직 저장한 내 로또가 없어요.",
+                    text = stringResource(id = R.string.pocket_title_my_number_history_empty),
                     style = LottoMateTheme.typography.body2
                         .copy(color = LottoMateGray100),
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                LottoMateSolidButton(
-                    text = "번호 뽑으러 가기",
-                    buttonSize = LottoMateButtonProperty.Size.SMALL,
-                    buttonShape = LottoMateButtonProperty.Shape.ROUND,
-                    onClick = onClickDrawNumber,
+                    modifier = Modifier.padding(top = 16.dp),
                 )
             }
         }
-        
-        Spacer(modifier = Modifier.height(12.dp))
 
         BannerCard(
             modifier = Modifier
-                .padding(Dimens.DefaultPadding20)
-                .padding(bottom = 28.dp),
-            onClickBanner = {}
+                .padding(horizontal = Dimens.DefaultPadding20)
+                .padding(top = 32.dp, bottom = 28.dp),
+            type = BannerType.MAP,
+            onClickBanner = { onClickBanner(BannerType.MAP) },
         )
     }
-
 }
 
 @Composable
-private fun MyLottoSituation(
+private fun MyLottoHistory(
     modifier: Modifier = Modifier,
+    myLottoHistories: List<LottoDetail>,
+    onClickEdit: () -> Unit,
+    onClickCheckWin: () -> Unit,
+) {
+    Column(
+        modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .fillMaxWidth()
+                .background(color = LottoMateGray10, shape = RoundedCornerShape(Dimens.RadiusLarge))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+            ) {
+                // TODO : API 연결 후, 데이터들 동적으로 변경 예정
+                val year = 2024
+                val month = 8
+                val totalCount = 10
+                val winCount = 1
+                val loseCount = 10
+                val winRate = String.format("%2d", ((winCount.toDouble() / winCount.plus(loseCount)) * 100).roundToInt()).plus("%")
+
+                val message = pluralStringResource(id = R.plurals.pocket_text_my_number_history, 1, year, month, totalCount)
+
+                val totalCountStartIndex = message.indexOf(totalCount.toString())
+                val totalCountEndIndex = totalCountStartIndex.plus(totalCount.toString().length).plus(1)
+                val annotatedMessage = AnnotatedString.Builder(message).apply {
+                    addStyle(SpanStyle(fontWeight = FontWeight.Bold), totalCountStartIndex, totalCountEndIndex)
+                }.toAnnotatedString()
+
+                LottoMateAnnotatedText(
+                    annotatedString = annotatedMessage,
+                    style = LottoMateTheme.typography.body1,
+                    modifier = Modifier,
+                )
+
+                val rateMessage = pluralStringResource(id = R.plurals.pocket_text_my_number_history_rate, 1, winCount, loseCount, winRate)
+
+                val rateStartIndex = rateMessage.indexOf(winRate)
+                val rateEndIndex = rateStartIndex.plus(winRate.length).plus(1)
+                val annotatedRateMessage = AnnotatedString.Builder(rateMessage).apply {
+                    addStyle(SpanStyle(fontWeight = FontWeight.Bold), rateStartIndex, rateEndIndex)
+                }.toAnnotatedString()
+
+                LottoMateAnnotatedText(
+                    annotatedString = annotatedRateMessage,
+                    style = LottoMateTheme.typography.body1,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+        }
+
+        val lottoHistoriesByRound = myLottoHistories.groupBy { it.round }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp)
+        ) {
+            LottoMateText(
+                text = stringResource(id = R.string.pocket_text_my_number_history_edit),
+                textAlign = TextAlign.End,
+                style = LottoMateTheme.typography.label2
+                    .copy(color = LottoMateGray80),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .clickable { onClickEdit() },
+            )
+
+            Column {
+                lottoHistoriesByRound.forEach { (round, lottoDetails) ->
+                    Column(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                    ) {
+                        MyLottoHistoryRowItemTitle(round, lottoDetails)
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        lottoDetails.forEach { detail ->
+                            MyLottoHistoryRowItem(
+                                detail = detail,
+                                onClickCheckWin = onClickCheckWin,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MyLottoHistoryRowItem(
+    detail: LottoDetail,
+    onClickCheckWin: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(
+                    id = when (detail.type) {
+                        LottoType.L645 -> R.drawable.icon_lotto645_rank_first
+                        LottoType.L720 -> R.drawable.icon_lotto720_rank_first
+                        else -> R.drawable.icon_speetto_rank_first
+                    }
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+
+            detail.numbers.forEachIndexed { index, number ->
+                when (detail.type) {
+                    LottoType.L645 -> {
+                        LottoBall645(
+                            modifier = Modifier.padding(end = 8.dp),
+                            number = number,
+                            size = 28.dp,
+                        )
+                    }
+
+                    LottoType.L720 -> {
+                        LottoBall720(
+                            index = index,
+                            number = number,
+                            isBonusNumber = false,
+                            size = 28.dp,
+                            modifier = Modifier.padding(end = 6.dp)
+                        )
+                    }
+                    else -> {}
+                }
+            }
+        }
+
+        when (detail.condition) {
+            LottoCondition.NOT_WON -> {
+                LottoMateTextButton(
+                    buttonText = stringResource(id = R.string.pocket_text_my_number_history_failed),
+                    buttonSize = LottoMateButtonProperty.Size.SMALL,
+                    textColor = LottoMateError,
+                    onClick = {},
+                )
+            }
+            LottoCondition.CHECKED_WIN -> {
+                LottoMateTextButton(
+                    buttonText = stringResource(id = R.string.pocket_text_my_number_history_win),
+                    buttonSize = LottoMateButtonProperty.Size.SMALL,
+                    textColor = LottoMatePositive,
+                    onClick = {},
+                )
+            }
+            LottoCondition.NOT_CHECKED -> {
+                LottoMateOutLineButton(
+                    text = stringResource(id = R.string.pocket_text_my_number_history_check),
+                    buttonSize = LottoMateButtonProperty.Size.XSMALL,
+                    buttonShape = LottoMateButtonProperty.Shape.NORMAL_XSMALL,
+                    onClick = { onClickCheckWin() },
+                )
+            }
+            LottoCondition.NOT_CHECKED_END -> {
+                LottoMateOutLineButton(
+                    text = stringResource(id = R.string.pocket_text_my_number_history_check),
+                    buttonSize = LottoMateButtonProperty.Size.XSMALL,
+                    buttonShape = LottoMateButtonProperty.Shape.NORMAL_XSMALL,
+                    buttonBorderColor = LottoMateGray60,
+                    textColor = LottoMateGray60,
+                    onClick = {}
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun MyLottoHistoryRowItemTitle(
+    round: Int,
+    lottoDetails: List<LottoDetail>,
+) {
+    Row(
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        LottoMateText(
+            text = round.toString().plus(stringResource(id = R.string.pocket_text_my_number_history_round)),
+            style = LottoMateTheme.typography.label2,
+        )
+
+        LottoMateText(
+            text = lottoDetails.first().date,
+            style = LottoMateTheme.typography.caption
+                .copy(color = LottoMateGray80),
+            modifier = Modifier.padding(start = 4.dp),
+        )
+    }
+}
+
+@Composable
+private fun MyLottoSituationSection(
+    modifier: Modifier = Modifier,
+    onClickLottoInfo: () -> Unit,
 ) {
     Column(
         modifier = modifier,
     ) {
         LottoMateText(
-            text = "내 로또 현황",
+            text = stringResource(id = R.string.pocket_text_my_number_situation),
             style = LottoMateTheme.typography.headline1,
         )
-        
-        Spacer(modifier = Modifier.height(8.dp))
 
-        LottoMateCard(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {}
-        ) {
-            Row(
-                modifier = Modifier.padding(vertical = 24.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        Row {
+            LottoMateCard(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .weight(1f),
+                onClick = {}
             ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(132.dp)
+                        .padding(16.dp),
                 ) {
-                    LottoMateText(
-                        text = stringResource(id = R.string.pocket_title_my_number_possible_check),
-                        style = LottoMateTheme.typography.label2,
-                    )
-
-                    Row {
+                    Column(
+                        modifier = Modifier
+                    ) {
                         LottoMateText(
-                            text = "내 로또",
-                            style = LottoMateTheme.typography.headline1,
+                            text = stringResource(id = R.string.pocket_text_my_number_possible_check),
+                            style = LottoMateTheme.typography.headline2,
                         )
 
-                        Spacer(modifier = Modifier.width(2.dp))
+                        val availableCount = "0"
+                        val message = pluralStringResource(id = R.plurals.pocket_text_my_number_situation_my_lotto, 1, availableCount)
 
-                        LottoMateText(
-                            text = "NN",
-                            style = LottoMateTheme.typography.headline1
-                                .copy(color = LottoMateRed50),
-                        )
+                        val startIndex = 5
+                        val endIndex = startIndex.plus(availableCount.length)
+                        val annotatedMessage = AnnotatedString.Builder(message).apply {
+                            addStyle(SpanStyle(color = LottoMateRed50), startIndex, endIndex)
+                        }.toAnnotatedString()
 
-                        Spacer(modifier = Modifier.width(2.dp))
-
-                        LottoMateText(
-                            text = "개",
-                            style = LottoMateTheme.typography.headline1,
+                        LottoMateAnnotatedText(
+                            annotatedString = annotatedMessage,
+                            style = LottoMateTheme.typography.label2,
                         )
                     }
+
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.img_pocket_my_number_available),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .size(36.dp)
+                    )
                 }
+            }
+            
+            Spacer(modifier = Modifier.width(15.dp))
 
-                Divider(
-                    modifier = Modifier.size(width = 1.dp, height = 40.dp),
-                    color = Color(0xFFD9D9D9),
-                )
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+            LottoMateCard(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 8.dp),
+                onClick = {}
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(132.dp)
+                        .padding(16.dp),
                 ) {
-                    LottoMateText(
-                        text = stringResource(id = R.string.pocket_title_my_number_possible_check),
-                        style = LottoMateTheme.typography.label2,
-                    )
-
-                    Row {
+                    Column(
+                        modifier = Modifier
+                    ) {
                         LottoMateText(
-                            text = "내 로또",
-                            style = LottoMateTheme.typography.headline1,
+                            text = stringResource(id = R.string.pocket_text_my_number_before_draw),
+                            style = LottoMateTheme.typography.headline2,
                         )
 
-                        Spacer(modifier = Modifier.width(2.dp))
+                        val beforeCount = "0"
+                        val message = pluralStringResource(id = R.plurals.pocket_text_my_number_situation_my_lotto, 1, beforeCount)
 
-                        LottoMateText(
-                            text = "NN",
-                            style = LottoMateTheme.typography.headline1
-                                .copy(color = LottoMateRed50),
-                        )
+                        val startIndex = 5
+                        val endIndex = startIndex.plus(beforeCount.length)
+                        val annotatedMessage = AnnotatedString.Builder(message).apply {
+                            addStyle(SpanStyle(color = LottoMateRed50), startIndex, endIndex)
+                        }.toAnnotatedString()
 
-                        Spacer(modifier = Modifier.width(2.dp))
-
-                        LottoMateText(
-                            text = "개",
-                            style = LottoMateTheme.typography.headline1,
+                        LottoMateAnnotatedText(
+                            annotatedString = annotatedMessage,
+                            style = LottoMateTheme.typography.label2,
                         )
                     }
+
+                    Image(
+                        bitmap = ImageBitmap.imageResource(id = R.drawable.img_pocket_my_number_before),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .size(36.dp)
+                    )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         Box(
             modifier = Modifier
+                .padding(top = 16.dp)
                 .fillMaxWidth()
                 .background(color = LottoMateGray10, shape = RoundedCornerShape(Dimens.RadiusLarge))
         ) {
@@ -326,35 +577,51 @@ private fun MyLottoSituation(
                     Image(
                         painter = painterResource(id = R.drawable.icon_lotto645_rank_first),
                         contentDescription = null,
+                        modifier = Modifier.size(24.dp),
                     )
 
-                    Spacer(modifier = Modifier.width(6.dp))
+                    val isToday = DateUtils.getDaysUntilNextDay(Calendar.SATURDAY) == 0
 
-                    LottoMateText(
-                        text = "로또 당첨 발표까지",
+                    val annotatedMessage = when(isToday) {
+                        true -> {
+                            val keyword = stringResource(id = R.string.pocket_text_my_number_notice_keyword)
+                            val message = stringResource(id = R.string.pocket_text_my_number_notice_645_today)
+
+                            val startIndex = message.indexOf(keyword)
+                            val endIndex = startIndex + keyword.length
+                            AnnotatedString.Builder(message).apply {
+                                addStyle(SpanStyle(color = LottoMateRed50, fontWeight = FontWeight.Bold), startIndex, endIndex)
+                            }.toAnnotatedString()
+                        }
+                        false -> {
+                            val days = DateUtils.getDaysUntilNextDay(Calendar.SATURDAY)
+                            val message = pluralStringResource(id = R.plurals.pocket_text_my_number_notice_645, 1, days)
+
+                            val startIndex = 11
+                            val endIndex = startIndex.plus(2)
+                            AnnotatedString.Builder(message).apply {
+                                addStyle(SpanStyle(
+                                    color = when (days) {
+                                        in 1..3 -> LottoMateBlue50
+                                        else -> LottoMateBlack
+                                    },
+                                    fontWeight = FontWeight.Bold
+                                ), startIndex, endIndex)
+                            }.toAnnotatedString()
+                        }
+                    }
+
+                    LottoMateAnnotatedText(
+                        annotatedString = annotatedMessage,
                         style = LottoMateTheme.typography.body1,
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "N일",
-                        style = LottoMateTheme.typography.headline2
-                            .copy(color = LottoMateRed50),
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "남았어요.",
-                        style = LottoMateTheme.typography.body1,
+                        modifier = Modifier.padding(start = 6.dp),
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Image(
@@ -362,35 +629,51 @@ private fun MyLottoSituation(
                         contentDescription = null,
                     )
 
-                    Spacer(modifier = Modifier.width(6.dp))
+                    val isToday = DateUtils.getDaysUntilNextDay(Calendar.TUESDAY) == 0
 
-                    LottoMateText(
-                        text = "연금복권 당첨 발표까지",
+                    val annotatedMessage = when(isToday) {
+                        true -> {
+                            val keyword = stringResource(id = R.string.pocket_text_my_number_notice_keyword)
+                            val message = stringResource(id = R.string.pocket_text_my_number_notice_720_today)
+
+                            val startIndex = message.indexOf(keyword)
+                            val endIndex = startIndex + keyword.length
+                            AnnotatedString.Builder(message).apply {
+                                addStyle(SpanStyle(color = LottoMateRed50, fontWeight = FontWeight.Bold), startIndex, endIndex)
+                            }.toAnnotatedString()
+                        }
+                        false -> {
+                            val days = DateUtils.getDaysUntilNextDay(Calendar.THURSDAY)
+                            val message = pluralStringResource(id = R.plurals.pocket_text_my_number_notice_720, 1, days)
+
+                            val startIndex = 13
+                            val endIndex = startIndex.plus(2)
+                            AnnotatedString.Builder(message).apply {
+                                addStyle(SpanStyle(
+                                    color = when (days) {
+                                        in 1..3 -> LottoMateBlue50
+                                        else -> LottoMateBlack
+                                    },
+                                    fontWeight = FontWeight.Bold
+                                ), startIndex, endIndex)
+                            }.toAnnotatedString()
+                        }
+                    }
+
+                    LottoMateAnnotatedText(
+                        annotatedString = annotatedMessage,
                         style = LottoMateTheme.typography.body1,
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "N일",
-                        style = LottoMateTheme.typography.headline2
-                            .copy(color = LottoMateRed50),
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "남았어요.",
-                        style = LottoMateTheme.typography.body1,
+                        modifier = Modifier.padding(start = 6.dp),
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .fillMaxWidth()
+                .clickable { onClickLottoInfo() },
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -412,229 +695,15 @@ private fun MyLottoSituation(
     }
 }
 
-@Composable
-internal fun MyLottoHistory(
-    modifier: Modifier = Modifier,
-    myLottoHistories: List<LottoDetail> = emptyList(),
-    onClickEdit: () -> Unit,
-    onClickCheckWin: () -> Unit,
-) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-    ) {
-        LottoMateText(
-            text = "내 로또 내역",
-            style = LottoMateTheme.typography.headline1,
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = LottoMateGray10, shape = RoundedCornerShape(Dimens.RadiusLarge))
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),
-            ) {
-                Row {
-                    LottoMateText(
-                        text = "2024년 8월부터 로또를 총",
-                        style = LottoMateTheme.typography.body1,
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "NN개",
-                        style = LottoMateTheme.typography.body2,
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "구매했어요.",
-                        style = LottoMateTheme.typography.body1,
-                    )
-                }
-
-                Row {
-                    LottoMateText(
-                        text = "당첨 N개 미당첨 N개로 내 당첨률은",
-                        style = LottoMateTheme.typography.body1,
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "NN%",
-                        style = LottoMateTheme.typography.body2,
-                    )
-
-                    Spacer(modifier = Modifier.width(2.dp))
-
-                    LottoMateText(
-                        text = "이에요.",
-                        style = LottoMateTheme.typography.body1,
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        val lottoHistoriesByRound = myLottoHistories.groupBy { it.round }
-
-        Column {
-            LottoMateText(
-                text = "편집",
-                textAlign = TextAlign.End,
-                style = LottoMateTheme.typography.label2
-                    .copy(color = LottoMateGray80),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .noInteractionClickable { onClickEdit() },
-            )
-
-            lottoHistoriesByRound.forEach { (round, lottoDetails) ->
-                Column(
-                    modifier = Modifier.padding(bottom = 16.dp),
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.Bottom,
-                        ) {
-                            LottoMateText(
-                                text = round.toString().plus("회차"),
-                                style = LottoMateTheme.typography.label1,
-                            )
-
-                            Spacer(modifier = Modifier.width(4.dp))
-
-                            LottoMateText(
-                                text = lottoDetails.first().date,
-                                style = LottoMateTheme.typography.caption
-                                    .copy(color = LottoMateGray80),
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    lottoDetails.forEach { detail ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp),
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Image(
-                                    painter = painterResource(
-                                        id = when (detail.type) {
-                                            LottoType.L645 -> R.drawable.icon_lotto645_rank_first
-                                            LottoType.L720 -> R.drawable.icon_lotto720_rank_first
-                                            else -> R.drawable.icon_speetto_rank_first
-                                        }
-                                    ),
-                                    contentDescription = null
-                                )
-
-                                Spacer(modifier = Modifier.width(4.dp))
-
-                                detail.numbers.forEachIndexed { index, number ->
-                                    when (detail.type) {
-                                        LottoType.L645 -> {
-                                            LottoBall645(
-                                                number = number,
-                                            )
-
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                        }
-
-                                        LottoType.L720 -> {
-                                            LottoBall720(
-                                                index = index,
-                                                number = number,
-                                                isBonusNumber = false,
-                                            )
-
-                                            if (index == 0) {
-                                                Spacer(modifier = Modifier.width(4.dp))
-
-                                                LottoMateText(
-                                                    text = "조",
-                                                    style = LottoMateTheme.typography.label2,
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                        }
-                                        else -> {}
-                                    }
-                                }
-                            }
-
-                            when (detail.condition) {
-                                LottoCondition.NOT_WON -> {
-                                    LottoMateTextButton(
-                                        buttonText = "미당첨",
-                                        buttonSize = LottoMateButtonProperty.Size.SMALL,
-                                        textColor = LottoMateError,
-                                        onClick = {},
-                                    )
-                                }
-                                LottoCondition.CHECKED_WIN -> {
-                                    LottoMateTextButton(
-                                        buttonText = "당첨",
-                                        buttonSize = LottoMateButtonProperty.Size.SMALL,
-                                        textColor = LottoMatePositive,
-                                        onClick = {},
-                                    )
-                                }
-                                LottoCondition.NOT_CHECKED -> {
-                                    LottoMateOutLineButton(
-                                        text = "확인",
-                                        buttonSize = LottoMateButtonProperty.Size.XSMALL,
-                                        onClick = { onClickCheckWin() },
-                                    )
-                                }
-                                LottoCondition.NOT_CHECKED_END -> {
-                                    LottoMateOutLineButton(
-                                        text = "확인",
-                                        buttonSize = LottoMateButtonProperty.Size.XSMALL,
-                                        buttonBorderColor = LottoMateGray60,
-                                        textColor = LottoMateGray60,
-                                        onClick = {}
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun MyNumberContentPreview() {
     LottoMateTheme {
-        MyLottoHistory(
-            modifier = Modifier.background(Color.White),
-            myLottoHistories = mockLottoDetails,
-            onClickEdit = {},
-            onClickCheckWin = {}
+        MyNumberContent(
+            onClickQRScan = {},
+            onClickSaveNumbers = {},
+            onClickLottoInfo = {},
+            onClickBanner = {},
         )
     }
 }

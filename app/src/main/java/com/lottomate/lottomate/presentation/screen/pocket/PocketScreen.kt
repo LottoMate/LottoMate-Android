@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -72,7 +70,7 @@ fun PocketRoute(
     }
 
     PocketScreen(
-        padding = padding,
+        modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
         currentTabIndex = currentTabIndex,
         drewRandomNumbers = drewRandomNumbers,
         snackBarHostState = snackBarHostState,
@@ -86,7 +84,7 @@ fun PocketRoute(
 
 @Composable
 private fun PocketScreen(
-    padding: PaddingValues,
+    modifier: Modifier = Modifier,
     currentTabIndex: Int,
     drewRandomNumbers: List<List<Int>>,
     snackBarHostState: SnackbarHostState,
@@ -97,39 +95,35 @@ private fun PocketScreen(
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(top = Dimens.BaseTopPadding)
                 .verticalScroll(rememberScrollState()),
         ) {
-            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
-
             TopTabMenus(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(top = 24.dp),
                 currentTabIndex = currentTabIndex,
                 onClickTabMenu = onClickTabMenu,
             )
 
             when (currentTabIndex) {
                 0 -> {
-                    Spacer(modifier = Modifier.height(24.dp))
-
                     MyNumberContent(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(top = 24.dp),
                         onClickQRScan = {},
                         onClickSaveNumbers = {},
+                        onClickLottoInfo = {},
+                        onClickBanner = {},
                     )
                 }
                 1 -> {
-                    Spacer(modifier = Modifier.height(32.dp))
-
                     RandomNumberContent(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(top = 32.dp),
                         drewRandomNumbers = drewRandomNumbers,
                         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
                         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
@@ -175,9 +169,7 @@ private fun TopTabMenus(
     val tabMenus = stringArrayResource(id = R.array.pocket_tab_menu)
 
     Row(
-        modifier = modifier
-            .padding(top = 24.dp)
-            .padding(horizontal = 20.dp),
+        modifier = modifier.padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         tabMenus.forEachIndexed { index, button ->
