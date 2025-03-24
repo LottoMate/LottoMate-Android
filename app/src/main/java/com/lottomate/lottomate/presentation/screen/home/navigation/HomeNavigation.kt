@@ -12,21 +12,17 @@ import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.HomeRoute
-import com.lottomate.lottomate.presentation.screen.home.SettingPage
 import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
+import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
 import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.navigateToWinnerGuide
 
 fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
-}
-
-fun NavController.navigateToSetting() {
-    navigate(LottoMateRoute.Setting)
 }
 
 fun NavController.navigateToInterviewDetail(no: Int) {
@@ -87,14 +83,6 @@ fun NavGraphBuilder.homeNavGraph(
             no = no,
             onClickBanner = {},
             onShowErrorSnackBar = onShowErrorSnackBar,
-            onBackPressed = { navController.navigateUp() },
-        )
-    }
-
-    // 설정 화면
-    composable<LottoMateRoute.Setting> {
-        SettingPage(
-            padding = padding,
             onBackPressed = { navController.navigateUp() },
         )
     }

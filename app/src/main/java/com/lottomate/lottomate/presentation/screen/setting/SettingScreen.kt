@@ -1,10 +1,11 @@
-package com.lottomate.lottomate.presentation.screen.home
+package com.lottomate.lottomate.presentation.screen.setting
 
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
@@ -42,9 +42,22 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
-internal fun SettingPage(
+fun SettingRoute(
     vm: LoginViewModel = hiltViewModel(),
     padding: PaddingValues,
+    moveToMyPage: () -> Unit,
+    onBackPressed: () -> Unit,
+) {
+    SettingScreen(
+        onClickMyPage = moveToMyPage,
+        onBackPressed = onBackPressed,
+    )
+}
+
+@Composable
+private fun SettingScreen(
+    modifier: Modifier = Modifier,
+    onClickMyPage: () -> Unit = {},
     onBackPressed: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -56,16 +69,15 @@ internal fun SettingPage(
 
             task.result.idToken?.let {  idToken ->
                 task.result.serverAuthCode?.let { accessToken ->
-                    vm.loginWithGoogle(idToken, accessToken)
+//                    vm.loginWithGoogle(idToken, accessToken)
                 }
             }
         }
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite),
     ) {
         Column(
@@ -107,8 +119,68 @@ internal fun SettingPage(
                         modifier = Modifier
                             .padding(start = 20.dp)
                             .noInteractionClickable {
-                                val gso = vm.loginWithGoogleClient(context)
-                                resultLoginWithGoogle.launch(gso.signInIntent)
+//                                val signInWithGoogleOption = GetSignInWithGoogleOption
+//                                    .Builder("143180959109-sk88uf4he0n41fo7470kkagcm4qng4sj.apps.googleusercontent.com")
+//                                    .build()
+//
+////                                val googleIdOption = GetGoogleIdOption
+////                                    .Builder()
+////                                    .setFilterByAuthorizedAccounts(true)
+////                                    .setServerClientId("143180959109-sk88uf4he0n41fo7470kkagcm4qng4sj.apps.googleusercontent.com")
+////                                    .build()
+//
+//                                val request: GetCredentialRequest = GetCredentialRequest
+//                                    .Builder()
+//                                    .addCredentialOption(signInWithGoogleOption)
+//                                    .build()
+//
+//                                coroutineScope.launch {
+//                                    try {
+//                                        var responseJson = ""
+//                                        val credentialManager = CredentialManager.create(context)
+//                                        val result = credentialManager.getCredential(
+//                                            context,
+//                                            request
+//                                        )
+//
+//                                        val credential = result.credential
+//                                        Log.d("SettingPage", "credential: $credential")
+//                                        when (credential) {
+//                                            is PublicKeyCredential -> {
+//                                                responseJson = credential.authenticationResponseJson
+//                                            }
+//
+//                                            is CustomCredential -> {
+//                                                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
+//                                                    val googleIdTokenCredential =
+//                                                        GoogleIdTokenCredential.createFrom(
+//                                                            credential.data
+//                                                        )
+//
+//
+//
+//                                                    Log.d("SettingPage", "idToken: ${googleIdTokenCredential.idToken.}")
+//                                                }
+//                                            }
+//
+//                                            else -> {
+//
+//                                            }
+//                                        }
+//                                    } catch (e: Exception) {
+//                                        Log.e(
+//                                            "SettingPage",
+//                                            "SettingPage: ${e.stackTraceToString()}",
+//                                            e
+//                                        )
+//                                    }
+//                                }
+//                                val gso = vm.loginWithGoogleClient(context)
+//                                gso.signOut()
+//
+//                                resultLoginWithGoogle.launch(gso.signInIntent)
+
+//                                vm.loginWithGoogleOauth(context)
                             }
                         )
                 }
@@ -124,9 +196,10 @@ internal fun SettingPage(
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth()
+                            .clickable { onClickMyPage() }
                             .padding(vertical = 18.dp)
-                            .padding(start = 20.dp, end = 13.dp),
+                            .padding(start = 20.dp, end = 13.dp)
+                            .fillMaxWidth(),
                     ) {
                         LottoMateText(
                             text = "내 계정 관리",
@@ -239,8 +312,7 @@ internal fun SettingPage(
 @Composable
 private fun SettingPagePreview() {
     LottoMateTheme {
-        SettingPage(
-            padding = PaddingValues(0.dp),
+        SettingScreen(
             onBackPressed = {},
         )
     }
