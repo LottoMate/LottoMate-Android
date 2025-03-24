@@ -47,6 +47,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun PocketRoute(
     vm: PocketViewModel = hiltViewModel(),
     padding: PaddingValues,
+    moveToLottoScan: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
@@ -79,6 +80,7 @@ fun PocketRoute(
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
         onClickSaveRandomNumbers = {  },
+        onClickQRScan = moveToLottoScan,
     )
 }
 
@@ -93,6 +95,7 @@ private fun PocketScreen(
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
+    onClickQRScan: () -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -115,7 +118,7 @@ private fun PocketScreen(
                 0 -> {
                     MyNumberContent(
                         modifier = Modifier.padding(top = 24.dp),
-                        onClickQRScan = {},
+                        onClickQRScan = onClickQRScan,
                         onClickSaveNumbers = {},
                         onClickLottoInfo = {},
                         onClickBanner = {},
@@ -213,9 +216,10 @@ private fun PocketScreenPreview() {
     LottoMateTheme {
         PocketRoute(
             padding = PaddingValues(0.dp),
+            moveToLottoScan = {},
             onShowErrorSnackBar = {},
             onClickDrawRandomNumbers = {},
-            onClickStorageOfRandomNumbers = {}
+            onClickStorageOfRandomNumbers = {},
         )
     }
 }
