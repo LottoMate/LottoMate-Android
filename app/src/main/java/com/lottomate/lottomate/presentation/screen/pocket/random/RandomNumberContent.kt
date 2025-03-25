@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
+import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -222,10 +224,19 @@ private fun BottomDrawNumbers(
                                 onClickSaveRandomNumbers = { onClickSaveRandomNumbers(it) },
                             )
 
+                            // 각 Row 밑에 여백 8
                             if (chunkIndex != chunk.lastIndex) Spacer(modifier = Modifier.height(8.dp))
                         }
 
-                        if (index != visibleNumbers.lastIndex) Spacer(modifier = Modifier.height(8.dp))
+                        // chunk 사이에 Divider 추가 (마지막 chunk 제외)
+                        if (index != visibleNumbers.chunked(if (isInitialShow) 5 else 10).lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(vertical = 16.dp),
+                                color = LottoMateGray20,
+                                thickness = 1.dp
+                            )
+                        }
                     }
 
                     // 더보기 버튼
