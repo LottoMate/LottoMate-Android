@@ -51,10 +51,17 @@
     <string name="pocket_top_app_bar_title">로또 보관소</string>
     <string name="pocket_title_processing">오늘의 랜덤 번호를\n뽑는 중이에요</string>
     <string name="pocket_title_complete">오늘의 랜덤 번호를\n확인하세요!</string>
-    <string name="pocket_title_random_number">오늘의 행운을 뽑아보세요</string>
-    <string name="pocket_title_sub_random_number">행운의 랜덤 뽑기</string>
+    <string name="pocket_text_random_number">오늘의 행운을 뽑아보세요</string>
+    <string name="pocket_text_sub_random_number">행운의 랜덤 뽑기</string>
+    <string name="pocket_text_random_number_caption">무제한으로 뽑을 수 있어요</string>
+
+    <plurals name="pocket_text_random_number_not_empty">
+        <item quantity="one">오늘 %s번째 돌렸어요</item>
+        <item quantity="other">오늘 %s번째 돌렸어요</item>
+    </plurals>
+
     <string name="pocket_title_today_draw_lotto">오늘 뽑은 번호</string>
-    <string name="pocket_title_sub_today_draw_lotto">오늘이 지나면 뽑은 번호가 사라집니다.</string>
+    <string name="pocket_title_sub_today_draw_lotto">오늘이 지나면 뽑은 번호는 사라져요</string>
     <string name="pocket_title_my_number_left">당첨 결과를\n빠르게 확인하려면?</string>
     <string name="pocket_title_my_number_right">내 로또 번호를\n저장하려면?</string>
     <string name="pocket_text_my_number_situation">내 로또 현황</string>
@@ -62,6 +69,8 @@
     <string name="pocket_text_my_number_before_draw">아직\n당첨 발표 전인</string>
     <string name="pocket_title_my_number_history">내 로또 내역</string>
     <string name="pocket_title_my_number_history_empty">아직 저장한 내 로또가 없어요</string>
+    <string name="pocket_title_random_number_save">저장한 번호</string>
+    <string name="pocket_title_sub_random_number_save">내가 저장한 행운 번호를 확인할 수 있어요</string>
 
     <plurals name="pocket_text_my_number_situation_my_lotto">
         <item quantity="one">내 로또 %s개</item>

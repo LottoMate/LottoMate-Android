@@ -80,7 +80,7 @@ fun PocketRoute(
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
-        onClickSaveRandomNumbers = {  },
+        onClickSaveRandomNumbers = { vm.saveDrewRandomNumber(it) },
         onClickQRScan = moveToLottoScan,
         onClickSetting = moveToSetting,
     )
@@ -164,18 +164,6 @@ private fun PocketScreen(
                 )
             }
         )
-
-        // TODO : SnackBar 위치 수정 예정
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            snackBarHostState.currentSnackbarData?.let {
-                LottoMateSnackBarHost(snackBarHostState = snackBarHostState) {
-                    LottoMateSnackBar(message = it.visuals.message)
-                }
-            }
-        }
     }
 }
 

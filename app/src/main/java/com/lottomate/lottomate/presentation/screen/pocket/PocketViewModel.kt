@@ -1,13 +1,13 @@
 package com.lottomate.lottomate.presentation.screen.pocket
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.domain.repository.LottoNumberRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
+import com.lottomate.lottomate.utils.ClipboardUtils
 import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -28,6 +28,7 @@ class PocketViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     errorHandler: LottoMateErrorHandler,
     private val randomLottoRepository: RandomLottoRepository,
+    private val lottoNumberRepository: LottoNumberRepository,
 ) : BaseViewModel(errorHandler) {
     var currentTabIndex = mutableIntStateOf(0)
 
@@ -53,15 +54,17 @@ class PocketViewModel @Inject constructor(
      * [공식문서 참고](https://developer.android.com/develop/ui/views/touch-and-input/copy-paste?hl=ko#PastePlainText)
      */
     fun copyLottoNumbers(numbers: List<Int>) {
-        val copyData = numbers.joinToString("-")
-        val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText(CLIPBOARD_LABEL, copyData)
+        val copyData = numbers.joinToString("-") { String.format("%02d", it) }
 
-        clipboardManager.setPrimaryClip(clip)
-
-        viewModelScope.launch {
-            _snackBarFlow.emit(SNACKBAR_MESSAGE)
-        }
+        ClipboardUtils.copyToClipboard(
+            context = context,
+            copyText = copyData,
+            onSuccess = {
+                viewModelScope.launch {
+                    _snackBarFlow.emit("로또 번호를 복사했어요")
+                }
+            }
+        )
     }
 
     /**
@@ -79,6 +82,19 @@ class PocketViewModel @Inject constructor(
                     .filter { DateUtils.isDateInPast(it.createAt) }
                     .forEach { randomLottoRepository.deleteOneOfRandomLotto(it.key) }
             }
+        }
+    }
+
+    /**
+     * 랜덤 번호 뽑기에서 뽑은 번호를 DB에 저장하는 함수
+     */
+    fun saveDrewRandomNumber(numbers: List<Int>) {
+        viewModelScope.launch {
+            runCatching {
+                lottoNumberRepository.saveLottoNumber(numbers)
+            }.onSuccess {
+                _snackBarFlow.emit("로또 번호를 저장했어요")
+            }.onFailure { handleException(it) }
         }
     }
 
