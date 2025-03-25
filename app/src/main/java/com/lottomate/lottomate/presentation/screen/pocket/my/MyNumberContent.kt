@@ -629,7 +629,7 @@ private fun MyLottoSituationSection(
                         contentDescription = null,
                     )
 
-                    val isToday = DateUtils.getDaysUntilNextDay(Calendar.TUESDAY) == 0
+                    val isToday = DateUtils.getDaysUntilNextDay(Calendar.THURSDAY) == 0
 
                     val annotatedMessage = when(isToday) {
                         true -> {
