@@ -108,8 +108,8 @@ private fun PocketScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = Dimens.BaseTopPadding)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(top = Dimens.BaseTopPadding),
         ) {
             TopTabMenus(
                 modifier = Modifier.padding(top = 24.dp),
@@ -137,6 +137,19 @@ private fun PocketScreen(
                         onClickSaveRandomNumbers = onClickSaveRandomNumbers,
                     )
                 }
+            }
+        }
+
+        snackBarHostState.currentSnackbarData?.let {
+            LottoMateSnackBarHost(
+                modifier = Modifier.align(Alignment.TopCenter),
+                snackBarHostState = snackBarHostState
+            ) {
+                LottoMateSnackBar(
+                    modifier = Modifier
+                        .padding(top = Dimens.BaseTopPadding.plus(12.dp)),
+                    message = it.visuals.message
+                )
             }
         }
 
