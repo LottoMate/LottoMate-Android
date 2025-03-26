@@ -285,8 +285,9 @@ private fun LottoMateBaseButton(
 ) {
     val shape = when (buttonShape) {
         LottoMateButtonProperty.Shape.NORMAL -> RoundedCornerShape(Dimens.RadiusSmall)
-        LottoMateButtonProperty.Shape.SMALL_ROUND -> RoundedCornerShape(Dimens.RadiusExtraSmall)
+        LottoMateButtonProperty.Shape.NORMAL_XSMALL -> RoundedCornerShape(Dimens.RadiusExtraSmall)
         LottoMateButtonProperty.Shape.ROUND -> RoundedCornerShape(60.dp)
+        LottoMateButtonProperty.Shape.ROUND_SMALL -> RoundedCornerShape(Dimens.RadiusExtraSmall)
     }
 
     Surface(
@@ -375,7 +376,8 @@ private fun LottoMateDialogButton(
         border = buttonBorder,
         shape = when (buttonShape) {
             LottoMateButtonProperty.Shape.NORMAL -> RoundedCornerShape(Dimens.RadiusSmall)
-            LottoMateButtonProperty.Shape.SMALL_ROUND -> RoundedCornerShape(Dimens.RadiusExtraSmall)
+            LottoMateButtonProperty.Shape.NORMAL_XSMALL -> RoundedCornerShape(Dimens.RadiusExtraSmall)
+            LottoMateButtonProperty.Shape.ROUND_SMALL -> RoundedCornerShape(Dimens.RadiusExtraSmall)
             LottoMateButtonProperty.Shape.ROUND -> RoundedCornerShape(60.dp)
         },
         enabled = enabled,
@@ -396,7 +398,7 @@ private fun LottoMateDialogButton(
 
 sealed interface LottoMateButtonProperty {
     enum class Shape {
-        NORMAL, SMALL_ROUND, ROUND,
+        NORMAL, NORMAL_XSMALL, ROUND, ROUND_SMALL,
     }
 
     enum class Size {
@@ -471,7 +473,7 @@ private fun LottoMateOutlineButtonPreview() {
                 text = "확인",
                 buttonSize = LottoMateButtonProperty.Size.XSMALL,
                 buttonType = LottoMateButtonProperty.Type.ACTIVE,
-                buttonShape = LottoMateButtonProperty.Shape.NORMAL,
+                buttonShape = LottoMateButtonProperty.Shape.NORMAL_XSMALL,
                 onClick = {}
             )
 

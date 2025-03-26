@@ -10,14 +10,12 @@ import android.os.Build
  */
 class ClipboardUtils {
     companion object {
-        fun copyToClipboard(context: Context, copyText: String) {
+        fun copyToClipboard(context: Context, copyText: String, onSuccess: () -> Unit,) {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                clipboard.clearPrimaryClip()
-            }
-
             clipboard.setPrimaryClip(ClipData.newPlainText("Copied Text", copyText))
+
+            // API 33 이하일 경우, 스낵바 표시
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) onSuccess()
         }
     }
 }

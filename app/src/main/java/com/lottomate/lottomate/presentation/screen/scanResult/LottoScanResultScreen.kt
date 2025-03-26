@@ -46,6 +46,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.DateUtils
 import com.lottomate.lottomate.utils.StringUtils
 import kotlinx.coroutines.flow.collectLatest
+import java.util.Calendar
 
 @Composable
 fun LottoScanResultRoute(
@@ -188,10 +189,10 @@ private fun LottoScanResultNotYet(
             )
 
             // 남은 일수
-            val daysLeft = if (DateUtils.getDaysUntilNextSaturday() == 0) {
+            val daysLeft = if (DateUtils.getDaysUntilNextDay(Calendar.SATURDAY) == 0) {
                 val time = DateUtils.getHoursUntilTargetTime(20, 45)
                 time.toString().plus("시간")
-            } else DateUtils.getDaysUntilNextSaturday().toString().plus("일")
+            } else DateUtils.getDaysUntilNextDay(Calendar.SATURDAY).toString().plus("일")
 
             val message = pluralStringResource(id = R.plurals.lotto_result_days_left, count = 1, daysLeft)
 

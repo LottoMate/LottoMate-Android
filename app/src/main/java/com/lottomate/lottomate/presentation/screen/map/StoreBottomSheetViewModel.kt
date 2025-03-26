@@ -46,10 +46,11 @@ class StoreBottomSheetViewModel @Inject constructor(
 
     fun copyStoreInfo(context: Context, store: StoreInfo, onSuccess: (String) -> Unit) {
         val copyText = "지점명: ${store.storeName}\n주소: ${store.address}"
-        ClipboardUtils.copyToClipboard(context, copyText)
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            onSuccess("로또 판매점 주소를 복사했어요")
-        }
+        ClipboardUtils.copyToClipboard(
+            context = context,
+            copyText = copyText,
+            onSuccess = { onSuccess("로또 판매점 주소를 복사했어요") }
+        )
     }
 }

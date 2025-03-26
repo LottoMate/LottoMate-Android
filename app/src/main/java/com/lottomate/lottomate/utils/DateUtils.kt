@@ -13,12 +13,15 @@ object DateUtils {
 
     /**
      * 오늘로부터 다음 로또 추첨일까지의 일수를 계산합니다.
+     *
+     * @param day: 계산을 원하는 요일
+     * ex) 토 : Calendar.SATURDAY
      */
-    fun getDaysUntilNextSaturday(): Int {
+    fun getDaysUntilNextDay(day: Int): Int {
         val today = Calendar.getInstance()
 
         // 오늘의 요일을 기준으로 다음 토요일을 계산
-        val daysToSaturday = (Calendar.SATURDAY - today[Calendar.DAY_OF_WEEK] + 7) % 7
+        val daysToSaturday = (day - today[Calendar.DAY_OF_WEEK] + 7) % 7
         today.add(Calendar.DAY_OF_YEAR, daysToSaturday)
 
         // 남은 일수 계산

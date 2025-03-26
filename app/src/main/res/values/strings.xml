@@ -51,30 +51,56 @@
     <string name="pocket_top_app_bar_title">로또 보관소</string>
     <string name="pocket_title_processing">오늘의 랜덤 번호를\n뽑는 중이에요</string>
     <string name="pocket_title_complete">오늘의 랜덤 번호를\n확인하세요!</string>
-    <string name="pocket_title_random_number">오늘의 행운을 뽑아보세요</string>
-    <string name="pocket_title_sub_random_number">행운의 랜덤 뽑기</string>
+    <string name="pocket_text_random_number">오늘의 행운을 뽑아보세요</string>
+    <string name="pocket_text_sub_random_number">행운의 랜덤 뽑기</string>
+    <string name="pocket_text_random_number_caption">무제한으로 뽑을 수 있어요</string>
+
+    <plurals name="pocket_text_random_number_not_empty">
+        <item quantity="one">오늘 %s번째 돌렸어요</item>
+        <item quantity="other">오늘 %s번째 돌렸어요</item>
+    </plurals>
+
     <string name="pocket_title_today_draw_lotto">오늘 뽑은 번호</string>
-    <string name="pocket_title_sub_today_draw_lotto">오늘이 지나면 뽑은 번호가 사라집니다.</string>
+    <string name="pocket_title_sub_today_draw_lotto">오늘이 지나면 뽑은 번호는 사라져요</string>
     <string name="pocket_title_my_number_left">당첨 결과를\n빠르게 확인하려면?</string>
     <string name="pocket_title_my_number_right">내 로또 번호를\n저장하려면?</string>
-    <string name="pocket_title_my_number_situation">내 로또 현황</string>
-    <string name="pocket_title_my_number_possible_check">지금 당첨 확인 가능한</string>
-    <string name="pocket_title_my_number_before_draw">아직 당첨 발표 전인</string>
+    <string name="pocket_text_my_number_situation">내 로또 현황</string>
+    <string name="pocket_text_my_number_possible_check">지금 바로\n당첨 확인 가능한</string>
+    <string name="pocket_text_my_number_before_draw">아직\n당첨 발표 전인</string>
     <string name="pocket_title_my_number_history">내 로또 내역</string>
-<!--    <string name="pocket_title_my_number_middle_bottom">내 로또 $2d개</string>-->
-    <plurals name="pocket_title_my_number_middle_bottom">
-        <item quantity="one">내 로또 %2d개</item>
-        <item quantity="other">내 로또 %2d개</item>
+    <string name="pocket_title_my_number_history_empty">아직 저장한 내 로또가 없어요</string>
+    <string name="pocket_title_random_number_save">저장한 번호</string>
+    <string name="pocket_title_sub_random_number_save">내가 저장한 행운 번호를 확인할 수 있어요</string>
+
+    <plurals name="pocket_text_my_number_situation_my_lotto">
+        <item quantity="one">내 로또 %s개</item>
+        <item quantity="other">내 로또 %s개</item>
     </plurals>
     
     <string name="pocket_text_empty_draw_lotto">아직 저장된 내 로또가 없어요.</string>
     <string name="pocket_text_my_number_scan">QR 스캔하기</string>
     <string name="pocket_text_my_number_save_number">번호 등록하기</string>
-    <string name="pocket_text_my_number_notice">로또 당첨 발표까지 $d일 남았어요.</string>
-    <string name="pocket_text_my_number_notice2">연금복권 당첨 발표까지 $d일 남았어요.</string>
+    <plurals name="pocket_text_my_number_notice_645">
+        <item quantity="one">로또 당첨 발표까지 %1d일 남았어요</item>
+        <item quantity="other">로또 당첨 발표까지 %1d일 남았어요</item>
+    </plurals>
+
+    <plurals name="pocket_text_my_number_notice_720">
+        <item quantity="one">연금복권 당첨 발표까지 %1d일 남았어요</item>
+        <item quantity="other">연금복권 당첨 발표까지 %1d일 남았어요</item>
+    </plurals>
+    <string name="pocket_text_my_number_notice_keyword">오늘</string>
+    <string name="pocket_text_my_number_notice_645_today">로또 당첨 발표는 오늘 이에요!</string>
+    <string name="pocket_text_my_number_notice_720_today">연금복권 당첨 발표는 오늘 이에요!</string>
     <string name="pocket_text_my_number_notice_caption">역대 당첨금 확인하기</string>
-    <string name="pocket_text_my_number_history">%4d년 $2d월부터 로또를 총 %2d개 구매했어요.</string>
-    <string name="pocket_text_my_number_history2">당첨 $d개 미당첨 $d개로 내 당첨률은 %2d\%이에요.</string>
+    <plurals name="pocket_text_my_number_history">
+        <item quantity="one">%4d년 %2d월부터 로또를 총 %2d개 구매했어요</item>
+        <item quantity="other">%4d년 %2d월부터 로또를 총 %2d개 구매했어요</item>
+    </plurals>
+    <plurals name="pocket_text_my_number_history_rate">
+        <item quantity="one">당첨 %d개 미당첨 %d개로 내 당첨률은 %s 이에요</item>
+        <item quantity="other">당첨 %d개 미당첨 %d개로 내 당첨률은 %s 이에요</item>
+    </plurals>
     <string name="pocket_text_my_number_history_round">회차</string>
     <string name="pocket_text_my_number_history_edit">편집</string>
     <string name="pocket_text_my_number_history_win">당첨</string>

@@ -8,9 +8,11 @@ import androidx.navigation.compose.composable
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
+import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScan
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
+import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 
 fun NavController.navigateToPocketTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Pocket, navOptions)
@@ -32,6 +34,8 @@ fun NavGraphBuilder.pocketNavGraph(
     composable<BottomTabRoute.Pocket> {
         PocketRoute(
             padding = padding,
+            moveToLottoScan = { navController.navigateToLottoScan() },
+            moveToSetting = { navController.navigateToSetting() },
             onShowErrorSnackBar = onShowErrorSnackBar,
             onClickDrawRandomNumbers = { navController.navigateToDrawRandomNumbers() },
             onClickStorageOfRandomNumbers = { navController.navigateToRandomNumberStorage() }

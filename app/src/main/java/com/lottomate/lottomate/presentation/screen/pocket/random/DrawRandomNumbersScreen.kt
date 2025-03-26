@@ -1,33 +1,28 @@
 package com.lottomate.lottomate.presentation.screen.pocket.random
 
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +30,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.ImageLoader
+import coil.compose.SubcomposeAsyncImage
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
+import coil.request.ImageRequest
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
@@ -45,7 +49,6 @@ import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
-import com.lottomate.lottomate.presentation.ui.LottoMateGray60
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.flow.collectLatest
@@ -84,10 +87,6 @@ private fun DrawRandomNumbersScreen(
     snackBarHostState: SnackbarHostState,
     onClickComplete: () -> Unit,
 ) {
-    val density = LocalDensity.current
-    var bottomCompleteBtnHeight by remember { mutableIntStateOf(0) }
-    val bottomCompleteBtnHeightDp = with (density) { bottomCompleteBtnHeight.toDp() }
-
     Scaffold(
         containerColor = LottoMateWhite,
     ) { innerPadding ->
@@ -103,77 +102,52 @@ private fun DrawRandomNumbersScreen(
                     .align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                LottoMateText(
-                    text = if (uiState is DrawRandomNumbersUiState.Loading) stringResource(id = R.string.pocket_title_processing)
-                    else stringResource(id = R.string.pocket_title_complete),
-                    style = LottoMateTheme.typography.title2,
-                    textAlign = TextAlign.Center,
-                )
+                when (uiState) {
+                    DrawRandomNumbersUiState.Loading -> GeneratingRandomNumbersScreen()
 
-                Spacer(modifier = Modifier.height(36.dp))
+                    is DrawRandomNumbersUiState.Success -> {
+                        val numbers = uiState.randomNumbers
 
-                Image(
-                    painter = painterResource(id = R.drawable.pocket_venus_boli_bori_2),
-                    contentDescription = stringResource(id = R.string.desc_pocket_image),
-                )
+                        LottoMateText(
+                            text = stringResource(id = R.string.pocket_title_complete),
+                            style = LottoMateTheme.typography.title2,
+                            textAlign = TextAlign.Center,
+                        )
 
-                Spacer(modifier = Modifier.height(36.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.img_pocket_random_number_complete),
+                            contentDescription = stringResource(id = R.string.desc_pocket_image),
+                            modifier = Modifier
+                                .padding(top = 42.dp)
+                                .size(260.dp),
+                        )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .padding(horizontal = Dimens.DefaultPadding20)
-                        .background(LottoMateGray10, RoundedCornerShape(60.dp)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Row(modifier = Modifier.padding(vertical = 12.dp, horizontal = 37.dp)) {
-                        when (uiState) {
-                            DrawRandomNumbersUiState.Loading -> {
-                                // TODO : 로띠 전달받으면 수정 예정
-                                Box(
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .background(LottoMateGray60, CircleShape)
+                        Box(
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(top = 48.dp)
+                                .padding(horizontal = Dimens.DefaultPadding20)
+                                .background(
+                                    color = LottoMateGray10,
+                                    shape = RoundedCornerShape(60.dp)
                                 )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Box(
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .background(LottoMateGray60, CircleShape)
-                                )
-
-                                Spacer(modifier = Modifier.width(8.dp))
-
-                                Box(
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .background(LottoMateGray60, CircleShape)
-                                )
-                            }
-
-                            is DrawRandomNumbersUiState.Success -> {
-                                val numbers = uiState.randomNumbers
-
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                ) {
-                                    numbers.forEach { num ->
-                                        LottoBall645(
-                                            number = num,
-                                            size = 28.dp
-                                        )
-                                    }
+                                .padding(vertical = 12.dp, horizontal = 37.dp),
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .padding(vertical = 4.dp),
+                            ) {
+                                numbers.forEachIndexed { index, num ->
+                                    LottoBall645(
+                                        number = num,
+                                        size = 28.dp,
+                                        modifier = Modifier.padding(start = if (index == 0) 0.dp else 8.dp),
+                                    )
                                 }
                             }
                         }
                     }
                 }
-                
-                Spacer(modifier = Modifier.height(74.dp))
             }
 
             if (uiState is DrawRandomNumbersUiState.Success) {
@@ -184,27 +158,81 @@ private fun DrawRandomNumbersScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = Dimens.DefaultPadding20)
-                        .align(Alignment.BottomCenter)
-                        .onSizeChanged {
-                            bottomCompleteBtnHeight = it.height
-                        }
+                        .padding(bottom = 36.dp)
+                        .align(Alignment.BottomCenter),
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        bottom = bottomCompleteBtnHeightDp.plus(14.dp),
-                    ),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                snackBarHostState.currentSnackbarData?.let {
-                    LottoMateSnackBarHost(snackBarHostState = snackBarHostState) {
-                        LottoMateSnackBar(message = it.visuals.message)
-                    }
+            snackBarHostState.currentSnackbarData?.let {
+                LottoMateSnackBarHost(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    snackBarHostState = snackBarHostState
+                ) {
+                    LottoMateSnackBar(
+                        modifier = Modifier
+                            .padding(top = Dimens.BaseTopPadding.plus(12.dp)),
+                        message = it.visuals.message
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun GeneratingRandomNumbersScreen() {
+    val context = LocalContext.current
+
+    // TODO : .gif -> 로띠로 수정 예정
+    val lottieComposition by rememberLottieComposition(spec = LottieCompositionSpec.Asset("lottie_sample.json"))
+    val lottieProgress by animateLottieCompositionAsState(
+        composition = lottieComposition,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = true,
+    )
+
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    add(ImageDecoderDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
+            }
+            .build()
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        LottoMateText(
+            text = stringResource(id = R.string.draw_random_number_title_loading),
+            style = LottoMateTheme.typography.title2,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Box(
+            modifier = Modifier.padding(top = 16.dp),
+        ) {
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data("file:///android_asset/gif_pocket_random_number.gif")
+                    .build(),
+                imageLoader = imageLoader,
+                contentDescription = null,
+                modifier = Modifier.size(width = 262.dp, height = 284.dp),
+            )
+
+            Image(
+                bitmap = ImageBitmap.imageResource(id = R.drawable.img_pocket_random_number_draw),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 14.dp)
+                    .size(180.dp)
+            )
         }
     }
 }
@@ -213,7 +241,7 @@ private fun DrawRandomNumbersScreen(
 @Composable
 private fun DrawRandomNumbersScreenPreview() {
     DrawRandomNumbersScreen(
-        uiState = DrawRandomNumbersUiState.Success(listOf(1, 2, 3, 4, 5, 6, 7)),
+        uiState = DrawRandomNumbersUiState.Success(listOf(1, 2, 3, 4, 5, 6)),
         snackBarHostState = SnackbarHostState(),
         onClickComplete = {}
     )

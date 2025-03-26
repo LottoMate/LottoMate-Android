@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -49,6 +47,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun PocketRoute(
     vm: PocketViewModel = hiltViewModel(),
     padding: PaddingValues,
+    moveToLottoScan: () -> Unit,
+    moveToSetting: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
@@ -72,7 +72,7 @@ fun PocketRoute(
     }
 
     PocketScreen(
-        padding = padding,
+        modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
         currentTabIndex = currentTabIndex,
         drewRandomNumbers = drewRandomNumbers,
         snackBarHostState = snackBarHostState,
@@ -80,13 +80,15 @@ fun PocketRoute(
         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
         onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
-        onClickSaveRandomNumbers = {  },
+        onClickSaveRandomNumbers = { vm.saveDrewRandomNumber(it) },
+        onClickQRScan = moveToLottoScan,
+        onClickSetting = moveToSetting,
     )
 }
 
 @Composable
 private fun PocketScreen(
-    padding: PaddingValues,
+    modifier: Modifier = Modifier,
     currentTabIndex: Int,
     drewRandomNumbers: List<List<Int>>,
     snackBarHostState: SnackbarHostState,
@@ -95,41 +97,39 @@ private fun PocketScreen(
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
+    onClickQRScan: () -> Unit,
+    onClickSetting: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
-            .padding(bottom = padding.calculateBottomPadding())
             .background(LottoMateWhite),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(top = Dimens.BaseTopPadding),
         ) {
-            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
-
             TopTabMenus(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(top = 24.dp),
                 currentTabIndex = currentTabIndex,
                 onClickTabMenu = onClickTabMenu,
             )
 
             when (currentTabIndex) {
                 0 -> {
-                    Spacer(modifier = Modifier.height(24.dp))
-
                     MyNumberContent(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClickQRScan = {},
+                        modifier = Modifier.padding(top = 24.dp),
+                        onClickQRScan = onClickQRScan,
                         onClickSaveNumbers = {},
+                        onClickLottoInfo = {},
+                        onClickBanner = {},
                     )
                 }
                 1 -> {
-                    Spacer(modifier = Modifier.height(32.dp))
-
                     RandomNumberContent(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.padding(top = 32.dp),
                         drewRandomNumbers = drewRandomNumbers,
                         onClickDrawRandomNumbers = onClickDrawRandomNumbers,
                         onClickStorageOfRandomNumbers = onClickStorageOfRandomNumbers,
@@ -140,6 +140,19 @@ private fun PocketScreen(
             }
         }
 
+        snackBarHostState.currentSnackbarData?.let {
+            LottoMateSnackBarHost(
+                modifier = Modifier.align(Alignment.TopCenter),
+                snackBarHostState = snackBarHostState
+            ) {
+                LottoMateSnackBar(
+                    modifier = Modifier
+                        .padding(top = Dimens.BaseTopPadding.plus(12.dp)),
+                    message = it.visuals.message
+                )
+            }
+        }
+
         LottoMateTopAppBar(
             titleRes = R.string.pocket_top_app_bar_title,
             hasNavigation = false,
@@ -147,22 +160,10 @@ private fun PocketScreen(
                 Icon(
                     painter = painterResource(id = R.drawable.icon_setting),
                     contentDescription = stringResource(id = R.string.desc_setting_icon),
-                    modifier = Modifier.noInteractionClickable {  }
+                    modifier = Modifier.noInteractionClickable { onClickSetting() }
                 )
             }
         )
-
-        // TODO : SnackBar 위치 수정 예정
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter,
-        ) {
-            snackBarHostState.currentSnackbarData?.let {
-                LottoMateSnackBarHost(snackBarHostState = snackBarHostState) {
-                    LottoMateSnackBar(message = it.visuals.message)
-                }
-            }
-        }
     }
 }
 
@@ -175,9 +176,7 @@ private fun TopTabMenus(
     val tabMenus = stringArrayResource(id = R.array.pocket_tab_menu)
 
     Row(
-        modifier = modifier
-            .padding(top = 24.dp)
-            .padding(horizontal = 20.dp),
+        modifier = modifier.padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         tabMenus.forEachIndexed { index, button ->
@@ -221,9 +220,11 @@ private fun PocketScreenPreview() {
     LottoMateTheme {
         PocketRoute(
             padding = PaddingValues(0.dp),
+            moveToLottoScan = {},
+            moveToSetting = {},
             onShowErrorSnackBar = {},
             onClickDrawRandomNumbers = {},
-            onClickStorageOfRandomNumbers = {}
+            onClickStorageOfRandomNumbers = {},
         )
     }
 }
