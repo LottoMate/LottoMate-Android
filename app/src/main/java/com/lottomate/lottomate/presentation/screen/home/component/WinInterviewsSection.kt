@@ -121,6 +121,7 @@ internal fun WinInterviewCardsSection(
                                 style = LottoMateTheme.typography.headline1,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.weight(1f),
                             )
 
                             LottoMateText(
