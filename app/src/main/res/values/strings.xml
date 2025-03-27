@@ -113,11 +113,30 @@
     <string name="pocket_desc_my_number_top_right_image">번호 등록하기 이미지</string>
     <string name="pocket_desc_my_number_notice_caption_icon">역대 당첨금 확인하기 아이콘</string>
 
+    <!-- 라운지 -->
+    <string name="lounge_title">라운지</string>
+    <string name="lounge_interview_text_title">로또 1등 기 받아가요</string>
+    <string name="lounge_interview_text_sub_title">로또 당첨자 인터뷰</string>
+
+    <!-- 랜덤 번호 뽑기 -->
+    <string name="draw_random_number_title_loading">오늘의 랜덤 번호를\n뽑는 중이에요</string>
+    <string name="draw_random_number_title_complete">오늘의 랜덤 번호를\n확인하세요!</string>
+    <string name="draw_random_number_text_complete_snackbar">뽑은 번호는 오늘 뽑은 번호에서 확인할 수 있어요</string>
+
     <!-- 로또 결과 -->
     <plurals name="lotto_result_days_left">
         <item quantity="one">당첨 발표일까지 %s 남았어요</item>
         <item quantity="other">당첨 발표일까지 %s 남았어요</item>
     </plurals>
+
+    <!-- 당첨자 가이드 -->
+    <string name="guide_title">당첨자 가이드</string>
+    <string name="guide_top_notice_content01">당첨 결과 발표 후부터</string>
+    <string name="guide_top_notice_content02">1년 내로</string>
+    <string name="guide_top_notice_content03">당첨금을 찾아야 해요</string>
+    <string name="guide_top_notice_content04">정해진 기간이 지나면 받을 수 없으니 꼭 주의하세요</string>
+    <string name="guide_top_notice_sub_content">지급 마지막 날짜가 공휴일 또는 주말일 경우 다음날까지 찾아갈 수\n있어요. 수령하지 않은 당첨금은 복권기금으로 포함됩니다.</string>
+
 
     <!-- 로그인 -->
     <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
