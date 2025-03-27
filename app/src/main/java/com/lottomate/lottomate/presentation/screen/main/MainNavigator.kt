@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHomeTab
+import com.lottomate.lottomate.presentation.screen.lounge.navigation.navigateToLoungeTab
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigateToPocketTab
 
@@ -44,7 +45,7 @@ class MainNavigator(
             MainBottomTab.HOME -> navController.navigateToHomeTab(navOptions)
             MainBottomTab.MAP -> navController.navigateToMapTab(navOptions)
             MainBottomTab.POCKET -> navController.navigateToPocketTab(navOptions)
-            MainBottomTab.LOUNGE -> {}
+            MainBottomTab.LOUNGE -> navController.navigateToLoungeTab(navOptions)
         }
     }
 }
