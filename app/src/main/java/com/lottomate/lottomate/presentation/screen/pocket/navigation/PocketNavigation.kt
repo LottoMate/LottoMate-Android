@@ -12,7 +12,7 @@ import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLot
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
-import com.lottomate.lottomate.presentation.screen.pocket.savenumber.SaveNumbersRoute
+import com.lottomate.lottomate.presentation.screen.pocket.register.RegisterLottoNumbersRoute
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 
 fun NavController.navigateToPocketTab(navOptions: NavOptions) {
@@ -65,7 +65,7 @@ fun NavGraphBuilder.pocketNavGraph(
     }
 
     composable<LottoMateRoute.RegisterLottoNumber> {
-        SaveNumbersRoute(
+        RegisterLottoNumbersRoute(
             padding = padding,
             onBackPressed = { navController.navigateUp() },
         )
