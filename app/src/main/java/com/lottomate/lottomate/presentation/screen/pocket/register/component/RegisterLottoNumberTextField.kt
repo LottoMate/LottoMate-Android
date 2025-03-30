@@ -53,7 +53,7 @@ fun RegisterLottoNumberTextField(
         },
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Number,
+            keyboardType = KeyboardType.NumberPassword,
         ),
         keyboardActions = KeyboardActions(
             onDone = { focusManager.clearFocus() },

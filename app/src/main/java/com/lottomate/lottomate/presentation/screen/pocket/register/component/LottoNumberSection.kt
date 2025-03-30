@@ -25,7 +25,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.pocket.register.RegisterLottoNumber
+import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumber
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
