@@ -19,13 +19,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.ui.LottoMateGray120
+import com.lottomate.lottomate.presentation.ui.LottoMateGray140
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.presentation.ui.stunningFontFamily
 import kotlinx.coroutines.delay
 
 @Composable
@@ -70,15 +75,16 @@ private fun IntroScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             LottoMateText(
-                text = "행운을 불러오는",
+                text = stringResource(id = R.string.intro_title),
                 style = LottoMateTheme.typography.title3
                     .copy(color = LottoMateGray120),
             )
 
             LottoMateText(
-                text = "LottoMate",
-                style = LottoMateTheme.typography.title1
-                    .copy(color = LottoMateGray120),
+                text = stringResource(id = R.string.intro_title_app_name),
+                fontFamily = stunningFontFamily,
+                fontSize = 40.sp,
+                color = LottoMateGray140,
                 modifier = Modifier.padding(top = 2.dp)
             )
 
@@ -88,5 +94,13 @@ private fun IntroScreen() {
                     .size(180.dp))
 
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun IntroScreenPreview() {
+    LottoMateTheme {
+        IntroScreen()
     }
 }
