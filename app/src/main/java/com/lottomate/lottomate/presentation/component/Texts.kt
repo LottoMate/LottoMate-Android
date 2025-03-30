@@ -47,23 +47,13 @@ fun LottoMateText(
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
 ) {
-//    val textStyle: LottoMateTextStyle = lottoMateTextStyle(style = style)
-//    val baselineModifier = if (textStyle != LottoMateTextStyle.UNSPECIFIED) {
-//        val top = textStyle.firstBaseLineToTop.value.dp
-//        val bottom = textStyle.lastBaseLineToBottom.value.dp
-//        Modifier.paddingFromBaseline(top = top, bottom = bottom)
-//    } else {
-//        Modifier
-//    }
-
     val size = with(LocalDensity.current) { style.fontSize.value.dp.toSp() }
 
     Text(
         text = text,
-//        modifier = modifier.then(baselineModifier),
         modifier = modifier,
         color = color,
-        fontSize = size,
+        fontSize = fontFamily?.let { fontSize } ?: run { size },
         fontStyle = fontStyle,
         fontWeight = fontWeight,
         fontFamily = fontFamily,
@@ -98,23 +88,13 @@ fun LottoMateAnnotatedText(
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
 ) {
-//    val textStyle: LottoMateTextStyle = lottoMateTextStyle(style = style)
-//    val baselineModifier = if (textStyle != LottoMateTextStyle.UNSPECIFIED) {
-//        val top = textStyle.firstBaseLineToTop.value.dp
-//        val bottom = textStyle.lastBaseLineToBottom.value.dp
-//        Modifier.paddingFromBaseline(top = top, bottom = bottom)
-//    } else {
-//        Modifier
-//    }
-
     val size = with(LocalDensity.current) { style.fontSize.value.dp.toSp() }
-
 
     Text(
         text = annotatedString,
         modifier = modifier,
         color = annotatedString?.let { Color.Unspecified } ?: color,
-        fontSize = size,
+        fontSize = fontFamily?.let { fontSize } ?: size,
         fontStyle = fontStyle,
         fontWeight = fontWeight,
         fontFamily = fontFamily,

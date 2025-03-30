@@ -18,6 +18,10 @@ private val pretendardFontFamily = FontFamily(
     Font(R.font.pretendard_bold, FontWeight.Bold),
 )
 
+val stunningFontFamily = FontFamily(
+    Font(R.font.stunning_bold, FontWeight.Bold),
+)
+
 private val pretendardStyle = TextStyle(
     fontFamily = pretendardFontFamily,
     letterSpacing = (-0.6).sp,
