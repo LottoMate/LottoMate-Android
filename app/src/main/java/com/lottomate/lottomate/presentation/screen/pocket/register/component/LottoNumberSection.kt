@@ -80,6 +80,7 @@ fun LottoNumberSection(
         MiddleLotteryRoundPicker(
             round = round,
             date = date,
+            lotteryType = lotteryType,
             hasPreRound = hasPreRound,
             hasNextRound = hasNextRound,
             onClickNextRound = onClickNextRound,
@@ -168,6 +169,7 @@ private fun MiddleLotteryRoundPicker(
     modifier: Modifier = Modifier,
     round: Int,
     date: String,
+    lotteryType: LottoType,
     hasNextRound: Boolean = false,
     hasPreRound: Boolean = true,
     onClickLottoRoundPicker: () -> Unit,
@@ -219,7 +221,7 @@ private fun MiddleLotteryRoundPicker(
 
         if (!hasPreRound) {
             LottoMateText(
-                text = stringResource(id = R.string.register_lotto_number_text_round_notice),
+                text = stringResource(id = if (lotteryType == LottoType.L645) R.string.register_lotto_number_text_round_notice_645 else R.string.register_lotto_number_text_round_notice_720),
                 style = LottoMateTheme.typography.caption2
                     .copy(color = LottoMateGray70),
             )
