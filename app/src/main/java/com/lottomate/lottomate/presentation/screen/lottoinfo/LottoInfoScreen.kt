@@ -79,6 +79,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow5
+import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -762,7 +763,7 @@ fun BottomSheetDimBackground(
         Box(
             modifier = modifier
                 .background(LottoMateDim1)
-                .clickable { onClick() }
+                .noInteractionClickable { onClick() }
         )
     }
 }
