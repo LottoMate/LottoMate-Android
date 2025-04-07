@@ -37,7 +37,7 @@ class LottoRoundViewModel @Inject constructor(
 
                         lottoRoundRange.value = reversedRounds.mapIndexed { index, round ->
                             if (round > latestRound || round < (latestRound-48)) LatestRoundInfo(0, "")
-                            else LatestRoundInfo(round, DateUtils.calLottoRoundDate(latestDate, index))
+                            else LatestRoundInfo(round, DateUtils.calLottoRoundDate(latestDate, index-1))
                         }.toList()
                     } else {
                         val roundRange = 0..(latestRound+1)
@@ -45,7 +45,7 @@ class LottoRoundViewModel @Inject constructor(
 
                         lottoRoundRange.value = reversedRounds.mapIndexed { index, round ->
                             if (round > latestRound || round < LOTTO_FIRST_ROUND) LatestRoundInfo(0, "")
-                            else LatestRoundInfo(round, DateUtils.calLottoRoundDate(latestDate, index))
+                            else LatestRoundInfo(round, DateUtils.calLottoRoundDate(latestDate, index-1))
                         }.toList().reversed()
                     }
 
