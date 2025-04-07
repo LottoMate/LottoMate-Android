@@ -7,7 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -85,6 +87,7 @@ fun LottoNumberSection(
             onClickLottoRoundPicker = { onClickLottoRoundPicker(lotteryType) },
         )
 
+        Spacer(modifier = Modifier.height(32.dp))
 
         for (i in inputNumbers.indices) {
             RegisterLottoNumberTextField(
@@ -171,44 +174,56 @@ private fun MiddleLotteryRoundPicker(
     onClickNextRound: () -> Unit,
     onClickPreRound: () -> Unit,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 10.dp)
-            .padding(bottom = 32.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.icon_arrow_small_left),
-            contentDescription = "",
-            tint = if (hasPreRound) LottoMateGray100 else LottoMateGray40,
-            modifier = Modifier.noInteractionClickable { if (hasPreRound) onClickPreRound() }
-        )
-
         Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clickable { onClickLottoRoundPicker() }
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            LottoMateText(
-                text = round.toString().plus("회"),
-                style = LottoMateTheme.typography.headline1,
+            Icon(
+                painter = painterResource(id = R.drawable.icon_arrow_small_left),
+                contentDescription = "",
+                tint = if (hasPreRound) LottoMateGray100 else LottoMateGray40,
+                modifier = Modifier.noInteractionClickable { if (hasPreRound) onClickPreRound() }
             )
 
-            LottoMateText(
-                text = date.replace("-", "."),
-                style = LottoMateTheme.typography.label2
-                    .copy(color = LottoMateGray70),
-                modifier = Modifier.padding(start = 8.dp),
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { onClickLottoRoundPicker() }
+            ) {
+                LottoMateText(
+                    text = round.toString().plus("회"),
+                    style = LottoMateTheme.typography.headline1,
+                )
+
+                LottoMateText(
+                    text = date.replace("-", "."),
+                    style = LottoMateTheme.typography.label2
+                        .copy(color = LottoMateGray70),
+                    modifier = Modifier.padding(start = 8.dp),
+                )
+            }
+
+            Icon(
+                painter = painterResource(id = R.drawable.icon_arrow_small_right),
+                contentDescription = "",
+                tint = if (hasNextRound) LottoMateGray100 else LottoMateGray40,
+                modifier = Modifier.noInteractionClickable { if (hasNextRound) onClickNextRound() }
             )
         }
 
-        Icon(
-            painter = painterResource(id = R.drawable.icon_arrow_small_right),
-            contentDescription = "",
-            tint = if (hasNextRound) LottoMateGray100 else LottoMateGray40,
-            modifier = Modifier.noInteractionClickable { if (hasNextRound) onClickNextRound() }
-        )
+        if (!hasPreRound) {
+            LottoMateText(
+                text = stringResource(id = R.string.register_lotto_number_text_round_notice),
+                style = LottoMateTheme.typography.caption2
+                    .copy(color = LottoMateGray70),
+            )
+        }
     }
 }
 
