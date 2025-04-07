@@ -62,6 +62,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.utils.DateUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,10 @@ fun RegisterLottoNumbersRoute(
     val latestLottoRoundInfo by vm.latestLottoRoundInfo.collectAsState()
     var currentLotto645Round by remember { mutableStateOf(latestLottoRoundInfo.getValue(LottoType.L645.num)) }
     var currentLotto720Round by remember { mutableStateOf(latestLottoRoundInfo.getValue(LottoType.L720.num)) }
+    val hasLotto645PreRound by vm.hasLotto645PreRound
+    val hasLotto645NextRound by vm.hasLotto645NextRound
+    val hasLotto720PreRound by vm.hasLotto720PreRound
+    val hasLotto720NextRound by vm.hasLotto720NextRound
 
     LaunchedEffect(true) {
         vm.snackBarFlow.collectLatest { snackBarHostState.showSnackbar(it) }
@@ -89,14 +94,37 @@ fun RegisterLottoNumbersRoute(
         pickerState = pickerState,
         lotto645RoundInfo = currentLotto645Round,
         lotto720RoundInfo = currentLotto720Round,
+        hasLotto645PreRound = hasLotto645PreRound,
+        hasLotto645NextRound = hasLotto645NextRound,
+        hasLotto720PreRound = hasLotto720PreRound,
+        hasLotto720NextRound = hasLotto720NextRound,
         onClickRegister = { lotto645, lotto720 ->
             val msg = context.getString(R.string.register_lotto_number_text_complete)
             vm.sendSnackBarMsg(msg)
         },
         onChangeLottoRound = { lottoType ->
             when (lottoType) {
-                LottoType.L645 -> currentLotto645Round = pickerState.selectedItem
-                LottoType.L720 -> currentLotto720Round = pickerState.selectedItem
+                LottoType.L645 -> {
+                    currentLotto645Round = pickerState.selectedItem
+                    vm.judgePreOrNextLottoRound(lottoType, currentLotto645Round.round)
+                }
+                LottoType.L720 -> {
+                    currentLotto720Round = pickerState.selectedItem
+                    vm.judgePreOrNextLottoRound(lottoType, currentLotto720Round.round)
+                }
+                else -> {}
+            }
+        },
+        onClickPreOrNextLottoRound = { type, roundInfo ->
+            when (type) {
+                LottoType.L645 -> {
+                    currentLotto645Round = roundInfo
+                    vm.judgePreOrNextLottoRound(type, currentLotto645Round.round)
+                }
+                LottoType.L720 -> {
+                    currentLotto720Round = roundInfo
+                    vm.judgePreOrNextLottoRound(type, currentLotto720Round.round)
+                }
                 else -> {}
             }
         },
@@ -110,10 +138,15 @@ private fun RegisterLottoNumbersScreen(
     modifier: Modifier = Modifier,
     lotto645RoundInfo: LatestRoundInfo,
     lotto720RoundInfo: LatestRoundInfo,
+    hasLotto645PreRound: Boolean,
+    hasLotto645NextRound: Boolean,
+    hasLotto720PreRound: Boolean,
+    hasLotto720NextRound: Boolean,
     pickerState: PickerState,
     snackBarHostState: SnackbarHostState,
     onBackPressed: () -> Unit,
     onChangeLottoRound: (LottoType) -> Unit,
+    onClickPreOrNextLottoRound: (LottoType, LatestRoundInfo) -> Unit,
     onClickRegister: (List<RegisterLottoNumber>, List<RegisterLottoNumber>) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -122,8 +155,6 @@ private fun RegisterLottoNumbersScreen(
 
     val inputLotto645Numbers = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
     val inputLotto720Numbers = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
-    var showLottoRoundPicker by remember { mutableStateOf(false) }
-    val scaffoldState = rememberBottomSheetScaffoldState()
     var selectLottoType by remember { mutableStateOf(LottoType.L645) }
 
     BottomSheetScaffold(
@@ -191,6 +222,8 @@ private fun RegisterLottoNumbersScreen(
                         round = lotto645RoundInfo.round,
                         date = lotto645RoundInfo.drawDate,
                         inputNumbers = inputLotto645Numbers,
+                        hasPreRound = hasLotto645PreRound,
+                        hasNextRound = hasLotto645NextRound,
                         onAddNewInputNumber = { inputLotto645Numbers.add(0, RegisterLottoNumber.EMPTY) },
                         onRemoveInputNumber = { index -> inputLotto645Numbers.removeAt(index) },
                         onChangeInputNumber = { index, number -> inputLotto645Numbers[index] = inputLotto645Numbers[index].copy(lottoNumbers = number) },
@@ -200,8 +233,12 @@ private fun RegisterLottoNumbersScreen(
 
                             coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
                         },
-                        onClickNextRound = {},
-                        onClickPreRound = {},
+                        onClickNextRound = {
+                            onClickPreOrNextLottoRound(LottoType.L645, LatestRoundInfo(lotto645RoundInfo.round+1, DateUtils.calLottoRoundDate(lotto645RoundInfo.drawDate.replace("-", "."), 1, true)))
+                        },
+                        onClickPreRound = {
+                            onClickPreOrNextLottoRound(LottoType.L645, LatestRoundInfo(lotto645RoundInfo.round-1, DateUtils.calLottoRoundDate(lotto645RoundInfo.drawDate.replace("-", "."), 1)))
+                        },
                     )
 
                     Box(modifier = Modifier
@@ -217,6 +254,8 @@ private fun RegisterLottoNumbersScreen(
                         round = lotto720RoundInfo.round,
                         date = lotto720RoundInfo.drawDate,
                         inputNumbers = inputLotto720Numbers,
+                        hasPreRound = hasLotto720PreRound,
+                        hasNextRound = hasLotto720NextRound,
                         onAddNewInputNumber = { inputLotto720Numbers.add(0, RegisterLottoNumber.EMPTY) },
                         onRemoveInputNumber = { index -> inputLotto720Numbers.removeAt(index) },
                         onChangeInputNumber = { index, number -> inputLotto720Numbers[index] = inputLotto720Numbers[index].copy(lottoNumbers = number) },
@@ -226,8 +265,12 @@ private fun RegisterLottoNumbersScreen(
 
                             coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
                         },
-                        onClickNextRound = {},
-                        onClickPreRound = {},
+                        onClickNextRound = {
+                            onClickPreOrNextLottoRound(LottoType.L720, LatestRoundInfo(lotto720RoundInfo.round+1, DateUtils.calLottoRoundDate(lotto720RoundInfo.drawDate.replace("-", "."), 1, true)))
+                        },
+                        onClickPreRound = {
+                            onClickPreOrNextLottoRound(LottoType.L720, LatestRoundInfo(lotto720RoundInfo.round-1, DateUtils.calLottoRoundDate(lotto720RoundInfo.drawDate.replace("-", "."), 1)))
+                        },
                     )
                 }
             }
@@ -345,8 +388,13 @@ private fun RegisterLottoNumberScreenPreview() {
             pickerState = pickerState,
             lotto645RoundInfo = LatestRoundInfo(0, ""),
             lotto720RoundInfo = LatestRoundInfo(0, ""),
+            hasLotto645PreRound = true,
+            hasLotto645NextRound = false,
+            hasLotto720PreRound = true,
+            hasLotto720NextRound = false,
             onClickRegister = { _, _ -> },
             onChangeLottoRound = {},
+            onClickPreOrNextLottoRound = { _, _ -> },
             onBackPressed = {},
         )
     }

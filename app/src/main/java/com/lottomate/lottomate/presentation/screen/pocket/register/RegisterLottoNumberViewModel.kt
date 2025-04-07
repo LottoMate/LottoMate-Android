@@ -3,15 +3,14 @@ package com.lottomate.lottomate.presentation.screen.pocket.register
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,38 +20,32 @@ class RegisterLottoNumberViewModel @Inject constructor(
 ) : ViewModel() {
     val latestLottoRoundInfo: StateFlow<Map<Int, LatestRoundInfo>>
         get() = lottoInfoRepository.latestLottoRoundInfo
-    var hasPreLottoRound = mutableStateOf(true)
+    var hasLotto645PreRound = mutableStateOf(true)
         private set
-    var hasNextLottoRound = mutableStateOf(false)
+    var hasLotto645NextRound = mutableStateOf(false)
         private set
-
-    private var _lottoRoundUiState = MutableStateFlow(LottoRoundUiState.Loading)
-    val lottoRoundUiState: StateFlow<LottoRoundUiState> get() = _lottoRoundUiState.asStateFlow()
+    var hasLotto720PreRound = mutableStateOf(true)
+        private set
+    var hasLotto720NextRound = mutableStateOf(false)
+        private set
 
     private var _snackBarFlow = MutableSharedFlow<String>()
     val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
 
-    private fun judgePreOrNextLottoRound(lottoRndNum: Int) {
-//        val currentLottoType = LottoType.findLottoType(currentTabMenu.intValue).num
-        val latestLottoRound = lottoInfoRepository.allLatestLottoRound.getValue(lottoRndNum)
+    fun judgePreOrNextLottoRound(lotteryType: LottoType, lottoRndNum: Int) {
+        val latestLottoRound = latestLottoRoundInfo.value.getValue(lotteryType.num)
 
-        hasNextLottoRound.value = lottoRndNum != latestLottoRound
-        hasPreLottoRound.value = lottoRndNum != LOTTO_FIRST_ROUND
-    }
-
-    fun loadLotto645Round() {
-//        viewModelScope.launch {
-//            lottoInfoRepository.fetchLottoInfo(LottoType.L645.num, 1126)
-//                .collectLatest { lottoInfo ->
-//                    lottoInfo.lottoRound?.let { round ->
-//                        judgePreOrNextLottoRound(round)
-//                    }
-//
-//                    _lottoRoundUiState.update {
-//                        LottoRoundUiState.Success(lottoInfo)
-//                    }
-//                }
-//        }
+        when (lotteryType) {
+            LottoType.L645 -> {
+                hasLotto645NextRound.value = lottoRndNum != latestLottoRound.round
+                hasLotto645PreRound.value = lottoRndNum != latestLottoRound.round - REGISTRABLE_ROUND_LIMIT
+            }
+            LottoType.L720 -> {
+                hasLotto720NextRound.value = lottoRndNum != latestLottoRound.round
+                hasLotto720PreRound.value = lottoRndNum != latestLottoRound.round - REGISTRABLE_ROUND_LIMIT
+            }
+            else -> {}
+        }
     }
 
     fun sendSnackBarMsg(message: String) {
@@ -62,7 +55,7 @@ class RegisterLottoNumberViewModel @Inject constructor(
     }
 
     companion object {
-        private const val LOTTO_FIRST_ROUND = 1
+        private const val REGISTRABLE_ROUND_LIMIT = 48
     }
 }
 

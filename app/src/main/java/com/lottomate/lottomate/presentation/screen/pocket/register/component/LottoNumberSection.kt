@@ -39,12 +39,15 @@ fun LottoNumberSection(
     round: Int,
     date: String,
     inputNumbers: List<RegisterLottoNumber>,
+    hasPreRound: Boolean,
+    hasNextRound: Boolean,
     onAddNewInputNumber: () -> Unit,
     onRemoveInputNumber: (Int) -> Unit,
     onChangeInputNumber: (Int, String) -> Unit,
     onChangeReset: (Int) -> Unit,
-    onClickLottoRoundPicker: () -> Unit,
     onClickLottoRoundPicker: (LottoType) -> Unit,
+    onClickNextRound: () -> Unit,
+    onClickPreRound: () -> Unit,
 ) {
     val maxLottoNumberLength = when (lotteryType) {
         LottoType.L645 -> 12
@@ -73,9 +76,12 @@ fun LottoNumberSection(
         }
 
         MiddleLotteryRoundPicker(
-            onClickLottoRoundPicker = onClickLottoRoundPicker,
             round = round,
             date = date,
+            hasPreRound = hasPreRound,
+            hasNextRound = hasNextRound,
+            onClickNextRound = onClickNextRound,
+            onClickPreRound = onClickPreRound,
             onClickLottoRoundPicker = { onClickLottoRoundPicker(lotteryType) },
         )
 
@@ -159,7 +165,11 @@ private fun MiddleLotteryRoundPicker(
     modifier: Modifier = Modifier,
     round: Int,
     date: String,
+    hasNextRound: Boolean = false,
+    hasPreRound: Boolean = true,
     onClickLottoRoundPicker: () -> Unit,
+    onClickNextRound: () -> Unit,
+    onClickPreRound: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -172,7 +182,8 @@ private fun MiddleLotteryRoundPicker(
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_small_left),
             contentDescription = "",
-            tint = LottoMateGray100,
+            tint = if (hasPreRound) LottoMateGray100 else LottoMateGray40,
+            modifier = Modifier.noInteractionClickable { if (hasPreRound) onClickPreRound() }
         )
 
         Row(
@@ -195,7 +206,8 @@ private fun MiddleLotteryRoundPicker(
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_small_right),
             contentDescription = "",
-            tint = LottoMateGray100,
+            tint = if (hasNextRound) LottoMateGray100 else LottoMateGray40,
+            modifier = Modifier.noInteractionClickable { if (hasNextRound) onClickNextRound() }
         )
     }
 }
@@ -211,11 +223,15 @@ private fun Lotto645SectionPreview() {
             round = 1156,
             date = "2025.11.06",
             inputNumbers = inputNumbers,
+            hasPreRound = true,
+            hasNextRound = false,
             onAddNewInputNumber = { inputNumbers.add(0, RegisterLottoNumber.EMPTY)},
             onRemoveInputNumber = { index -> inputNumbers.removeAt(index) },
             onChangeInputNumber = { index, number -> inputNumbers[index] = inputNumbers[index].copy(lottoNumbers = number) },
             onChangeReset = { inputNumbers[it] = inputNumbers[it].copy(lottoNumbers = "", isError = false)},
             onClickLottoRoundPicker = {},
+            onClickNextRound = {},
+            onClickPreRound = {},
         )
     }
 }
@@ -232,11 +248,15 @@ private fun Lotto720SectionPreview() {
             round = 256,
             date = "2025.03.27",
             inputNumbers = inputNumbers720,
+            hasPreRound = true,
+            hasNextRound = false,
             onAddNewInputNumber = { inputNumbers720.add(0, RegisterLottoNumber.EMPTY)},
             onRemoveInputNumber = { index -> inputNumbers720.removeAt(index) },
             onChangeInputNumber = { index, number -> inputNumbers720[index] = inputNumbers720[index].copy(lottoNumbers = number) },
             onChangeReset = { inputNumbers720[it] = inputNumbers720[it].copy(lottoNumbers = "", isError = false)},
             onClickLottoRoundPicker = {},
+            onClickPreRound = {},
+            onClickNextRound = {},
         )
     }
 }
