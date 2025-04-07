@@ -157,6 +157,12 @@ private fun RegisterLottoNumbersScreen(
     val inputLotto720Numbers = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
     var selectLottoType by remember { mutableStateOf(LottoType.L645) }
 
+    val isDimVisible by remember {
+        derivedStateOf {
+            scaffoldState.bottomSheetState.targetValue == SheetValue.Expanded
+        }
+    }
+
     BottomSheetScaffold(
         modifier = modifier,
         containerColor = LottoMateWhite,
@@ -373,6 +379,16 @@ private fun RegisterLottoNumbersScreen(
                     )
                 }
             }
+
+            BottomSheetDimBackground(
+                modifier = Modifier.fillMaxSize(),
+                isDimVisible = isDimVisible,
+                onClick = {
+                    coroutineScope.launch {
+                        scaffoldState.bottomSheetState.partialExpand()
+                    }
+                }
+            )
         }
     }
 }
