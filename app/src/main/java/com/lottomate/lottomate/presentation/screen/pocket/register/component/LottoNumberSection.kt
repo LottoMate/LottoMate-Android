@@ -36,12 +36,15 @@ import com.lottomate.lottomate.utils.noInteractionClickable
 fun LottoNumberSection(
     modifier: Modifier = Modifier,
     lotteryType: LottoType,
+    round: Int,
+    date: String,
     inputNumbers: List<RegisterLottoNumber>,
     onAddNewInputNumber: () -> Unit,
     onRemoveInputNumber: (Int) -> Unit,
     onChangeInputNumber: (Int, String) -> Unit,
     onChangeReset: (Int) -> Unit,
     onClickLottoRoundPicker: () -> Unit,
+    onClickLottoRoundPicker: (LottoType) -> Unit,
 ) {
     val maxLottoNumberLength = when (lotteryType) {
         LottoType.L645 -> 12
@@ -71,6 +74,9 @@ fun LottoNumberSection(
 
         MiddleLotteryRoundPicker(
             onClickLottoRoundPicker = onClickLottoRoundPicker,
+            round = round,
+            date = date,
+            onClickLottoRoundPicker = { onClickLottoRoundPicker(lotteryType) },
         )
 
 
@@ -151,6 +157,8 @@ fun TopTitleSection(
 @Composable
 private fun MiddleLotteryRoundPicker(
     modifier: Modifier = Modifier,
+    round: Int,
+    date: String,
     onClickLottoRoundPicker: () -> Unit,
 ) {
     Row(
@@ -169,15 +177,15 @@ private fun MiddleLotteryRoundPicker(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.noInteractionClickable { onClickLottoRoundPicker() }
+            modifier = Modifier.clickable { onClickLottoRoundPicker() }
         ) {
             LottoMateText(
-                text = "1126회",
+                text = round.toString().plus("회"),
                 style = LottoMateTheme.typography.headline1,
             )
 
             LottoMateText(
-                text = "2024.06.29",
+                text = date.replace("-", "."),
                 style = LottoMateTheme.typography.label2
                     .copy(color = LottoMateGray70),
                 modifier = Modifier.padding(start = 8.dp),
@@ -200,6 +208,8 @@ private fun Lotto645SectionPreview() {
 
         LottoNumberSection(
             lotteryType = LottoType.L645,
+            round = 1156,
+            date = "2025.11.06",
             inputNumbers = inputNumbers,
             onAddNewInputNumber = { inputNumbers.add(0, RegisterLottoNumber.EMPTY)},
             onRemoveInputNumber = { index -> inputNumbers.removeAt(index) },
@@ -219,6 +229,8 @@ private fun Lotto720SectionPreview() {
 
         LottoNumberSection(
             lotteryType = LottoType.L720,
+            round = 256,
+            date = "2025.03.27",
             inputNumbers = inputNumbers720,
             onAddNewInputNumber = { inputNumbers720.add(0, RegisterLottoNumber.EMPTY)},
             onRemoveInputNumber = { index -> inputNumbers720.removeAt(index) },

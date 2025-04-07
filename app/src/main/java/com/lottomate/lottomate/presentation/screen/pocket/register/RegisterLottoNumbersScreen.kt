@@ -1,6 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.pocket.register
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -14,17 +13,22 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +50,11 @@ import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.lottoinfo.BottomSheetDimBackground
+import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
+import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
+import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
 import com.lottomate.lottomate.presentation.screen.pocket.register.component.LottoNumberSection
 import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumber
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
@@ -54,6 +63,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterLottoNumbersRoute(
@@ -64,32 +74,57 @@ fun RegisterLottoNumbersRoute(
     val context = LocalContext.current
 
     val snackBarHostState = remember { SnackbarHostState() }
+    val pickerState = rememberPickerState()
+
+    val latestLottoRoundInfo by vm.latestLottoRoundInfo.collectAsState()
+    var currentLotto645Round by remember { mutableStateOf(latestLottoRoundInfo.getValue(LottoType.L645.num)) }
+    var currentLotto720Round by remember { mutableStateOf(latestLottoRoundInfo.getValue(LottoType.L720.num)) }
+
     LaunchedEffect(true) {
         vm.snackBarFlow.collectLatest { snackBarHostState.showSnackbar(it) }
     }
+
     RegisterLottoNumbersScreen(
         snackBarHostState = snackBarHostState,
+        pickerState = pickerState,
+        lotto645RoundInfo = currentLotto645Round,
+        lotto720RoundInfo = currentLotto720Round,
         onClickRegister = { lotto645, lotto720 ->
             val msg = context.getString(R.string.register_lotto_number_text_complete)
             vm.sendSnackBarMsg(msg)
+        },
+        onChangeLottoRound = { lottoType ->
+            when (lottoType) {
+                LottoType.L645 -> currentLotto645Round = pickerState.selectedItem
+                LottoType.L720 -> currentLotto720Round = pickerState.selectedItem
+                else -> {}
+            }
         },
         onBackPressed = onBackPressed,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RegisterLottoNumbersScreen(
     modifier: Modifier = Modifier,
+    lotto645RoundInfo: LatestRoundInfo,
+    lotto720RoundInfo: LatestRoundInfo,
+    pickerState: PickerState,
     snackBarHostState: SnackbarHostState,
     onBackPressed: () -> Unit,
+    onChangeLottoRound: (LottoType) -> Unit,
     onClickRegister: (List<RegisterLottoNumber>, List<RegisterLottoNumber>) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
+    val coroutineScope = rememberCoroutineScope()
+    val scaffoldState = rememberBottomSheetScaffoldState()
+
     val inputLotto645Numbers = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
     val inputLotto720Numbers = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
     var showLottoRoundPicker by remember { mutableStateOf(false) }
     val scaffoldState = rememberBottomSheetScaffoldState()
+    var selectLottoType by remember { mutableStateOf(LottoType.L645) }
 
     BottomSheetScaffold(
         modifier = modifier,
@@ -98,14 +133,23 @@ private fun RegisterLottoNumbersScreen(
         sheetContainerColor = LottoMateWhite,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-//            LottoRoundWheelPicker(
-//                currentLottoRound = 1126,
-//                currentTabIndex = 0,
-//                scaffoldState = scaffoldState,
-//                pickerState = pickerState,
-//                onClickSelect = {},
-//            )
-        }
+            LottoRoundWheelPicker(
+                currentLottoRound = if (selectLottoType == LottoType.L645) lotto645RoundInfo.round else lotto720RoundInfo.round,
+                lotteryType = selectLottoType,
+                scaffoldState = scaffoldState,
+                pickerState = pickerState,
+                isRegisterScreen = true,
+                onClickSelect = { onChangeLottoRound(selectLottoType) },
+            )
+        },
+        sheetDragHandle = null,
+        sheetSwipeEnabled = false,
+        sheetShape = RoundedCornerShape(
+            topStart = 32.dp,
+            topEnd = 32.dp,
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp
+        ),
     ) {
         Box(
             modifier = modifier
@@ -144,12 +188,20 @@ private fun RegisterLottoNumbersScreen(
                     LottoNumberSection(
                         modifier = Modifier.padding(top = 40.dp),
                         lotteryType = LottoType.L645,
+                        round = lotto645RoundInfo.round,
+                        date = lotto645RoundInfo.drawDate,
                         inputNumbers = inputLotto645Numbers,
                         onAddNewInputNumber = { inputLotto645Numbers.add(0, RegisterLottoNumber.EMPTY) },
                         onRemoveInputNumber = { index -> inputLotto645Numbers.removeAt(index) },
                         onChangeInputNumber = { index, number -> inputLotto645Numbers[index] = inputLotto645Numbers[index].copy(lottoNumbers = number) },
                         onChangeReset = { index -> inputLotto645Numbers[index] = RegisterLottoNumber.EMPTY },
-                        onClickLottoRoundPicker = { showLottoRoundPicker = true }
+                        onClickLottoRoundPicker = {
+                            selectLottoType = it
+
+                            coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                        },
+                        onClickNextRound = {},
+                        onClickPreRound = {},
                     )
 
                     Box(modifier = Modifier
@@ -162,12 +214,20 @@ private fun RegisterLottoNumbersScreen(
                     LottoNumberSection(
                         modifier = Modifier.padding(top = 40.dp, bottom = 91.dp),
                         lotteryType = LottoType.L720,
+                        round = lotto720RoundInfo.round,
+                        date = lotto720RoundInfo.drawDate,
                         inputNumbers = inputLotto720Numbers,
                         onAddNewInputNumber = { inputLotto720Numbers.add(0, RegisterLottoNumber.EMPTY) },
                         onRemoveInputNumber = { index -> inputLotto720Numbers.removeAt(index) },
                         onChangeInputNumber = { index, number -> inputLotto720Numbers[index] = inputLotto720Numbers[index].copy(lottoNumbers = number) },
                         onChangeReset = { index -> inputLotto720Numbers[index] = RegisterLottoNumber.EMPTY },
-                        onClickLottoRoundPicker = { showLottoRoundPicker = true }
+                        onClickLottoRoundPicker = {
+                            selectLottoType = it
+
+                            coroutineScope.launch { scaffoldState.bottomSheetState.expand() }
+                        },
+                        onClickNextRound = {},
+                        onClickPreRound = {},
                     )
                 }
             }
@@ -278,9 +338,15 @@ private fun RegisterLottoNumbersScreen(
 @Composable
 private fun RegisterLottoNumberScreenPreview() {
     LottoMateTheme {
+        val pickerState = rememberPickerState()
+
         RegisterLottoNumbersScreen(
             snackBarHostState = SnackbarHostState(),
+            pickerState = pickerState,
+            lotto645RoundInfo = LatestRoundInfo(0, ""),
+            lotto720RoundInfo = LatestRoundInfo(0, ""),
             onClickRegister = { _, _ -> },
+            onChangeLottoRound = {},
             onBackPressed = {},
         )
     }

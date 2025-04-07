@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,8 @@ import javax.inject.Inject
 class RegisterLottoNumberViewModel @Inject constructor(
     private val lottoInfoRepository: LottoInfoRepository,
 ) : ViewModel() {
+    val latestLottoRoundInfo: StateFlow<Map<Int, LatestRoundInfo>>
+        get() = lottoInfoRepository.latestLottoRoundInfo
     var hasPreLottoRound = mutableStateOf(true)
         private set
     var hasNextLottoRound = mutableStateOf(false)
