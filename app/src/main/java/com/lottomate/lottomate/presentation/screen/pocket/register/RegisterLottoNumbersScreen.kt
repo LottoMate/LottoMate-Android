@@ -77,9 +77,9 @@ fun RegisterLottoNumbersRoute(
     val snackBarHostState = remember { SnackbarHostState() }
     val pickerState = rememberPickerState()
 
-    val latestLottoRoundInfo by vm.latestLottoRoundInfo.collectAsState()
-    var currentLotto645Round by remember { mutableStateOf(latestLottoRoundInfo.getValue(LottoType.L645.num)) }
-    var currentLotto720Round by remember { mutableStateOf(latestLottoRoundInfo.getValue(LottoType.L720.num)) }
+    val currentLotto645Round by vm.currentLotto645Round.collectAsState()
+    val currentLotto720Round by vm.currentLotto720Round.collectAsState()
+
     val hasLotto645PreRound by vm.hasLotto645PreRound
     val hasLotto645NextRound by vm.hasLotto645NextRound
     val hasLotto720PreRound by vm.hasLotto720PreRound
@@ -102,32 +102,8 @@ fun RegisterLottoNumbersRoute(
             val msg = context.getString(R.string.register_lotto_number_text_complete)
             vm.sendSnackBarMsg(msg)
         },
-        onChangeLottoRound = { lottoType ->
-            when (lottoType) {
-                LottoType.L645 -> {
-                    currentLotto645Round = pickerState.selectedItem
-                    vm.judgePreOrNextLottoRound(lottoType, currentLotto645Round.round)
-                }
-                LottoType.L720 -> {
-                    currentLotto720Round = pickerState.selectedItem
-                    vm.judgePreOrNextLottoRound(lottoType, currentLotto720Round.round)
-                }
-                else -> {}
-            }
-        },
-        onClickPreOrNextLottoRound = { type, roundInfo ->
-            when (type) {
-                LottoType.L645 -> {
-                    currentLotto645Round = roundInfo
-                    vm.judgePreOrNextLottoRound(type, currentLotto645Round.round)
-                }
-                LottoType.L720 -> {
-                    currentLotto720Round = roundInfo
-                    vm.judgePreOrNextLottoRound(type, currentLotto720Round.round)
-                }
-                else -> {}
-            }
-        },
+        onChangeLottoRound = { lottoType -> vm.updateLottoRoundByType(lottoType, pickerState.selectedItem) },
+        onClickPreOrNextLottoRound = { type, roundInfo -> vm.updateLottoRoundByType(type, roundInfo) },
         onBackPressed = onBackPressed,
     )
 }
