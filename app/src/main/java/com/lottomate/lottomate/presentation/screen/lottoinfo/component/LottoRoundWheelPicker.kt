@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -31,28 +32,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
-import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoBottomWheelUiState
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoRoundViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.PickerState
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateRed5
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.utils.DateUtils.calLottoRoundDate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -64,72 +65,66 @@ fun LottoRoundWheelPicker(
     vm: LottoRoundViewModel = hiltViewModel(),
     scaffoldState: BottomSheetScaffoldState,
     currentLottoRound: Int,
-    currentTabIndex: Int,
+    lotteryType: LottoType,
     pickerState: PickerState,
+    isRegisterScreen: Boolean = false,
     onClickSelect: () -> Unit,
 ) {
-    LaunchedEffect(currentTabIndex) {
-        vm.getLatestLottoInfo(currentTabIndex)
+    LaunchedEffect(lotteryType) {
+        vm.setLottoRoundRange(lotteryType, isRegisterScreen)
     }
 
-    val uiState by vm.uiState.collectAsStateWithLifecycle()
+    val latestLottoInfo by vm.latestLottoInfo.collectAsState(emptyMap())
+
     val lottoRoundRange by vm.lottoRoundRange
 
-    when (uiState) {
-        LottoBottomWheelUiState.Loading -> { }
-        is LottoBottomWheelUiState.Success -> {
-            val latestRoundOrPage = (uiState as LottoBottomWheelUiState.Success).round
-            val latestLottoDate = (uiState as LottoBottomWheelUiState.Success).date
+    val latestRoundOrPage = latestLottoInfo[lotteryType.num]?.round ?: 0
 
-            val visibleItemCount = 3
-            val visibleItemsMiddle = visibleItemCount / 2
+    val visibleItemCount = 3
+    val visibleItemsMiddle = visibleItemCount / 2
 
-            val scrollState = rememberLazyListState(
-                initialFirstVisibleItemIndex = maxOf(0, latestRoundOrPage - currentLottoRound)
-            )
-            val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
+    val scrollState = rememberLazyListState(
+        initialFirstVisibleItemIndex = maxOf(0, latestRoundOrPage - currentLottoRound)
+    )
+    val flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
 
-            LaunchedEffect(key1 = currentLottoRound, key2 = latestRoundOrPage, key3 = scaffoldState.bottomSheetState.currentValue) {
-                val targetIndex = when (currentTabIndex) {
-                    LottoType.S2000.ordinal -> maxOf(0, abs(latestRoundOrPage - currentLottoRound))
-                    else -> maxOf(0, latestRoundOrPage - currentLottoRound)
-                }
-                scrollState.scrollToItem(targetIndex)
-                pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: ""
-            }
-
-            LaunchedEffect(scrollState) {
-                snapshotFlow { scrollState.firstVisibleItemIndex }
-                    .map { index -> lottoRoundRange.getOrNull(index + visibleItemsMiddle) ?: "" }
-                    .distinctUntilChanged()
-                    .collect { item ->
-                        pickerState.selectedItem = item
-                    }
-            }
-
-            LottoRoundWheelPickerContent(
-                modifier = Modifier.fillMaxWidth(),
-                lastDate = latestLottoDate,
-                visibleItemCount = visibleItemCount,
-                lottoRoundRange = lottoRoundRange,
-                currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
-                currentLottoType = LottoType.findLottoType(currentTabIndex),
-                scaffoldState = scaffoldState,
-                scrollState = scrollState,
-                flingBehavior = flingBehavior,
-                onClickSelect = onClickSelect
-            )
+    LaunchedEffect(key1 = currentLottoRound, key2 = latestRoundOrPage, key3 = scaffoldState.bottomSheetState.currentValue) {
+        val targetIndex = when (lotteryType) {
+            LottoType.S2000 -> maxOf(0, abs(latestRoundOrPage - currentLottoRound))
+            else -> maxOf(0, latestRoundOrPage - currentLottoRound)
         }
+        scrollState.scrollToItem(targetIndex)
+        pickerState.selectedItem = lottoRoundRange.getOrNull(targetIndex + visibleItemsMiddle) ?: LatestRoundInfo(0, "")
     }
+
+    LaunchedEffect(scrollState) {
+        snapshotFlow { scrollState.firstVisibleItemIndex }
+            .map { index -> lottoRoundRange.getOrNull(index + visibleItemsMiddle) ?: LatestRoundInfo(0, "") }
+            .distinctUntilChanged()
+            .collect { item ->
+                pickerState.selectedItem = item
+            }
+    }
+
+    LottoRoundWheelPickerContent(
+        modifier = Modifier.fillMaxWidth(),
+        visibleItemCount = visibleItemCount,
+        lottoRoundRange = lottoRoundRange,
+        currentIndex = lottoRoundRange.indexOf(pickerState.selectedItem),
+        currentLottoType = lotteryType,
+        scaffoldState = scaffoldState,
+        scrollState = scrollState,
+        flingBehavior = flingBehavior,
+        onClickSelect = onClickSelect
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun LottoRoundWheelPickerContent(
     modifier: Modifier = Modifier,
-    lastDate: String?,
     visibleItemCount: Int,
-    lottoRoundRange: List<String>,
+    lottoRoundRange: List<LatestRoundInfo>,
     currentIndex: Int,
     currentLottoType: LottoType,
     pickerMaxHeight: Dp = 116.dp,
@@ -186,9 +181,9 @@ private fun LottoRoundWheelPickerContent(
                     ) {
                         LottoMateText(
                             text = when (currentLottoType) {
-                                LottoType.S2000, LottoType.S1000, LottoType.S500 -> lottoRoundRange[index]
-                                else -> { if (index == 0) lottoRoundRange[index] else lottoRoundRange[index].plus("회") }
-                            },
+                                LottoType.S2000, LottoType.S1000, LottoType.S500 -> lottoRoundRange[index].round
+                                else -> { if (lottoRoundRange[index].round == 0) "" else lottoRoundRange[index].round.toString().plus("회") }
+                            }.toString(),
                             textAlign = TextAlign.Center,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
@@ -196,11 +191,12 @@ private fun LottoRoundWheelPickerContent(
                                 .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
                         )
 
-                        lastDate?.let { date ->
+                        // 날짜 표시
+                        lottoRoundRange[index].drawDate.let { date ->
                             Spacer(modifier = Modifier.width(20.dp))
 
                             LottoMateText(
-                                text = if (index == 0) "" else calLottoRoundDate(date, index),
+                                text = if (index == 0) "" else date,
                                 style = LottoMateTheme.typography.body1
                                     .copy(if (currentIndex == index) LottoMateBlack else LottoMateGray90),
                             )
@@ -218,7 +214,7 @@ private fun LottoRoundWheelPickerContent(
                 .padding(horizontal = 20.dp),
         ) {
             LottoMateAssistiveButton(
-                text = "취소",
+                text = stringResource(id = R.string.common_cancel),
                 buttonSize = LottoMateButtonProperty.Size.LARGE,
                 onClick = {
                     coroutineScope.launch {
@@ -231,7 +227,7 @@ private fun LottoRoundWheelPickerContent(
             Spacer(modifier = Modifier.width(15.dp))
 
             LottoMateSolidButton(
-                text = "확인",
+                text = stringResource(id = R.string.common_confirm),
                 buttonSize = LottoMateButtonProperty.Size.LARGE,
                 modifier = Modifier.weight(1f),
                 onClick = {
@@ -258,10 +254,9 @@ private fun LottoRoundWheelPickerContentPreview() {
     LottoMateTheme {
         val scrollState = rememberLazyListState()
         val pickerState = rememberPickerState()
-        val ranges = List(20) { it.toString() }
+        val ranges = List(20) { LatestRoundInfo(it, "")}
 
         LottoRoundWheelPickerContent(
-            lastDate = "2024-03-01",
             lottoRoundRange = ranges,
             visibleItemCount = 3,
             scaffoldState = rememberBottomSheetScaffoldState(),
@@ -271,5 +266,14 @@ private fun LottoRoundWheelPickerContentPreview() {
             flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState),
             onClickSelect = {}
         )
+    }
+}
+
+data class WheelPickerItem(
+    val value: Int,
+    val label: String? = null,
+) {
+    companion object {
+        val Empty = WheelPickerItem(0)
     }
 }

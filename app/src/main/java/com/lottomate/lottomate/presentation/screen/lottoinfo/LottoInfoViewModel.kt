@@ -108,9 +108,9 @@ class LottoInfoViewModel @Inject constructor(
 
     private fun judgePreOrNextLottoRound(lottoRndNum: Int) {
         val currentLottoType = LottoType.findLottoType(currentTabMenu.intValue).num
-        val latestLottoRound = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType)
+        val latestLottoRound = lottoInfoRepository.latestLottoRoundInfo.value.getValue(currentLottoType)
 
-        hasNextLottoRound.value = lottoRndNum != latestLottoRound
+        hasNextLottoRound.value = lottoRndNum != latestLottoRound.round
         hasPreLottoRound.value = lottoRndNum != LOTTO_FIRST_ROUND
     }
 
@@ -120,10 +120,10 @@ class LottoInfoViewModel @Inject constructor(
 
             val currentLottoType = LottoType.findLottoType(currentTabMenu.value)
 
-            if (lottoInfoRepository.allLatestLottoRound.isNotEmpty()) {
+            if (lottoInfoRepository.latestLottoRoundInfo.value.isNotEmpty()) {
                 lottoInfoRepository.fetchLottoInfo(
                     lottoType = currentLottoType.num,
-                    lottoRndNum = lottoInfoRepository.allLatestLottoRound.getValue(currentLottoType.num)
+                    lottoRndNum = lottoInfoRepository.latestLottoRoundInfo.value.getValue(currentLottoType.num).round
                 )
                     .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
                     .catch { throwable -> handleException(throwable) }

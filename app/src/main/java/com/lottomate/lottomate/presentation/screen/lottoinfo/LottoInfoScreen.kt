@@ -63,12 +63,14 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.component.Lotto720W
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoRoundWheelPicker
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoWinNumberCard
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.SpeettoWinInfoCard
+import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfoWithBalls
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.SpeettoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateDim1
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
@@ -77,6 +79,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateGray90
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.presentation.ui.LottoMateYellow5
+import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -106,7 +109,7 @@ fun LottoInfoRoute(
         pickerState = pickerState,
         onBackPressed = onBackPressed,
         onChangeTabMenu = { vm.changeTabMenu(it) },
-        onChangeLottoRound = { vm.getLottoInfoByRoundOrPage(pickerState.selectedItem.toInt()) },
+        onChangeLottoRound = { vm.getLottoInfoByRoundOrPage(pickerState.selectedItem.round) },
         onClickPreRound = {
             val preLottoRound = it.minus(1)
             vm.getLottoInfoByRoundOrPage(preLottoRound)
@@ -200,7 +203,7 @@ private fun LottoInfoContent(
 
                     LottoRoundWheelPicker(
                         currentLottoRound = info.currentPage,
-                        currentTabIndex = currentTabIndex,
+                        lotteryType = LottoType.findLottoType(currentTabIndex),
                         scaffoldState = scaffoldState,
                         pickerState = pickerState,
                         onClickSelect = onChangeLottoRound,
@@ -211,7 +214,7 @@ private fun LottoInfoContent(
 
                     LottoRoundWheelPicker(
                         currentLottoRound = info.lottoRound,
-                        currentTabIndex = currentTabIndex,
+                        lotteryType = LottoType.findLottoType(currentTabIndex),
                         scaffoldState = scaffoldState,
                         pickerState = pickerState,
                         onClickSelect = onChangeLottoRound,
@@ -751,7 +754,7 @@ private fun BottomBannerSection(
 }
 
 @Composable
-private fun BottomSheetDimBackground(
+fun BottomSheetDimBackground(
     modifier: Modifier = Modifier,
     isDimVisible: Boolean,
     onClick: () -> Unit,
@@ -759,14 +762,14 @@ private fun BottomSheetDimBackground(
     if (isDimVisible) {
         Box(
             modifier = modifier
-                .background(LottoMateBlack.copy(0.4f))
-                .clickable { onClick() }
+                .background(LottoMateDim1)
+                .noInteractionClickable { onClick() }
         )
     }
 }
 
 class PickerState {
-    var selectedItem by mutableStateOf("")
+    var selectedItem by mutableStateOf(LatestRoundInfo(0, ""))
 }
 
 @Composable

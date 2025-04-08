@@ -61,16 +61,18 @@ object DateUtils {
      *
      * @param lastRoundDate 최근 로또 당첨 회차 날짜
      * @param index 회차 피커에서 선택한 index
+     * @isFuture 미래 날짜 계산 여부 (1주일 후에 대한 날짜를 계산하기 위하여 추가)
      *
      * @return 계산 완료한 날짜
      */
-    fun calLottoRoundDate(lastRoundDate: String, index: Int): String {
+    fun calLottoRoundDate(lastRoundDate: String, index: Int, isFuture: Boolean = false): String {
         val (year, month, day) = lastRoundDate.split(".").map { it.toInt() }
         val date = Calendar.getInstance().apply {
             set(Calendar.YEAR, year)
             set(Calendar.MONTH, month.minus(1))
             set(Calendar.DAY_OF_MONTH, day)
-            add(Calendar.DATE, -(DAYS_IN_WEEK * index.minus(1)))
+            val offset = DAYS_IN_WEEK * index
+            add(Calendar.DATE, if (isFuture) offset else -offset)
         }
 
         return buildString {

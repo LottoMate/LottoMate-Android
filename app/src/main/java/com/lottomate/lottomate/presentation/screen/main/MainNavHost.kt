@@ -17,6 +17,7 @@ import com.lottomate.lottomate.presentation.screen.setting.navigation.settingNav
 fun MainNavHost(
     navigator: MainNavigator,
     padding: PaddingValues,
+    onShowGlobalSnackBar: (message: String) -> Unit,
     onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
@@ -44,6 +45,7 @@ fun MainNavHost(
         pocketNavGraph(
             padding = padding,
             navController = navigator.navController,
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
 
