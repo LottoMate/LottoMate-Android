@@ -102,7 +102,7 @@ private fun LoungeScreen(
             Image(
                 bitmap = ImageBitmap.imageResource(id = R.drawable.img_lounge_top),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
+                contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onClickTopBanner() },
