@@ -9,6 +9,7 @@ import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScan
+import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScanResult
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
@@ -34,6 +35,7 @@ fun NavController.navigateToSaveNumbers() {
 fun NavGraphBuilder.pocketNavGraph(
     padding: PaddingValues,
     navController: NavController,
+    onShowGlobalSnackBar: (message: String) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Pocket> {
@@ -67,6 +69,8 @@ fun NavGraphBuilder.pocketNavGraph(
     composable<LottoMateRoute.RegisterLottoNumber> {
         RegisterLottoNumbersRoute(
             padding = padding,
+            moveToLottoResult = { navController.navigateToLottoScanResult(it) },
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onBackPressed = { navController.navigateUp() },
         )
     }

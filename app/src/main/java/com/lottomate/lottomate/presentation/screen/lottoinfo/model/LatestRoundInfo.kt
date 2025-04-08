@@ -6,4 +6,8 @@ package com.lottomate.lottomate.presentation.screen.lottoinfo.model
 data class LatestRoundInfo(
     val round: Int,
     val drawDate: String,
-)
+) {
+    companion object {
+        val EMPTY = LatestRoundInfo(0, "")
+    }
+}

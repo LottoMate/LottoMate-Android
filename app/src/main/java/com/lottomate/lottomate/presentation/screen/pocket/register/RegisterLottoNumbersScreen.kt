@@ -57,6 +57,7 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundIn
 import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
 import com.lottomate.lottomate.presentation.screen.pocket.register.component.LottoNumberSection
 import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumber
+import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterNavigationType
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
@@ -70,7 +71,9 @@ import kotlinx.coroutines.launch
 fun RegisterLottoNumbersRoute(
     vm: RegisterLottoNumberViewModel = hiltViewModel(),
     padding: PaddingValues,
+    moveToLottoResult: (String) -> Unit,
     onBackPressed: () -> Unit,
+    onShowGlobalSnackBar: (String) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -85,8 +88,24 @@ fun RegisterLottoNumbersRoute(
     val hasLotto720PreRound by vm.hasLotto720PreRound
     val hasLotto720NextRound by vm.hasLotto720NextRound
 
+    LaunchedEffect(Unit) {
+        vm.registerNavigationFlow.collectLatest { navigation ->
+            when (navigation) {
+                RegisterNavigationType.None -> Unit
+                RegisterNavigationType.Back -> {
+                    onBackPressed()
+                    vm.resetNavigation()
+                }
+                is RegisterNavigationType.LottoResult -> {
+                    moveToLottoResult("https://m.dhlottery.co.kr/qr.do?method=winQr?v=1151q131518222831q040710163643q012029323941q111214172128q0102151821321289734360")
+                    vm.resetNavigation()
+                }
+            }
+        }
+    }
+
     LaunchedEffect(true) {
-        vm.snackBarFlow.collectLatest { snackBarHostState.showSnackbar(it) }
+        vm.snackBarFlow.collectLatest { onShowGlobalSnackBar(it) }
     }
 
     RegisterLottoNumbersScreen(
@@ -98,10 +117,7 @@ fun RegisterLottoNumbersRoute(
         hasLotto645NextRound = hasLotto645NextRound,
         hasLotto720PreRound = hasLotto720PreRound,
         hasLotto720NextRound = hasLotto720NextRound,
-        onClickRegister = { lotto645, lotto720 ->
-            val msg = context.getString(R.string.register_lotto_number_text_complete)
-            vm.sendSnackBarMsg(msg)
-        },
+        onClickRegister = { inputLotto645, inputLotto720 -> vm.saveLottoNumbers(inputLotto645, inputLotto720) },
         onChangeLottoRound = { lottoType -> vm.updateLottoRoundByType(lottoType, pickerState.selectedItem) },
         onClickPreOrNextLottoRound = { type, roundInfo -> vm.updateLottoRoundByType(type, roundInfo) },
         onBackPressed = onBackPressed,

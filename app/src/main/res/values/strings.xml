@@ -151,6 +151,7 @@
     <string name="register_lotto_number_text_complete">내 로또 번호를 저장했어요</string>
     <string name="register_lotto_number_text_round_notice_645">로또 당첨금은 지급 기한이 최대 1년이에요</string>
     <string name="register_lotto_number_text_round_notice_720">연금복권 당첨금은 지급 기한이 최대 1년이에요</string>
+    <string name="register_lotto_number_text_error">문제가 생겼어요\n다시 한 번 더 시도해주세요</string>
 
     <!-- 로그인 -->
     <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
