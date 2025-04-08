@@ -106,9 +106,3 @@ class RegisterLottoNumberViewModel @Inject constructor(
         private const val REGISTRABLE_ROUND_LIMIT = 48
     }
 }
-
-sealed interface LottoRoundUiState {
-    data object Loading: LottoRoundUiState
-    data class Success(val round: String, val date: String): LottoRoundUiState
-    data class Failed(val message: String, val throwable: Throwable? = null): LottoRoundUiState
-}
