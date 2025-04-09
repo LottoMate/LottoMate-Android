@@ -39,11 +39,16 @@ import com.lottomate.lottomate.presentation.screen.winnerguide.model.WinnerGuide
 
 @Composable
 fun WinnerGuideRoute(
-    onClickBanner: (BannerType) -> Unit,
+    moveToMap: () -> Unit,
+    moveToNaverMap: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     WinnerGuideScreen(
-        onClickBanner = onClickBanner,
+        onClickClaimAddress = { place ->
+            if (place.isEmpty()) moveToMap()
+            else moveToNaverMap(place)
+        },
+        onClickBanner = { moveToMap() },
         onBackPressed = onBackPressed,
     )
 }
@@ -51,10 +56,11 @@ fun WinnerGuideRoute(
 @Composable
 private fun WinnerGuideScreen(
     modifier: Modifier = Modifier,
+    onClickClaimAddress: (String) -> Unit,
     onClickBanner: (BannerType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    var currentLottoType by remember { mutableIntStateOf(2) }
+    var currentLottoType by remember { mutableIntStateOf(0) }
 
     Box(
         modifier = modifier
@@ -82,6 +88,7 @@ private fun WinnerGuideScreen(
             TopPrizeClaimLocation(
                 modifier = Modifier.padding(top = 24.dp),
                 type = WinnerGuideType.findWinnerGuide(LottoType.findLottoType(currentLottoType)),
+                onClickClaimAddress = onClickClaimAddress,
             )
 
             MiddlePrizeClaimSection(
