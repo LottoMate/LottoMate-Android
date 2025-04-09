@@ -167,7 +167,6 @@ private fun TopPrizeClaimLocationItem(
     modifier: Modifier = Modifier,
     rank: String,
     claimLocation: String,
-    claimLatLng: LatLng? = null,
     requiredItems: List<String>,
     hasCaption: Boolean = false,
 ) {
@@ -211,20 +210,15 @@ private fun TopPrizeClaimLocationItem(
                     modifier = Modifier.padding(start = 4.dp),
                 )
 
-                // 장소 위/경도 값이 있을 때에만 아이콘 노출
-                claimLatLng?.let {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_place),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(14.dp)
-                            .noInteractionClickable {
-                                // TODO : 지도 아이콘 클릭 시, 지도 표시
-                            },
-                        tint = LottoMateGray100,
-                    )
-                }
+                Icon(
+                    painter = painterResource(id = R.drawable.icon_place),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .size(14.dp)
+                        .noInteractionClickable { onClickClaimAddress() },
+                    tint = LottoMateGray100,
+                )
             }
 
             Row(
