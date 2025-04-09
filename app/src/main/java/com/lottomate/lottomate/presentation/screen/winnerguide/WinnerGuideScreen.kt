@@ -54,7 +54,7 @@ private fun WinnerGuideScreen(
     onClickBanner: (BannerType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    var currentLottoType by remember { mutableIntStateOf(2) }
+    var currentLottoType by remember { mutableIntStateOf(0) }
 
     Box(
         modifier = modifier
