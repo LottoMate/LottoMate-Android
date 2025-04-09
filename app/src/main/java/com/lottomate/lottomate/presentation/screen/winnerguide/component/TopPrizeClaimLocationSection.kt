@@ -29,12 +29,12 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
 import com.lottomate.lottomate.utils.noInteractionClickable
-import com.naver.maps.geometry.LatLng
 
 @Composable
 fun TopPrizeClaimLocation(
     modifier: Modifier = Modifier,
     type: WinnerGuideType,
+    onClickClaimAddress: (String) -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -66,6 +66,7 @@ fun TopPrizeClaimLocation(
                         rank = "1등",
                         claimLocation = "NH농협 본점",
                         requiredItems = listOf("당첨복권", "신분증"),
+                        onClickClaimAddress = { onClickClaimAddress("서울 중구 새문안로 16 농협중앙회 중앙본부") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -75,6 +76,7 @@ fun TopPrizeClaimLocation(
                         hasCaption = true,
                         claimLocation = "NH농협 전국지점",
                         requiredItems = listOf("당첨복권", "신분증"),
+                        onClickClaimAddress = { onClickClaimAddress("농협은행") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -83,6 +85,7 @@ fun TopPrizeClaimLocation(
                         rank = "4등, 5등",
                         claimLocation = "전국 복권 판매점",
                         requiredItems = listOf("당첨복권"),
+                        onClickClaimAddress = { onClickClaimAddress("") },
                     )
                 }
                 WinnerGuideType.LOTTO720 -> {
@@ -91,6 +94,7 @@ fun TopPrizeClaimLocation(
                         claimLocation = "동행복권 본사",
                         requiredItems = listOf("당첨복권", "신분증", "통장사본"),
                         hasCaption = true,
+                        onClickClaimAddress = { onClickClaimAddress("동행복권") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -99,6 +103,7 @@ fun TopPrizeClaimLocation(
                         rank = "3등, 4등",
                         claimLocation = "NH농협 전국지점",
                         requiredItems = listOf("당첨복권", "신분증"),
+                        onClickClaimAddress = { onClickClaimAddress("농협은행") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -107,6 +112,7 @@ fun TopPrizeClaimLocation(
                         rank = "5등, 6등, 7등",
                         claimLocation = "전국 복권 판매점",
                         requiredItems = listOf("당첨복권"),
+                        onClickClaimAddress = { onClickClaimAddress("") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -116,6 +122,7 @@ fun TopPrizeClaimLocation(
                         claimLocation = "동행복권 본사",
                         requiredItems = listOf("당첨복권", "신분증", "통장사본"),
                         hasCaption = true,
+                        onClickClaimAddress = { onClickClaimAddress("동행복권") },
                     )
                 }
                 WinnerGuideType.SPEETTO -> {
@@ -123,6 +130,7 @@ fun TopPrizeClaimLocation(
                         rank = "1억 이상",
                         claimLocation = "동행복권 본사",
                         requiredItems = listOf("당첨복권", "신분증"),
+                        onClickClaimAddress = { onClickClaimAddress("동행복권") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -131,6 +139,7 @@ fun TopPrizeClaimLocation(
                         rank = "200만원 초과 1억원 이하",
                         claimLocation = "NH농협 전국지점",
                         requiredItems = listOf("당첨복권", "신분증"),
+                        onClickClaimAddress = { onClickClaimAddress("농협은행") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -139,6 +148,7 @@ fun TopPrizeClaimLocation(
                         rank = "5만원 초과 200만원 이하",
                         claimLocation = "NH농협 전국지점",
                         requiredItems = listOf("당첨복권"),
+                        onClickClaimAddress = { onClickClaimAddress("농협은행") },
                     )
 
                     WinnerGuideHorizontalDivider()
@@ -147,6 +157,7 @@ fun TopPrizeClaimLocation(
                         rank = "5만원 이하",
                         claimLocation = "전국 복권 판매점",
                         requiredItems = listOf("당첨복권"),
+                        onClickClaimAddress = { onClickClaimAddress("") },
                     )
                 }
             }
@@ -169,6 +180,7 @@ private fun TopPrizeClaimLocationItem(
     claimLocation: String,
     requiredItems: List<String>,
     hasCaption: Boolean = false,
+    onClickClaimAddress: () -> Unit,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
