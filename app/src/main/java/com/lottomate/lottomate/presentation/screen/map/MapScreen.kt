@@ -21,7 +21,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -83,7 +82,9 @@ fun MapRoute(
     onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
-    val locationState by LocationStateManager.shouldRequestEnableLocation.collectAsState()
+    val locationState by LocationStateManager.shouldShowLocationSettingDialog.collectAsState()
+    val currentLocation by LocationStateManager.currentLocation.collectAsState()
+
     var showLocationSettingDialog by remember { mutableStateOf(false) }
 
     // 지도 진입 시, 로딩 화면 표시
@@ -117,7 +118,7 @@ fun MapRoute(
     val cameraPositionState: CameraPositionState = rememberCameraPositionState {
         // 카메라 초기 위치를 설정합니다.
         position = CameraPosition(
-            if (!LocationStateManager.hasGpsLocation()) { MapViewModel.DEFAULT_LATLNG } else currentPosition,
+            currentLocation ?: currentPosition,
             MapViewModel.DEFAULT_ZOOM_LEVEL
         )
     }
@@ -182,7 +183,7 @@ fun MapRoute(
     // Activity의 라이플사이크를 관찰한 후, 사용자의 GPS를 가져옵니다.
     LocationPermissionObserver(
         onStartLocationPermissionGranted = {
-            LocationStateManager.getCurrentLocation() ?: LocationStateManager.updateLocation()
+            currentLocation ?: LocationStateManager.updateLocation()
         },
         onStartLocationPermissionDenied = { },
     )
@@ -221,11 +222,11 @@ fun MapRoute(
                 cancelText = "취소",
                 confirmText = "설정으로 이동",
                 onDismiss = {
-                    LocationStateManager.setRequestEnableLocationState()
+                    LocationStateManager.setShouldShowLocationSettingDialog(false)
                     showLocationSettingDialog = false
                 },
                 onConfirm = {
-                    LocationStateManager.setRequestEnableLocationState()
+                    LocationStateManager.setShouldShowLocationSettingDialog(false)
                     showLocationSettingDialog = false
 
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
@@ -238,6 +239,7 @@ fun MapRoute(
     MapScreen(
         padding = padding,
         stores = stores,
+        currentLocation = currentLocation,
         selectStore = selectedStore,
         cameraPositionState = cameraPositionState,
         currentPosition = currentPosition,
@@ -298,6 +300,7 @@ private fun MapScreen(
     modifier: Modifier = Modifier,
     padding: PaddingValues,
     stores: List<StoreInfo>,
+    currentLocation: LatLng?,
     currentPosition: LatLng,
     currentCameraPosition: LatLng,
     cameraPositionState: CameraPositionState,
@@ -332,10 +335,6 @@ private fun MapScreen(
     var bottomSheetHeight by remember { mutableIntStateOf(0) }
 
     var showNonSeoulSnackBarAndButton by remember { mutableStateOf(false) }
-
-    val userLocation by remember {
-        derivedStateOf { LocationStateManager.getCurrentLocation() }
-    }
 
     fun checkIsInSeoul(position: LatLng): Boolean {
         val isInSeoul = position.latitude in (37.413294..37.715133) && position.longitude in (126.269311..127.734086)
@@ -385,22 +384,20 @@ private fun MapScreen(
     }
 
     // 지도 첫 진입 시, 사용자 GPS가 있을 경우 호출
-    LaunchedEffect(userLocation) {
-        Log.d("MapScreen", "현재 사용자 GPS : $userLocation")
+    LaunchedEffect(currentLocation) {
+        Log.d("MapScreen", "현재 사용자 GPS : $currentLocation")
 
-        if (LocationStateManager.hasGpsLocation()) {
-            userLocation?.let { location ->
-                onChangeCurrentPosition(location)
-                checkIsInSeoul(LatLng(location.first, location.second))
+        currentLocation?.let { location ->
+            onChangeCurrentPosition(Pair(location.latitude, location.longitude))
+            checkIsInSeoul(LatLng(location.latitude, location.longitude))
 
-                cameraPositionState.animate(
-                    update = CameraUpdate.toCameraPosition(
-                        CameraPosition(LatLng(location.first, location.second), cameraPositionState.position.zoom)
-                    ),
-                    animation = CameraAnimation.Easing,
-                    durationMs = 1_000,
-                )
-            }
+            cameraPositionState.animate(
+                update = CameraUpdate.toCameraPosition(
+                    CameraPosition(location, cameraPositionState.position.zoom)
+                ),
+                animation = CameraAnimation.Easing,
+                durationMs = 1_000,
+            )
         }
     }
 
@@ -490,10 +487,10 @@ private fun MapScreen(
                     )
                 }
 
-                // 현재 위치 표시 마커
-                if (LocationStateManager.hasGpsLocation()) {
+                // 사용자의 현재 위치 표시 마커
+                currentLocation?.let {
                     Marker(
-                        state = MarkerState(position = currentPosition),
+                        state = MarkerState(position = it),
                         icon = OverlayImage.fromResource(R.drawable.icon_current_location),
                     )
                 }
@@ -533,8 +530,8 @@ private fun MapScreen(
             },
             onClickStoreList = onClickStoreList,
             onClickLocationFocus = {
-                userLocation?.let { location ->
-                    onClickLocationFocus(LatLng(location.first, location.second))
+                currentLocation?.let { location ->
+                    onClickLocationFocus(location)
                 } ?: LocationStateManager.updateLocation()
             },
         )

@@ -19,7 +19,7 @@ fun WinnerGuideNaverMapWebView(
     place: String,
     onBackPressed: () -> Unit,
 ) {
-    val location by LocationStateManager.location.collectAsState()
+    val location by LocationStateManager.currentLocation.collectAsState()
 
     val webViewClient = object : WebViewClient() {
         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {

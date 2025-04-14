@@ -4,13 +4,11 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.naver.maps.geometry.LatLng
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,25 +17,20 @@ import kotlinx.coroutines.flow.update
 object LocationStateManager {
     private lateinit var context: Context
 
-    private var latitude by mutableStateOf<Double?>(null)
-    private var longitude by mutableStateOf<Double?>(null)
+    private var _currentLocation = MutableStateFlow<LatLng?>(null)
+    val currentLocation: StateFlow<LatLng?> get() = _currentLocation.asStateFlow()
 
-    private var _shouldRequestEnableLocation = MutableStateFlow(false)
-    val shouldRequestEnableLocation: StateFlow<Boolean> get() = _shouldRequestEnableLocation.asStateFlow()
-
-    fun getCurrentLocation(): Pair<Double, Double>? {
-        if (latitude == null || longitude == null) {
-            updateLocation()
-            return null
-        } else {
-            return Pair(latitude!!, longitude!!)
-        }
-    }
-
-    fun hasGpsLocation(): Boolean = latitude != null && longitude != null
+    private var _shouldShowLocationSettingDialog = MutableStateFlow(false)
+    val shouldShowLocationSettingDialog: StateFlow<Boolean> get() = _shouldShowLocationSettingDialog.asStateFlow()
 
     fun updateLocation() {
         try {
+            // 위치 데이터를 사용할 수 있는지 여부 확인
+            if (!isLocationSettingEnabled()) {
+                setShouldShowLocationSettingDialog(true)
+                return
+            }
+
             val locationService = LocationServices.getFusedLocationProviderClient(context)
 
             if (ActivityCompat.checkSelfPermission(
@@ -53,30 +46,19 @@ object LocationStateManager {
             locationService.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener { location ->
                     try {
-                        when (isLocationSettingEnabled()) {
-                            true -> {
-                                _shouldRequestEnableLocation.update { true }
-                                setDefaultLatLng()
-
-                                Log.d("LocationStateManager(onSuccess)", "사용자 GPS Update 필요")
-                            }
-                            false -> {
-                                latitude = location.latitude
-                                longitude = location.longitude
-
-                                Log.d("LocationStateManager", "사용자 GPS Update 성공 : ${location.latitude} / ${location.longitude}")
-                            }
-                        }
+                        _currentLocation.update { LatLng(location.latitude, location.longitude) }
                     } catch (exception: Exception) {
-                        Log.d("LocationStateManager(onSuccess-catch)", "사용자 GPS Update 필요")
-
                         setDefaultLatLng()
                     }
                 }
                 .addOnFailureListener {
+                    setDefaultLatLng()
+
                     Log.d("LocationStateManager", "사용자 GPS Update 실패 : ${it.stackTraceToString()}")
                 }
         } catch (exception: Exception) {
+            setDefaultLatLng()
+
             Log.d("LocationStateManager", "사용자 GPS Update 실패 : ${exception.stackTraceToString()}")
         }
     }
@@ -101,8 +83,8 @@ object LocationStateManager {
         }
     }
 
-    fun setRequestEnableLocationState() {
-        _shouldRequestEnableLocation.update { false }
+    fun setShouldShowLocationSettingDialog(state: Boolean) {
+        _shouldShowLocationSettingDialog.update { state }
     }
 
     fun init(context: Context) {
@@ -119,11 +101,10 @@ object LocationStateManager {
         val isGpsEnabled = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
         val isNetworkEnabled = locationManager.isProviderEnabled(android.location.LocationManager.NETWORK_PROVIDER)
 
-        return !isGpsEnabled && !isNetworkEnabled
+        return isGpsEnabled || isNetworkEnabled
     }
 
     private fun setDefaultLatLng() {
-        latitude = null
-        longitude = null
+        _currentLocation.update { null }
     }
 }
