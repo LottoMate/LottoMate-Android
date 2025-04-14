@@ -9,7 +9,6 @@ import androidx.navigation.toRoute
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerType
-import com.lottomate.lottomate.presentation.component.LottoMateNaverMapWebView
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.HomeRoute
@@ -20,6 +19,7 @@ import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapT
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
+import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideNaverMapWebView
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
 import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.navigateToWinnerGuide
 
@@ -137,11 +137,11 @@ fun NavGraphBuilder.homeNavGraph(
         )
     }
 
-    // 네이버 지도
+    // 당첨자 가이드 네이버 지도
     composable<LottoMateRoute.NaverMap> { navBackStackEntry ->
         val place = navBackStackEntry.toRoute<LottoMateRoute.NaverMap>().place
 
-        LottoMateNaverMapWebView(
+        WinnerGuideNaverMapWebView(
             place = place,
             onBackPressed = { navController.navigateUp() },
         )
