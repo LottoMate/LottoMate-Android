@@ -178,7 +178,7 @@ private fun InterviewSection(
                 subTitle = interviews[page].reviewPlace,
                 thumb = interviews[page].reviewThumb,
                 interviewDate = interviews[page].intrvDate,
-                onClick = { onClickInterview(page, interviews[page].reviewPlace) },
+                onClick = { onClickInterview(interviews[page].reviewNo, interviews[page].reviewPlace) },
             )
         }
 
