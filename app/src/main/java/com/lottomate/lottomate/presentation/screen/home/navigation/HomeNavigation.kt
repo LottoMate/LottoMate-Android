@@ -15,9 +15,11 @@ import com.lottomate.lottomate.presentation.screen.home.HomeRoute
 import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
+import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
+import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideNaverMapWebView
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
 import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.navigateToWinnerGuide
 
@@ -43,6 +45,10 @@ fun NavController.navigateToLottoScanResult(data: String) {
 
 fun NavController.navigateToBanner(bannerType: BannerType) {
     navigate(bannerType.route)
+}
+
+fun NavController.navigateToNaverMap(url: String) {
+    navigate(LottoMateRoute.NaverMap(url))
 }
 
 fun NavGraphBuilder.homeNavGraph(
@@ -119,10 +125,25 @@ fun NavGraphBuilder.homeNavGraph(
     // 당첨자 가이드 화면 (배너)
     composable<LottoMateRoute.LottoWinnerGuide> {
         WinnerGuideRoute(
-            onClickBanner = {
-                // TODO : 지도로 이동
+            moveToMap = {
+                val navOptions = NavOptions.Builder().apply {
+                    setPopUpTo<LottoMateRoute.LottoWinnerGuide>(inclusive = true)
+                }.build()
+
+                navController.navigateToMapTab(navOptions)
             },
+            moveToNaverMap = { navController.navigateToNaverMap(it) },
             onBackPressed = { navController.popBackStack() },
+        )
+    }
+
+    // 당첨자 가이드 네이버 지도
+    composable<LottoMateRoute.NaverMap> { navBackStackEntry ->
+        val place = navBackStackEntry.toRoute<LottoMateRoute.NaverMap>().place
+
+        WinnerGuideNaverMapWebView(
+            place = place,
+            onBackPressed = { navController.navigateUp() },
         )
     }
 }
