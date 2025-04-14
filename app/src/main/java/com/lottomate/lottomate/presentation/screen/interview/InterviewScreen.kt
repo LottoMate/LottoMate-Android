@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +58,7 @@ import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.interview.model.InterviewQnA
 import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUIModel
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
+import com.lottomate.lottomate.presentation.ui.LottoMateDim2
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
@@ -66,6 +68,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTransparent
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @Composable
 fun InterviewRoute(
@@ -111,7 +114,7 @@ private fun InterviewScreen(
     onClickOriginArticle: () -> Unit,
 ) {
     var showInterviewImage by remember { mutableStateOf(false) }
-    var showInterviewImageUri: String? by remember { mutableStateOf(null) }
+    var showInterviewImageIndex by remember { mutableStateOf(0) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -134,7 +137,7 @@ private fun InterviewScreen(
                         interview = interview,
                         onClickOriginArticle = onClickOriginArticle,
                         onClickInterviewImage = {
-                            showInterviewImageUri = it
+                            showInterviewImageIndex = it
                             showInterviewImage = true
                         },
                     )
@@ -182,9 +185,9 @@ private fun InterviewScreen(
 
         if (showInterviewImage) {
             InterviewImageView(
-                image = showInterviewImageUri!!,
+                index = showInterviewImageIndex,
+                images = (interviewUiState as InterviewUiState.Success).data.imgs,
                 onDismiss = {
-                    showInterviewImageUri = null
                     showInterviewImage = false
                 },
                 modifier = Modifier.fillMaxSize()
@@ -197,7 +200,7 @@ private fun InterviewScreen(
 private fun InterviewImageSection(
     modifier: Modifier = Modifier,
     imgs: List<String>,
-    onClickInterviewImage: (String) -> Unit,
+    onClickInterviewImage: (Int) -> Unit,
 ) {
     val interviewImageHeight = if (imgs.size == 1) 250.dp else 230.dp
     val pagerState = rememberPagerState(
@@ -215,7 +218,7 @@ private fun InterviewImageSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(interviewImageHeight)
-                    .noInteractionClickable { onClickInterviewImage(imgs[page]) },
+                    .noInteractionClickable { onClickInterviewImage(page) },
                 shape = RoundedCornerShape(Dimens.RadiusLarge)
             ) {
                 AsyncImage(
@@ -256,21 +259,70 @@ private fun InterviewImageSection(
 @Composable
 private fun InterviewImageView(
     modifier: Modifier = Modifier,
-    image: String,
+    index: Int,
+    images: List<String>,
     onDismiss: () -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val pagerState = rememberPagerState(
+        initialPage = index,
+        pageCount = { images.size },
+    )
+
     Box(
         modifier = modifier
-            .background(color = LottoMateBlack.copy(alpha = 0.8f))
+            .background(color = LottoMateDim2)
             .noInteractionClickable { onDismiss() },
     ) {
-        AsyncImage(
-            model = image,
-            contentDescription = "",
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.Center),
-        )
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.align(Alignment.Center)
+        ) {page ->
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                AsyncImage(
+                    model = images[page],
+                    contentDescription = "",
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .fillMaxWidth(),
+                )
+
+                if (page != 0) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_arrow_left),
+                        contentDescription = null,
+                        tint = LottoMateWhite,
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 13.dp)
+                            .noInteractionClickable {
+                                coroutineScope.launch {
+                                    pagerState.scrollToPage(page - 1)
+                                }
+                            },
+                    )
+                }
+
+                if (page != images.lastIndex) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_arrow_right),
+                        contentDescription = null,
+                        tint = LottoMateWhite,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 13.dp)
+                            .noInteractionClickable {
+                                coroutineScope.launch {
+                                    pagerState.scrollToPage(page + 1)
+                                }
+                            },
+                    )
+                }
+            }
+        }
 
         LottoMateTopAppBar(
             titleRes = R.string.top_app_bar_empty_title,
@@ -295,7 +347,7 @@ private fun InterviewContentDetail(
     modifier: Modifier = Modifier,
     interview: Interview,
     onClickOriginArticle: () -> Unit,
-    onClickInterviewImage: (String) -> Unit,
+    onClickInterviewImage: (Int) -> Unit,
 ) {
     Column(modifier = modifier) {
         InterviewTitle(
