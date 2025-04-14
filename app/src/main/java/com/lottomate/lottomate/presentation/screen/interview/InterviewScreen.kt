@@ -71,6 +71,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun InterviewRoute(
     vm: InterviewViewModel = hiltViewModel(),
     no: Int,
+    place: String,
     onClickBanner: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
