@@ -1,6 +1,9 @@
 package com.lottomate.lottomate.presentation.screen.interview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -35,6 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -275,24 +280,75 @@ private fun InterviewImageView(
         pageCount = { images.size },
     )
 
+    var scale by remember { mutableStateOf(1f) }
+    var offsetX by remember { mutableStateOf(0f) }
+    var offsetY by remember { mutableStateOf(0f) }
+
+    val screenWidth = LocalContext.current.resources.displayMetrics.widthPixels.toFloat()
+    val screenHeight = LocalContext.current.resources.displayMetrics.heightPixels.toFloat()
+
+
+    val imageGestureState = rememberTransformableState { zoomChange, panChange, _ ->
+        // 1. 스케일 계산
+        scale = (scale * zoomChange).coerceIn(1f, 5f)
+
+        // 2. 이미지 너비 계산
+        val imageWidth = screenWidth * scale
+        val imageHeight = screenHeight * scale
+
+        val maxOffsetX = ((imageWidth - screenWidth) / 2f).coerceAtLeast(0f)
+        val maxOffsetY = ((imageHeight - screenHeight) / 2f).coerceAtLeast(0f)
+
+        offsetX = (offsetX + panChange.x).coerceIn(-maxOffsetX, maxOffsetX)
+        offsetY = (offsetY + panChange.y).coerceIn(-maxOffsetY, maxOffsetY)
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        scale = 1f
+        offsetX = 0f
+    }
+
     Box(
         modifier = modifier
             .background(color = LottoMateDim2)
+            .fillMaxSize()
+            .transformable(imageGestureState)
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    scale = (scale * zoom).coerceIn(1f, 5f)
+
+                    val imageWidth = screenWidth * scale
+                    val imageHeight = screenHeight * scale
+
+                    val maxOffsetX = ((imageWidth - screenWidth) / 2f).coerceAtLeast(0f)
+                    val maxOffsetY = ((imageHeight - screenHeight) / 2f).coerceAtLeast(0f)
+
+                    offsetX = (offsetX + pan.x).coerceIn(-maxOffsetX, maxOffsetX)
+                    offsetY = (offsetY + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                }
+            }
             .noInteractionClickable { onDismiss() },
     ) {
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.align(Alignment.Center)
+            modifier = Modifier.align(Alignment.Center),
+            userScrollEnabled = scale <= 1f,
         ) {page ->
             Box(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxSize(),
             ) {
                 AsyncImage(
                     model = images[page],
                     contentDescription = "",
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .fillMaxWidth(),
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offsetX,
+                            translationY = offsetY
+                        )
+                        .fillMaxWidth()
                 )
 
                 if (page != 0) {
