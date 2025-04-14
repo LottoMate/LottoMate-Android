@@ -120,8 +120,9 @@ internal fun WinInterviewCardsSection(
                                 text = interviews[page].reviewTitle,
                                 style = LottoMateTheme.typography.headline1,
                                 maxLines = 2,
+                                minLines = 2,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.weight(1f),
+                                modifier = Modifier.fillMaxWidth(),
                             )
 
                             LottoMateText(

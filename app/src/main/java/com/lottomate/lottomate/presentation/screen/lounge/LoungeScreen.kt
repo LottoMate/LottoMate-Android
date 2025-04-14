@@ -244,10 +244,9 @@ private fun InterviewItem(
                     text = title,
                     style = LottoMateTheme.typography.label2,
                     maxLines = 2,
+                    minLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 LottoMateText(
