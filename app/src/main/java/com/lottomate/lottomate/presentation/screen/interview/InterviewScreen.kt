@@ -75,6 +75,10 @@ fun InterviewRoute(
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        vm.getInterview(no)
+    }
+
     val interviewUiState by vm.interview.collectAsStateWithLifecycle()
     val winnerInterviewsUiState by vm.winnerInterviews.collectAsStateWithLifecycle()
 
