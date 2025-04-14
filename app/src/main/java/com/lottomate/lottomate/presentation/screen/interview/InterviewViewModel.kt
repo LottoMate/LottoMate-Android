@@ -3,8 +3,7 @@ package com.lottomate.lottomate.presentation.screen.interview
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
-import com.lottomate.lottomate.presentation.screen.interview.model.Interview
-import com.lottomate.lottomate.presentation.screen.interview.model.InterviewMockData
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,10 +16,10 @@ import javax.inject.Inject
 class InterviewViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
 ) : BaseViewModel(errorHandler){
-    private var _winnerInterviews = MutableStateFlow(InterviewUiState.Loading as InterviewUiState<List<Interview>>)
-    private var _interview = MutableStateFlow(InterviewUiState.Loading as InterviewUiState<Interview>)
-    val interview: StateFlow<InterviewUiState<Interview>> get() = _interview.asStateFlow()
-    val winnerInterviews: StateFlow<InterviewUiState<List<Interview>>> get() = _winnerInterviews.asStateFlow()
+    private var _winnerInterviews = MutableStateFlow(InterviewUiState.Loading as InterviewUiState<List<InterviewUIModel>>)
+    private var _interview = MutableStateFlow(InterviewUiState.Loading as InterviewUiState<InterviewUIModel>)
+    val interview: StateFlow<InterviewUiState<InterviewUIModel>> get() = _interview.asStateFlow()
+    val winnerInterviews: StateFlow<InterviewUiState<List<InterviewUIModel>>> get() = _winnerInterviews.asStateFlow()
 
     init {
         runCatching {
