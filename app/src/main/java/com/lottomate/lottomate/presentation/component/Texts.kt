@@ -44,6 +44,7 @@ fun LottoMateText(
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
     maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
 ) {
@@ -64,6 +65,7 @@ fun LottoMateText(
         overflow = overflow,
         softWrap = softWrap,
         maxLines = maxLines,
+        minLines = minLines,
         onTextLayout = onTextLayout,
         style = style.copy(fontSize = size),
     )

@@ -54,7 +54,7 @@ fun HomeRoute(
     moveToLottoInfo: (LottoType, Int) -> Unit,
     moveToSetting: () -> Unit,
     moveToMap: () -> Unit,
-    moveToInterviewDetail: (Int) -> Unit,
+    moveToInterviewDetail: (Int, String) -> Unit,
     moveToScan: () -> Unit,
     onClickBanner: (BannerType) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
@@ -94,7 +94,7 @@ private fun HomeScreen(
     latestLotto720Round: Int,
     onClickPrevLottoInfo: (LottoType, Int) -> Unit,
     onClickNextLottoInfo: (LottoType, Int) -> Unit,
-    onClickInterview: (Int) -> Unit,
+    onClickInterview: (Int, String) -> Unit,
     moveToLottoInfo: (LottoType, Int) -> Unit,
     moveToMap: () -> Unit,
     moveToScan: () -> Unit,
@@ -160,7 +160,7 @@ private fun HomeScreen(
                     WinInterviewCardsSection(
                         modifier = Modifier.padding(top = 48.dp),
                         interviews = interviews,
-                        onClickInterview = { onClickInterview(it) },
+                        onClickInterview = onClickInterview,
                     )
                 }
             }
@@ -209,7 +209,7 @@ private fun HomeScreenPreview() {
             moveToLottoInfo = { _, _ -> },
             moveToMap = {},
             moveToScan = {},
-            onClickInterview = {},
+            onClickInterview = { _, _ -> },
             onClickNextLottoInfo = { _, _ -> },
             onClickPrevLottoInfo = { _, _ -> },
             onClickBanner = {},

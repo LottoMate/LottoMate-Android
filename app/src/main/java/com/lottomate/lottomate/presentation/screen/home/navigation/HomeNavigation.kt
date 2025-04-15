@@ -27,8 +27,8 @@ fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
 }
 
-fun NavController.navigateToInterviewDetail(no: Int) {
-    navigate(LottoMateRoute.InterviewDetail(no))
+fun NavController.navigateToInterviewDetail(no: Int, place: String) {
+    navigate(LottoMateRoute.InterviewDetail(no, place))
 }
 
 fun NavController.navigateToLottoDetail(type: LottoType, round: Int) {
@@ -63,7 +63,7 @@ fun NavGraphBuilder.homeNavGraph(
             moveToSetting = { navController.navigateToSetting() },
             moveToMap = { navController.navigateToMap() },
             moveToScan = { navController.navigateToLottoScan() },
-            moveToInterviewDetail = { navController.navigateToInterviewDetail(it) },
+            moveToInterviewDetail = { no, place -> navController.navigateToInterviewDetail(no, place) },
             onClickBanner = { navController.navigateToBanner(it) },
             onShowErrorSnackBar = onShowErrorSnackBar
         )
@@ -84,10 +84,12 @@ fun NavGraphBuilder.homeNavGraph(
     // 인터뷰 상세 화면
     composable<LottoMateRoute.InterviewDetail> {navBackStackEntry ->
         val no = navBackStackEntry.toRoute<LottoMateRoute.InterviewDetail>().no
+        val place = navBackStackEntry.toRoute<LottoMateRoute.InterviewDetail>().place
 
         InterviewRoute(
             no = no,
-            onClickBanner = {},
+            place = place,
+            onClickBanner = { navController.navigateToBanner(BannerType.MAP) },
             onShowErrorSnackBar = onShowErrorSnackBar,
             onBackPressed = { navController.navigateUp() },
         )

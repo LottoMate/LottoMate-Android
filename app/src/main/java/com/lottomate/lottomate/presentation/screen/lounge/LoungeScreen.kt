@@ -60,7 +60,7 @@ fun LoungeRoute(
     padding: PaddingValues,
     moveToSetting: () -> Unit,
     moveToBanner: (BannerType) -> Unit,
-    moveToInterview: (Int) -> Unit,
+    moveToInterview: (Int, String) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     val interviews by vm.interviews.collectAsStateWithLifecycle()
@@ -86,7 +86,7 @@ private fun LoungeScreen(
     onClickSetting: () -> Unit,
     onClickTopBanner: () -> Unit,
     onClickBottomBanner: (BannerType) -> Unit,
-    onClickInterview: (Int) -> Unit,
+    onClickInterview: (Int, String) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -142,7 +142,7 @@ private fun LoungeScreen(
 private fun InterviewSection(
     modifier: Modifier = Modifier,
     interviews: List<ResponseInterviewsInfo>,
-    onClickInterview: (Int) -> Unit,
+    onClickInterview: (Int, String) -> Unit,
 ) {
     val pagerState = rememberPagerState {
         interviews.size
@@ -178,7 +178,7 @@ private fun InterviewSection(
                 subTitle = interviews[page].reviewPlace,
                 thumb = interviews[page].reviewThumb,
                 interviewDate = interviews[page].intrvDate,
-                onClick = { onClickInterview(page) },
+                onClick = { onClickInterview(interviews[page].reviewNo, interviews[page].reviewPlace) },
             )
         }
 
@@ -244,10 +244,9 @@ private fun InterviewItem(
                     text = title,
                     style = LottoMateTheme.typography.label2,
                     maxLines = 2,
+                    minLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 LottoMateText(
@@ -280,7 +279,7 @@ private fun LoungeScreenPreview() {
             onClickTopBanner = {},
             onClickSetting = {},
             onClickBottomBanner = {},
-            onClickInterview = {},
+            onClickInterview = { _, _ -> },
         )
     }
 }
