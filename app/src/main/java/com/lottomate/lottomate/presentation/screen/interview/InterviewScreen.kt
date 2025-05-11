@@ -1,6 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.interview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
@@ -38,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -199,7 +201,6 @@ private fun InterviewScreen(
                 onDismiss = {
                     showInterviewImage = false
                 },
-                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -227,6 +228,7 @@ private fun InterviewImageSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(interviewImageHeight)
+                    .border(1.dp, LottoMateGray20, RoundedCornerShape(Dimens.RadiusLarge))
                     .noInteractionClickable { onClickInterviewImage(page) },
                 shape = RoundedCornerShape(Dimens.RadiusLarge)
             ) {
@@ -605,7 +607,6 @@ private fun BottomInterviewListContent(
 
                 BottomInterviewListItem(
                     title = interviewList[it].title,
-                    subTitle = interviewList[it].subTitle,
                     thumb = interviewList[it].thumb,
                     interviewDate = interviewList[it].interviewDate,
                     onClick = onClickInterviewItem
@@ -622,7 +623,7 @@ private fun BottomInterviewListContent(
 private fun BottomInterviewListItem(
     modifier: Modifier = Modifier,
     title: String,
-    subTitle: String,
+    subTitle: String = "",
     thumb: String,
     interviewDate: String,
     onClick: () -> Unit,
