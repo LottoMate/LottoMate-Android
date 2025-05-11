@@ -353,9 +353,9 @@ private fun InterviewImageView(
 
                 if (page != 0) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_arrow_left),
+                        painter = painterResource(id = R.drawable.icon_arrow_left_shadow),
                         contentDescription = null,
-                        tint = LottoMateWhite,
+                        tint = Color.Unspecified,
                         modifier = Modifier
                             .align(Alignment.CenterStart)
                             .padding(start = 13.dp)
@@ -369,9 +369,9 @@ private fun InterviewImageView(
 
                 if (page != images.lastIndex) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_arrow_right),
+                        painter = painterResource(id = R.drawable.icon_arrow_right_shadow),
                         contentDescription = null,
-                        tint = LottoMateWhite,
+                        tint = Color.Unspecified,
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 13.dp)
