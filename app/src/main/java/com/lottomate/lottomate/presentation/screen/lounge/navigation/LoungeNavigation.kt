@@ -26,7 +26,7 @@ fun NavGraphBuilder.loungeNavGraph(
             padding = padding,
             moveToSetting = { navController.navigateToSetting() },
             moveToBanner = { navController.navigateToBanner(it) },
-            moveToInterview = { navController.navigateToInterviewDetail(it) },
+            moveToInterview = { no, place -> navController.navigateToInterviewDetail(no, place) },
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }

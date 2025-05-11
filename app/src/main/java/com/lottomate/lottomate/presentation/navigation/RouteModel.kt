@@ -17,7 +17,7 @@ sealed interface LottoMateRoute {
     @Serializable data class NaverMap(val place: String) : LottoMateRoute
 
     // 인터뷰
-    @Serializable data object Interview : LottoMateRoute
+    @Serializable data class InterviewDetail(val no: Int, val place: String) : LottoMateRoute
     // 로그인
     @Serializable data object Login : LottoMateRoute
     @Serializable data object LoginComplete : LottoMateRoute
