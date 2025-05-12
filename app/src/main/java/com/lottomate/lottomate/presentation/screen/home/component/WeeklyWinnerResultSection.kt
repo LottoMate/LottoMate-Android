@@ -78,8 +78,8 @@ internal fun WeeklyWinnerResultSection(
             LottoMateScrollableTabRow(
                 tabState = tabRowState,
                 tabs = tabs,
-//                unselectedTabTextStyle = LottoMateTheme.typography.headline2,
-//                unselectedTabTextColor = LottoMateGray60,
+                unselectedTabTextStyle = LottoMateTheme.typography.headline2,
+                unselectedTabTextColor = LottoMateGray60,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -91,7 +91,7 @@ internal fun WeeklyWinnerResultSection(
                     .align(Alignment.CenterEnd)
                     .padding(end = Dimens.DefaultPadding20)
                     .size(22.dp)
-                    .clickable { openLottoTypeInfoBottomSheet() },
+                    .noInteractionClickable { openLottoTypeInfoBottomSheet() },
             )
         }
 
