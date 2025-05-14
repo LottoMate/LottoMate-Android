@@ -148,7 +148,7 @@ private fun HomeScreen(
                     )
 
                     WishWinCardsSection(
-                        modifier = Modifier.padding(top = 36.dp),
+                        modifier = Modifier.padding(top = 48.dp),
                         onClickMap = moveToMap,
                         onClickScan = moveToScan,
                     )
