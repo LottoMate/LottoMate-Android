@@ -190,14 +190,14 @@ private fun Lotto645WeeklyWinnerResult(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val isLatestRound = lottoInfo.round == latestLottoRound
+        val hasPrevRound = lottoInfo.round - 1 > latestLottoRound - 3
 
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_left),
             contentDescription = null,
-            tint = LottoMateGray100,
+            tint = if (hasPrevRound) LottoMateGray100 else LottoMateWhite,
             modifier = Modifier
-                .clip(CircleShape)
-                .clickable { onClickPrevLottoInfo(lottoInfo.round.minus(1)) }
+                .noInteractionClickable { if (hasPrevRound) onClickPrevLottoInfo(lottoInfo.round.minus(1)) }
         )
 
         Spacer(modifier = Modifier.width(3.dp))
@@ -283,6 +283,7 @@ private fun Lotto720WeeklyWinnerResult(
     onClickLottoInfo: () -> Unit,
 ) {
     val isLatestRound = lottoInfo.round == latestLottoRound
+    val hasPrevRound = lottoInfo.round - 1 > latestLottoRound - 3
 
     Row(
         modifier = modifier
@@ -295,10 +296,9 @@ private fun Lotto720WeeklyWinnerResult(
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_left),
             contentDescription = null,
-            tint = LottoMateGray100,
+            tint = if (hasPrevRound) LottoMateGray100 else LottoMateWhite,
             modifier = Modifier
-                .clip(CircleShape)
-                .clickable { onClickPrevLottoInfo(lottoInfo.round.minus(1)) },
+                .noInteractionClickable { if (hasPrevRound) onClickPrevLottoInfo(lottoInfo.round.minus(1)) },
         )
 
         Spacer(modifier = Modifier.width(3.dp))
@@ -379,7 +379,7 @@ private fun Lotto720WeeklyWinnerResult(
             contentDescription = null,
             tint = if (isLatestRound) LottoMateWhite else LottoMateGray100,
             modifier = Modifier
-                .noInteractionClickable { if (!isLatestRound) onClickPrevLottoInfo(lottoInfo.round.plus(1)) },
+                .noInteractionClickable { if (!isLatestRound) onClickNextLottoInfo(lottoInfo.round.plus(1)) },
         )
     }
 }
