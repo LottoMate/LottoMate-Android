@@ -68,7 +68,8 @@ internal fun WeeklyWinnerResultSection(
     ) {
         LottoMateText(
             text = "이번 주 당첨 결과",
-            style = LottoMateTheme.typography.headline1,
+            style = LottoMateTheme.typography.headline1
+                .copy(color = LottoMateBlack),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Dimens.DefaultPadding20),
@@ -109,7 +110,7 @@ internal fun WeeklyWinnerResultSection(
                     lottoInfo = lottoInfo,
                     onClickPrevLottoInfo = { onClickPrevLottoInfo(LottoType.L645, it) },
                     onClickNextLottoInfo = { onClickNextLottoInfo(LottoType.L645, it) },
-                    onClickLottoInfo = { onClickLottoInfo(LottoType.L645, lottoInfo.round) },
+                    onClickLottoInfo = { round -> onClickLottoInfo(LottoType.L645, round) },
                 )
             }
             1 -> {
@@ -118,10 +119,10 @@ internal fun WeeklyWinnerResultSection(
                 // 연금복권 당첨 결과
                 Lotto720WeeklyWinnerResult(
                     latestLottoRound = latestLotto720Round,
-                    lottoInfo = lottoInfos[LottoType.L720.num] as HomeLotto720Info,
+                    lottoInfo = lottoInfo,
                     onClickPrevLottoInfo = { onClickPrevLottoInfo(LottoType.L720, it) },
                     onClickNextLottoInfo = { onClickNextLottoInfo(LottoType.L720, it) },
-                    onClickLottoInfo = { onClickLottoInfo(LottoType.L720, lottoInfo.round) },
+                    onClickLottoInfo = { round -> onClickLottoInfo(LottoType.L720, round) },
                 )
             }
             2 -> {
@@ -182,7 +183,7 @@ private fun Lotto645WeeklyWinnerResult(
     lottoInfo: HomeLotto645Info,
     onClickPrevLottoInfo: (Int) -> Unit,
     onClickNextLottoInfo: (Int) -> Unit,
-    onClickLottoInfo: () -> Unit,
+    onClickLottoInfo: (Int) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -208,7 +209,7 @@ private fun Lotto645WeeklyWinnerResult(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .noInteractionClickable { onClickLottoInfo() },
+                .noInteractionClickable { onClickLottoInfo(lottoInfo.round) },
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
@@ -291,7 +292,7 @@ private fun Lotto720WeeklyWinnerResult(
     latestLottoRound: Int,
     onClickPrevLottoInfo: (Int) -> Unit,
     onClickNextLottoInfo: (Int) -> Unit,
-    onClickLottoInfo: () -> Unit,
+    onClickLottoInfo: (Int) -> Unit,
 ) {
     val isLatestRound = lottoInfo.round == latestLottoRound
     val hasPrevRound = lottoInfo.round - 1 > latestLottoRound - 3
@@ -317,7 +318,7 @@ private fun Lotto720WeeklyWinnerResult(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .noInteractionClickable { onClickLottoInfo() },
+                .noInteractionClickable { onClickLottoInfo(lottoInfo.round) },
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(

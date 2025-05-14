@@ -86,6 +86,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LottoInfoRoute(
     vm: LottoInfoViewModel = hiltViewModel(),
+    type: LottoType,
+    round: Int,
     onBackPressed: () -> Unit,
     onClickBottomBanner: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
@@ -95,6 +97,11 @@ fun LottoInfoRoute(
     val currentTabIndex by rememberSaveable { vm.currentTabMenu }
     val hasPreRound by rememberSaveable { vm.hasPreLottoRound }
     val hasNextRound by rememberSaveable { vm.hasNextLottoRound }
+
+    LaunchedEffect(type, round) {
+        vm.setLottoInfoTab(type)
+        vm.getLottoInfo(type, round)
+    }
 
     LaunchedEffect(true) {
         vm.errorFlow.collectLatest{ error -> onShowErrorSnackBar(error) }

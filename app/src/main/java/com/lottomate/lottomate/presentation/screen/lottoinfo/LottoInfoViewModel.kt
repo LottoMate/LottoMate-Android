@@ -35,10 +35,25 @@ class LottoInfoViewModel @Inject constructor(
     private val _lottoInfo = MutableStateFlow<LottoInfoUiState>(LottoInfoUiState.Loading)
     val lottoInfo get() = _lottoInfo.asStateFlow()
 
-    init {
-        runCatching {
-            loadLatestLottoInfo()
-        }.onFailure { handleException(it) }
+    fun getLottoInfo(type: LottoType, round: Int) {
+        viewModelScope.launch {
+            runCatching {
+                lottoInfoRepository.fetchLottoInfo(type.num, round)
+                    .onStart { _lottoInfo.update { LottoInfoUiState.Loading } }
+                    .catch { handleException(it) }
+                    .collectLatest { collectData ->
+                        _lottoInfo.update { LottoInfoUiState.Success(collectData) }
+                    }
+            }.onFailure { handleException(it) }
+        }
+    }
+
+    fun setLottoInfoTab(type: LottoType) {
+        when (type) {
+            LottoType.L645 -> currentTabMenu.intValue = LottoType.L645.ordinal
+            LottoType.L720 -> currentTabMenu.intValue = LottoType.L720.ordinal
+            else -> currentTabMenu.intValue = LottoType.S2000.ordinal
+        }
     }
 
     fun changeTabMenu(index: Int) {
