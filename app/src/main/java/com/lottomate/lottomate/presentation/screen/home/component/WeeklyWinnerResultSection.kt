@@ -180,7 +180,6 @@ private fun Lotto645WeeklyWinnerResult(
     onClickNextLottoInfo: (Int) -> Unit,
     onClickLottoInfo: () -> Unit,
 ) {
-    val winNumbers = listOf(4, 5, 11, 21, 37, 40)
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -211,7 +210,8 @@ private fun Lotto645WeeklyWinnerResult(
             Row(
                 modifier = Modifier
                     .background(LottoMateGray10, RoundedCornerShape(Dimens.RadiusSmall))
-                    .padding(vertical = 4.dp, horizontal = 12.dp),
+                    .padding(vertical = 8.dp, horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LottoMateText(
@@ -224,27 +224,28 @@ private fun Lotto645WeeklyWinnerResult(
                     text = "${lottoInfo.date} 추첨",
                     style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
-                    modifier = Modifier.padding(start = 8.dp),
                 )
             }
 
             LottoMateText(
                 text = "총 ${lottoInfo.winnerPrice.replace(",", "").toLong()/100_000_000}억원",
-                style = LottoMateTheme.typography.title1,
+                style = LottoMateTheme.typography.title1
+                    .copy(color = LottoMateBlack),
                 modifier = Modifier.padding(top = 12.dp),
             )
 
             LottoMateText(
                 text = "당첨된 ${lottoInfo.winnerCount}명은 한 번에 ${lottoInfo.winnerPrice.replace(",", "").toLong().div(lottoInfo.winnerCount.toInt())/100_000_000}억을 받아요",
-                style = LottoMateTheme.typography.label1,
+                style = LottoMateTheme.typography.label1
+                    .copy(color = LottoMateBlack),
                 modifier = Modifier.padding(top = 4.dp),
             )
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding(top = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 lottoInfo.winnerNumbers.forEach { number ->
@@ -252,7 +253,7 @@ private fun Lotto645WeeklyWinnerResult(
                 }
 
                 Icon(
-                    painter = painterResource(id = R.drawable.icon_mini_plus),
+                    painter = painterResource(id = R.drawable.icon_plus_10),
                     tint = LottoMateGray100,
                     contentDescription = "Just Separator",
                 )
