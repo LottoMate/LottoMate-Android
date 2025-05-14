@@ -11,18 +11,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.component.LottoMateAnnotatedText
 import com.lottomate.lottomate.presentation.component.LottoMateScrollableTabRow
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.rememberTabState
@@ -32,12 +36,12 @@ import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto720Info
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLottoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall720
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray60
-import com.lottomate.lottomate.presentation.ui.LottoMateGray70
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -199,7 +203,7 @@ private fun Lotto645WeeklyWinnerResult(
                 .noInteractionClickable { if (hasPrevRound) onClickPrevLottoInfo(lottoInfo.round.minus(1)) }
         )
 
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Column(
             modifier = Modifier
@@ -249,7 +253,10 @@ private fun Lotto645WeeklyWinnerResult(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 lottoInfo.winnerNumbers.forEach { number ->
-                    LottoBall645(number = number)
+                    LottoBall645(
+                        number = number,
+                        size = 28.dp,
+                    )
                 }
 
                 Icon(
@@ -258,11 +265,14 @@ private fun Lotto645WeeklyWinnerResult(
                     contentDescription = "Just Separator",
                 )
 
-                LottoBall645(number = lottoInfo.winnerBonusNumber)
+                LottoBall645(
+                    number = lottoInfo.winnerBonusNumber,
+                    size = 28.dp,
+                )
             }
         }
 
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_right),
@@ -302,7 +312,7 @@ private fun Lotto720WeeklyWinnerResult(
                 .noInteractionClickable { if (hasPrevRound) onClickPrevLottoInfo(lottoInfo.round.minus(1)) },
         )
 
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Column(
             modifier = Modifier
@@ -314,6 +324,7 @@ private fun Lotto720WeeklyWinnerResult(
                 modifier = Modifier
                     .background(LottoMateGray10, RoundedCornerShape(Dimens.RadiusSmall))
                     .padding(vertical = 4.dp, horizontal = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LottoMateText(
@@ -326,19 +337,30 @@ private fun Lotto720WeeklyWinnerResult(
                     text = "${lottoInfo.date} 추첨",
                     style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
-                    modifier = Modifier.padding(start = 8.dp),
                 )
             }
 
             LottoMateText(
                 text = "20년 x 월 700만원",
-                style = LottoMateTheme.typography.title1,
+                style = LottoMateTheme.typography.title2,
                 modifier = Modifier.padding(top = 12.dp),
             )
 
-            LottoMateText(
-                text = "당첨자는 20년 동안 매월 700만원 씩 받아요",
-                style = LottoMateTheme.typography.label1,
+            val message = pluralStringResource(id = R.plurals.home_720_prize_per_person, 1)
+            val keyword1 = stringResource(id = R.string.home_720_prize_per_person_keyword1)
+            val keyword2 = stringResource(id = R.string.home_720_prize_per_person_keyword2)
+            val years = message.indexOf(keyword1)
+            val prizeOfMonth = message.indexOf(keyword2)
+
+            val annotatedMessage = AnnotatedString.Builder(message).apply {
+                addStyle(SpanStyle(fontWeight = FontWeight.SemiBold), years, years + (keyword1.length))
+                addStyle(SpanStyle(fontWeight = FontWeight.SemiBold), prizeOfMonth, prizeOfMonth + (keyword2.length))
+            }.toAnnotatedString()
+
+            LottoMateAnnotatedText(
+                annotatedString = annotatedMessage,
+                style = LottoMateTheme.typography.label1
+                    .copy(color = LottoMateBlack),
                 modifier = Modifier.padding(top = 4.dp),
             )
 
@@ -346,20 +368,20 @@ private fun Lotto720WeeklyWinnerResult(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.Center,
+                horizontalArrangement = Arrangement.spacedBy(7.dp, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LottoBall720(
                     index = 0,
                     number = lottoInfo.winnerNumbers.first().toInt(),
                     isBonusNumber = false,
+                    size = 28.dp,
                 )
-
-                Spacer(modifier = Modifier.width(7.dp))
 
                 LottoMateText(
                     text = "조",
-                    style = LottoMateTheme.typography.label2,
+                    style = LottoMateTheme.typography.caption
+                        .copy(color = LottoMateBlack),
                 )
 
                 (1..lottoInfo.winnerNumbers.lastIndex).forEach { index ->
@@ -367,13 +389,13 @@ private fun Lotto720WeeklyWinnerResult(
                         index = index,
                         number = lottoInfo.winnerNumbers[index],
                         isBonusNumber = false,
-                        modifier = Modifier.padding(start = 7.dp),
+                        size = 28.dp,
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_right),

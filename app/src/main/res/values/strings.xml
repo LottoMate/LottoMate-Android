@@ -20,6 +20,14 @@
     <string name="home_top_notice_lotto720_3">연금복권 당첨 발표는 오늘 이에요!</string>
     <string name="home_top_notice_lotto720_3_keyword">오늘</string>
 
+    <!-- 홈 - 연금복권 -->
+    <plurals name="home_720_prize_per_person">
+        <item quantity="other">당첨자는 20년 동안 매월 700만원 씩 받아요</item>
+    </plurals>
+    <string name="home_720_prize_per_person_keyword1">20년</string>
+    <string name="home_720_prize_per_person_keyword2">매월 700만원</string>
+
+
     <!-- 인트로 -->
     <string name="intro_title">행운을 불러오는</string>
     <string name="intro_title_app_name">LottoMate</string>
