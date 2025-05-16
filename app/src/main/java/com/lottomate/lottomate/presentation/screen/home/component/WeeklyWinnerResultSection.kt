@@ -423,16 +423,17 @@ private fun SpeettoWeeklyWinnerResult(
             .padding(top = 32.dp)
             .padding(horizontal = Dimens.DefaultPadding20)
             .clickable { onClickLottoInfo() },
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_left),
             contentDescription = null,
             tint = LottoMateGray100,
+            modifier = Modifier
+                .padding(top = 68.dp),
         )
 
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Column(
             modifier = Modifier
@@ -448,37 +449,39 @@ private fun SpeettoWeeklyWinnerResult(
                 LottoMateText(
                     text = "54회 1등 당첨금",
                     style = LottoMateTheme.typography.label2
-                        .copy(color = LottoMateGray120),
+                        .copy(color = LottoMateBlack),
                 )
 
                 LottoMateText(
                     text = "2024.06.09 스피또 2000 기준",
                     style = LottoMateTheme.typography.caption
-                        .copy(color = LottoMateGray80),
+                        .copy(color = LottoMateGray100),
                 )
             }
 
             LottoMateText(
                 text = "10억원",
-                style = LottoMateTheme.typography.title1,
+                style = LottoMateTheme.typography.title1
+                    .copy(color = LottoMateBlack),
                 modifier = Modifier.padding(top = 12.dp),
             )
 
             LottoMateText(
                 text = "1등 복권이 6장 남아있어요.",
-                style = LottoMateTheme.typography.label1,
+                style = LottoMateTheme.typography.label1
+                    .copy(color = LottoMateBlack),
                 modifier = Modifier.padding(top = 4.dp),
             )
             LottoMateText(
                 text = "현재까지 출고율 72%",
                 style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray100),
-                modifier = Modifier.padding(top = 4.dp),
             )
 
             Row(
                 modifier = Modifier.padding(top = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             ) {
                 LottoMateText(
                     text = "1등 : 0/6",
@@ -490,39 +493,37 @@ private fun SpeettoWeeklyWinnerResult(
                     text = "|",
                     style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray40),
-                    modifier = Modifier.padding(start = 8.dp),
                 )
 
                 LottoMateText(
                     text = "2등 : 11/18",
                     style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
-                    modifier = Modifier.padding(start = 8.dp),
                 )
 
                 LottoMateText(
                     text = "|",
                     style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray40),
-                    modifier = Modifier.padding(start = 8.dp),
                 )
 
                 LottoMateText(
                     text = "3등 : 102/150",
                     style = LottoMateTheme.typography.caption
                         .copy(color = LottoMateGray80),
-                    modifier = Modifier.padding(start = 8.dp),
                 )
             }
 
         }
 
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(13.dp))
 
         Icon(
             painter = painterResource(id = R.drawable.icon_arrow_right),
             contentDescription = null,
             tint = LottoMateGray100,
+            modifier = Modifier
+                .padding(top = 68.dp),
         )
     }
 }
