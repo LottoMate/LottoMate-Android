@@ -2,7 +2,7 @@
     <string name="app_name">lottomate</string>
 
     <!-- 홈 -->
-    <string name="home_title">LOTTOMATE</string>
+    <string name="home_title">LottoMate</string>
 
     <string name="home_top_notice_lotto645_1">로또 추첨일은 매주 토요일 오후 8시 45분</string>
     <string name="home_top_notice_lotto645_1_keyword">매주 토요일 오후 8시 45분</string>

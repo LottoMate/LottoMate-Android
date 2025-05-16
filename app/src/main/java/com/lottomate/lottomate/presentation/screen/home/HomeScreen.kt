@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
@@ -41,6 +42,7 @@ import com.lottomate.lottomate.presentation.screen.home.component.WishWinCardsSe
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.presentation.ui.poppinsStyle
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
 
@@ -166,35 +168,22 @@ private fun HomeScreen(
                         onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
                     )
 
-                    MateVoteSection(
-                        modifier = Modifier.padding(top = 48.dp),
-                    )
+//                    MateVoteSection(
+//                        modifier = Modifier.padding(top = 48.dp),
+//                    )
 
                     BottomNoticeSection(
                         modifier = Modifier.padding(top = 56.dp),
                     )
                 }
             }
-            BannerCard(
-                modifier = Modifier
-                    .padding(top = 40.dp)
-                    .padding(horizontal = Dimens.DefaultPadding20),
-                onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
-            )
-
-//            MateVoteSection(
-//                modifier = Modifier.padding(top = 48.dp),
-//            )
-
-            BottomNoticeSection(
-                modifier = Modifier.padding(top = 48.dp),
-            )
         }
 
         LottoMateTopAppBar(
             titleRes = R.string.home_title,
             hasNavigation = false,
             isTitleCenter = false,
+            textStyle = poppinsStyle.copy(fontSize = 16.sp),
             actionButtons = {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_setting),

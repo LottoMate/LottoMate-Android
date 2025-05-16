@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,6 +40,7 @@ fun LottoMateTopAppBar(
     @StringRes titleRes: Int,
     hasNavigation: Boolean,
     isTitleCenter: Boolean = true,
+    textStyle: TextStyle = LottoMateTheme.typography.headline1,
     navigationColor: Color = LottoMateGray100,
     backgroundColor: Color = LottoMateWhite.copy(alpha = 0.8f),
     onBackPressed: () -> Unit = {},
@@ -75,7 +77,7 @@ fun LottoMateTopAppBar(
             LottoMateText(
                 text = stringResource(id = titleRes),
                 textAlign = if (isTitleCenter) TextAlign.Center else TextAlign.Start,
-                style = LottoMateTheme.typography.headline1,
+                style = textStyle,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),

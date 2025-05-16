@@ -18,8 +18,19 @@ private val pretendardFontFamily = FontFamily(
     Font(R.font.pretendard_bold, FontWeight.Bold),
 )
 
-val stunningFontFamily = FontFamily(
-    Font(R.font.stunning_bold, FontWeight.Bold),
+val poppinsFontFamily = FontFamily(
+    Font(R.font.poppins_bold, FontWeight.Bold),
+)
+
+val poppinsStyle = TextStyle(
+    fontFamily = poppinsFontFamily,
+    platformStyle = PlatformTextStyle(
+        includeFontPadding = false
+    ),
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
 )
 
 private val pretendardStyle = TextStyle(
