@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.home.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +42,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
-import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 internal fun WinInterviewCardsSection(
@@ -51,6 +52,15 @@ internal fun WinInterviewCardsSection(
     val pagerState = rememberPagerState(
         pageCount = { interviews.size }
     )
+
+    val interviewCoverImgList = remember(interviews) {
+        List(interviews.size) {
+            when ((1..2).random()) {
+                1 -> R.drawable.img_interview_empty01
+                else -> R.drawable.img_interview_empty02
+            }
+        }
+    }
 
     Column {
         Column(
@@ -101,19 +111,30 @@ internal fun WinInterviewCardsSection(
                     Column(
                         modifier = Modifier.background(LottoMateWhite)
                     ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(interviews[page].reviewThumb)
-                                .build(),
-                            contentDescription = "Lotto Interview Image",
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(id = R.drawable.img_review),
-                            // TODO : 기본 이미지 변경 필요 
-                            error = painterResource(id = R.drawable.img_review),
-                            modifier = Modifier
-                                .height(160.dp)
-                                .fillMaxWidth(),
-                        )
+                        if (interviews[page].reviewThumb.isEmpty()) {
+
+                            Image(
+                                painter = painterResource(id = interviewCoverImgList[page]),
+                                contentDescription = "interview image empty",
+                                modifier = Modifier
+                                    .height(160.dp)
+                                    .fillMaxWidth(),
+                            )
+                        } else {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(interviews[page].reviewThumb)
+                                    .build(),
+                                contentDescription = "Lotto Interview Image",
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(id = R.drawable.img_review),
+                                // TODO : 기본 이미지 변경 필요
+                                error = painterResource(id = R.drawable.img_review),
+                                modifier = Modifier
+                                    .height(160.dp)
+                                    .fillMaxWidth(),
+                            )
+                        }
 
                         Column(
                             modifier = Modifier
