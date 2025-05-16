@@ -190,7 +190,6 @@ private fun Lotto645WeeklyWinnerResult(
             .fillMaxWidth()
             .padding(top = 32.dp)
             .padding(horizontal = Dimens.DefaultPadding20),
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         val isLatestRound = lottoInfo.round == latestLottoRound
@@ -201,6 +200,7 @@ private fun Lotto645WeeklyWinnerResult(
             contentDescription = null,
             tint = if (hasPrevRound) LottoMateGray100 else LottoMateWhite,
             modifier = Modifier
+                .padding(top = 111.dp)
                 .noInteractionClickable { if (hasPrevRound) onClickPrevLottoInfo(lottoInfo.round.minus(1)) }
         )
 
@@ -280,6 +280,7 @@ private fun Lotto645WeeklyWinnerResult(
             contentDescription = null,
             tint = if (isLatestRound) LottoMateWhite else LottoMateGray100,
             modifier = Modifier
+                .padding(top = 111.dp)
                 .noInteractionClickable { if (!isLatestRound) onClickNextLottoInfo(lottoInfo.round.plus(1)) }
         )
     }
@@ -302,7 +303,6 @@ private fun Lotto720WeeklyWinnerResult(
             .fillMaxWidth()
             .padding(top = 32.dp)
             .padding(horizontal = Dimens.DefaultPadding20),
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Icon(
@@ -310,6 +310,7 @@ private fun Lotto720WeeklyWinnerResult(
             contentDescription = null,
             tint = if (hasPrevRound) LottoMateGray100 else LottoMateWhite,
             modifier = Modifier
+                .padding(top = 68.dp)
                 .noInteractionClickable { if (hasPrevRound) onClickPrevLottoInfo(lottoInfo.round.minus(1)) },
         )
 
@@ -403,6 +404,7 @@ private fun Lotto720WeeklyWinnerResult(
             contentDescription = null,
             tint = if (isLatestRound) LottoMateWhite else LottoMateGray100,
             modifier = Modifier
+                .padding(top = 68.dp)
                 .noInteractionClickable { if (!isLatestRound) onClickNextLottoInfo(lottoInfo.round.plus(1)) },
         )
     }
