@@ -32,6 +32,7 @@ import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
+import com.lottomate.lottomate.presentation.screen.home.component.HomeShimmerSkeleton
 import com.lottomate.lottomate.presentation.screen.home.component.LottoTypeInfoBottomSheet
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
@@ -117,21 +118,18 @@ private fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
 
-            TopLottoNotice(
-                modifier = Modifier
-                    .padding(top = Dimens.DefaultPadding20)
-                    .padding(horizontal = Dimens.DefaultPadding20),
-            )
-
-            Spacer(modifier = Modifier.height(36.dp))
-
             when (uiState) {
-                HomeUiState.Loading -> {
-
-                }
-
+                HomeUiState.Loading -> { HomeShimmerSkeleton() }
                 is HomeUiState.Error -> TODO()
                 is HomeUiState.Success -> {
+                    TopLottoNotice(
+                        modifier = Modifier
+                            .padding(top = Dimens.DefaultPadding20)
+                            .padding(horizontal = Dimens.DefaultPadding20),
+                    )
+
+                    Spacer(modifier = Modifier.height(36.dp))
+
                     val lottoInfos = uiState.lottoInfos
                     val interviews = uiState.interviews
 
@@ -157,6 +155,23 @@ private fun HomeScreen(
                         modifier = Modifier.padding(top = 48.dp),
                         interviews = interviews,
                         onClickInterview = onClickInterview,
+                    )
+
+
+                    BannerCard(
+                        modifier = Modifier
+                            .padding(top = 48.dp)
+                            .padding(horizontal = Dimens.DefaultPadding20),
+                        type = BannerType.WINNER_GUIDE,
+                        onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
+                    )
+
+                    MateVoteSection(
+                        modifier = Modifier.padding(top = 48.dp),
+                    )
+
+                    BottomNoticeSection(
+                        modifier = Modifier.padding(top = 56.dp),
                     )
                 }
             }
