@@ -18,25 +18,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
-import com.lottomate.lottomate.data.error.ErrorMessageProvider
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.BannerType
-import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
+import com.lottomate.lottomate.presentation.screen.home.component.HomeShimmerSkeleton
 import com.lottomate.lottomate.presentation.screen.home.component.LottoTypeInfoBottomSheet
-import com.lottomate.lottomate.presentation.screen.home.component.MateVoteSection
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
 import com.lottomate.lottomate.presentation.screen.home.component.WinInterviewCardsSection
@@ -44,6 +42,7 @@ import com.lottomate.lottomate.presentation.screen.home.component.WishWinCardsSe
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
+import com.lottomate.lottomate.presentation.ui.poppinsStyle
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.flow.collectLatest
 
@@ -121,21 +120,18 @@ private fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
 
-            TopLottoNotice(
-                modifier = Modifier
-                    .padding(top = Dimens.DefaultPadding20)
-                    .padding(horizontal = Dimens.DefaultPadding20),
-            )
-
-            Spacer(modifier = Modifier.height(36.dp))
-
             when (uiState) {
-                HomeUiState.Loading -> {
-
-                }
-
+                HomeUiState.Loading -> { HomeShimmerSkeleton() }
                 is HomeUiState.Error -> TODO()
                 is HomeUiState.Success -> {
+                    TopLottoNotice(
+                        modifier = Modifier
+                            .padding(top = Dimens.DefaultPadding20)
+                            .padding(horizontal = Dimens.DefaultPadding20),
+                    )
+
+                    Spacer(modifier = Modifier.height(36.dp))
+
                     val lottoInfos = uiState.lottoInfos
                     val interviews = uiState.interviews
 
@@ -152,7 +148,7 @@ private fun HomeScreen(
                     )
 
                     WishWinCardsSection(
-                        modifier = Modifier.padding(top = 36.dp),
+                        modifier = Modifier.padding(top = 48.dp),
                         onClickMap = moveToMap,
                         onClickScan = moveToScan,
                     )
@@ -162,28 +158,32 @@ private fun HomeScreen(
                         interviews = interviews,
                         onClickInterview = onClickInterview,
                     )
+
+
+                    BannerCard(
+                        modifier = Modifier
+                            .padding(top = 48.dp)
+                            .padding(horizontal = Dimens.DefaultPadding20),
+                        type = BannerType.WINNER_GUIDE,
+                        onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
+                    )
+
+//                    MateVoteSection(
+//                        modifier = Modifier.padding(top = 48.dp),
+//                    )
+
+                    BottomNoticeSection(
+                        modifier = Modifier.padding(top = 56.dp),
+                    )
                 }
             }
-            BannerCard(
-                modifier = Modifier
-                    .padding(top = 40.dp)
-                    .padding(horizontal = Dimens.DefaultPadding20),
-                onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
-            )
-
-            MateVoteSection(
-                modifier = Modifier.padding(top = 48.dp),
-            )
-
-            BottomNoticeSection(
-                modifier = Modifier.padding(top = 56.dp),
-            )
         }
 
         LottoMateTopAppBar(
             titleRes = R.string.home_title,
             hasNavigation = false,
             isTitleCenter = false,
+            textStyle = poppinsStyle.copy(fontSize = 16.sp),
             actionButtons = {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_setting),
