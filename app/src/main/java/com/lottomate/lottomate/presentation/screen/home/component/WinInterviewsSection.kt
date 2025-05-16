@@ -1,6 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.home.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,11 +19,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -37,7 +42,6 @@ import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
-import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 internal fun WinInterviewCardsSection(
@@ -49,19 +53,30 @@ internal fun WinInterviewCardsSection(
         pageCount = { interviews.size }
     )
 
+    val interviewCoverImgList = remember(interviews) {
+        List(interviews.size) {
+            when ((1..2).random()) {
+                1 -> R.drawable.img_interview_empty01
+                else -> R.drawable.img_interview_empty02
+            }
+        }
+    }
+
     Column {
         Column(
             modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
         ) {
             LottoMateText(
-                text = "로또 당첨자 인터뷰",
+                text = stringResource(id = R.string.home_interview_title_sub),
                 style = LottoMateTheme.typography.body1
                     .copy(color = LottoMateGray100),
             )
 
             LottoMateText(
-                text = "로또 1등 기 받아가요.",
-                style = LottoMateTheme.typography.title3,
+                text = stringResource(id = R.string.home_interview_title),
+                style = LottoMateTheme.typography.title3
+                    .copy(color = LottoMateBlack),
+                modifier = Modifier.padding(top = 2.dp),
             )
         }
 
@@ -79,30 +94,47 @@ internal fun WinInterviewCardsSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .dropShadow(
-                            shape = RoundedCornerShape(16.dp),
+                            shape = RoundedCornerShape(Dimens.RadiusLarge),
                             offsetX = 0.dp,
                             offsetY = 0.dp,
                             blur = 8.dp,
                         )
-                        .noInteractionClickable { onClickInterview(interviews[page].reviewNo, interviews[page].reviewPlace) },
+                        .clip(RoundedCornerShape(Dimens.RadiusLarge))
+                        .clickable {
+                            onClickInterview(
+                                interviews[page].reviewNo,
+                                interviews[page].reviewPlace
+                            )
+                        },
                     shape = RoundedCornerShape(Dimens.RadiusLarge),
                 ) {
                     Column(
                         modifier = Modifier.background(LottoMateWhite)
                     ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(interviews[page].reviewThumb)
-                                .build(),
-                            contentDescription = "Lotto Interview Image",
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(id = R.drawable.img_review),
-                            // TODO : 기본 이미지 변경 필요 
-                            error = painterResource(id = R.drawable.img_review),
-                            modifier = Modifier
-                                .height(160.dp)
-                                .fillMaxWidth(),
-                        )
+                        if (interviews[page].reviewThumb.isEmpty()) {
+
+                            Image(
+                                painter = painterResource(id = interviewCoverImgList[page]),
+                                contentDescription = "interview image empty",
+                                modifier = Modifier
+                                    .height(160.dp)
+                                    .fillMaxWidth(),
+                            )
+                        } else {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(interviews[page].reviewThumb)
+                                    .build(),
+                                contentDescription = "Lotto Interview Image",
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(id = R.drawable.img_review),
+                                // TODO : 기본 이미지 변경 필요
+                                error = painterResource(id = R.drawable.img_review),
+                                modifier = Modifier
+                                    .height(160.dp)
+                                    .fillMaxWidth(),
+                            )
+                        }
 
                         Column(
                             modifier = Modifier
@@ -118,7 +150,8 @@ internal fun WinInterviewCardsSection(
 
                             LottoMateText(
                                 text = interviews[page].reviewTitle,
-                                style = LottoMateTheme.typography.headline1,
+                                style = LottoMateTheme.typography.headline1
+                                    .copy(color = LottoMateBlack),
                                 maxLines = 2,
                                 minLines = 2,
                                 overflow = TextOverflow.Ellipsis,
@@ -142,14 +175,13 @@ internal fun WinInterviewCardsSection(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = Dimens.DefaultPadding20),
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterHorizontally),
                 ) {
                     repeat(pagerState.pageCount) { page ->
                         val color = if (pagerState.currentPage == page) LottoMateRed50 else LottoMateBlack.copy(alpha = 0.2f)
 
                         Box(
                             modifier = Modifier
-                                .padding(start = 6.dp)
                                 .clip(CircleShape)
                                 .background(color)
                                 .size(6.dp)

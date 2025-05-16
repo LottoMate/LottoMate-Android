@@ -34,7 +34,6 @@ import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
 import com.lottomate.lottomate.presentation.screen.home.component.HomeShimmerSkeleton
 import com.lottomate.lottomate.presentation.screen.home.component.LottoTypeInfoBottomSheet
-import com.lottomate.lottomate.presentation.screen.home.component.MateVoteSection
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
 import com.lottomate.lottomate.presentation.screen.home.component.WinInterviewCardsSection
@@ -147,7 +146,7 @@ private fun HomeScreen(
                     )
 
                     WishWinCardsSection(
-                        modifier = Modifier.padding(top = 36.dp),
+                        modifier = Modifier.padding(top = 48.dp),
                         onClickMap = moveToMap,
                         onClickScan = moveToScan,
                     )
@@ -176,6 +175,20 @@ private fun HomeScreen(
                     )
                 }
             }
+            BannerCard(
+                modifier = Modifier
+                    .padding(top = 40.dp)
+                    .padding(horizontal = Dimens.DefaultPadding20),
+                onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
+            )
+
+//            MateVoteSection(
+//                modifier = Modifier.padding(top = 48.dp),
+//            )
+
+            BottomNoticeSection(
+                modifier = Modifier.padding(top = 48.dp),
+            )
         }
 
         LottoMateTopAppBar(
