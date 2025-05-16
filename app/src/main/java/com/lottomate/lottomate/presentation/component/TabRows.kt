@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
@@ -45,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
-import com.lottomate.lottomate.presentation.ui.LottoMateGray80
+import com.lottomate.lottomate.presentation.ui.LottoMateGray60
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.CoroutineScope
@@ -61,6 +62,10 @@ fun LottoMateScrollableTabRow(
     modifier: Modifier = Modifier,
     tabState: TabState,
     tabs: List<String>,
+    selectedTabTextStyle: TextStyle = LottoMateTheme.typography.headline2,
+    unselectedTabTextStyle: TextStyle = LottoMateTheme.typography.headline2,
+    selectedTabTextColor: Color = LottoMateBlack,
+    unselectedTabTextColor: Color = LottoMateGray60,
 ) {
     LottoMateScrollableTabRow(
         selectedTabIndex = tabState.currentTabIndex,
@@ -70,8 +75,8 @@ fun LottoMateScrollableTabRow(
             Tab(
                 selected = tabState.currentTabIndex == index,
                 onClick = { tabState.currentTabIndex = index },
-                selectedContentColor = LottoMateBlack,
-                unselectedContentColor = LottoMateGray80,
+                selectedContentColor = selectedTabTextColor,
+                unselectedContentColor = unselectedTabTextColor,
                 modifier = Modifier.wrapContentWidth(),
                 content = {
                     Column(
@@ -91,11 +96,7 @@ fun LottoMateScrollableTabRow(
                         LottoMateText(
                             text = tab,
                             textAlign = TextAlign.Center,
-                            style = if (index == tabState.currentTabIndex) {
-                                LottoMateTheme.typography.headline2
-                            } else {
-                                LottoMateTheme.typography.body1
-                            },
+                            style = if (index == tabState.currentTabIndex) selectedTabTextStyle else unselectedTabTextStyle,
                         )
                     }
                 }
