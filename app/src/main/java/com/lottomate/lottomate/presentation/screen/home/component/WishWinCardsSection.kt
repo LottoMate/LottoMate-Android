@@ -11,14 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.LottoMateCard
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
-import com.lottomate.lottomate.utils.noInteractionClickable
 
 @Composable
 internal fun WishWinCardsSection(
@@ -30,8 +32,9 @@ internal fun WishWinCardsSection(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
     ) {
         LottoMateText(
-            text = "로또 당첨을 꿈꾼다면?",
-            style = LottoMateTheme.typography.headline1,
+            text = stringResource(id = R.string.home_wish_winner_section_title),
+            style = LottoMateTheme.typography.headline1
+                .copy(color = LottoMateBlack),
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -54,15 +57,16 @@ internal fun WishWinCardsSection(
                     )
 
                     LottoMateText(
-                        text = "로또 사러 어디로 가지?",
+                        text = stringResource(id = R.string.home_wish_winner_map_title_sub),
                         style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray100),
                         modifier = Modifier.padding(top = 8.dp),
                     )
 
                     LottoMateText(
-                        text = "근처 명당 보기",
-                        style = LottoMateTheme.typography.headline1,
+                        text = stringResource(id = R.string.home_wish_winner_map_title),
+                        style = LottoMateTheme.typography.headline2
+                            .copy(color = LottoMateBlack),
                     )
                 }
             }
@@ -83,18 +87,30 @@ internal fun WishWinCardsSection(
                     )
 
                     LottoMateText(
-                        text = "내 로또는 과연 몇 등일까?",
+                        text = stringResource(id = R.string.home_wish_winner_check_title_sub),
                         style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray100),
                         modifier = Modifier.padding(top = 8.dp),
                     )
 
                     LottoMateText(
-                        text = "당첨 확인하기",
-                        style = LottoMateTheme.typography.headline1,
+                        text = stringResource(id = R.string.home_wish_winner_check_title),
+                        style = LottoMateTheme.typography.headline2
+                            .copy(color = LottoMateBlack),
                     )
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 420)
+@Composable
+private fun WishWinCardsSectionPreview() {
+    LottoMateTheme {
+        WishWinCardsSection(
+            onClickMap = {},
+            onClickScan = {},
+        )
     }
 }

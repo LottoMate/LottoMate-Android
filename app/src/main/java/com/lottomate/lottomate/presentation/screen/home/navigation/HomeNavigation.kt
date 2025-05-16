@@ -75,6 +75,8 @@ fun NavGraphBuilder.homeNavGraph(
         val round = navBackStackEntry.toRoute<LottoMateRoute.LottoDetail>().round
 
         LottoInfoRoute(
+            type = type,
+            round = round,
             onClickBottomBanner = {},
             onShowErrorSnackBar = onShowErrorSnackBar,
             onBackPressed = { navController.navigateUp() },

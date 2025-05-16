@@ -18,7 +18,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,17 +25,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
-import com.lottomate.lottomate.data.error.ErrorMessageProvider
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.BannerType
-import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.home.component.BottomNoticeSection
 import com.lottomate.lottomate.presentation.screen.home.component.LottoTypeInfoBottomSheet
-import com.lottomate.lottomate.presentation.screen.home.component.MateVoteSection
 import com.lottomate.lottomate.presentation.screen.home.component.TopLottoNotice
 import com.lottomate.lottomate.presentation.screen.home.component.WeeklyWinnerResultSection
 import com.lottomate.lottomate.presentation.screen.home.component.WinInterviewCardsSection
@@ -152,7 +148,7 @@ private fun HomeScreen(
                     )
 
                     WishWinCardsSection(
-                        modifier = Modifier.padding(top = 36.dp),
+                        modifier = Modifier.padding(top = 48.dp),
                         onClickMap = moveToMap,
                         onClickScan = moveToScan,
                     )
@@ -171,12 +167,12 @@ private fun HomeScreen(
                 onClickBanner = { onClickBanner(BannerType.WINNER_GUIDE) },
             )
 
-            MateVoteSection(
-                modifier = Modifier.padding(top = 48.dp),
-            )
+//            MateVoteSection(
+//                modifier = Modifier.padding(top = 48.dp),
+//            )
 
             BottomNoticeSection(
-                modifier = Modifier.padding(top = 56.dp),
+                modifier = Modifier.padding(top = 48.dp),
             )
         }
 
