@@ -10,6 +10,9 @@ interface StoreApi {
     @POST("store/list")
     suspend fun getStoreList(
         @Query("type") type: Int,
+        @Query("drwtStore") drwtStore: Boolean = false,
+        @Query("page") page: Int = 1,
+        @Query("size") size: Int = 20,
         @Body body: StoreInfoRequestBody,
     ): StoreListResponse
 }

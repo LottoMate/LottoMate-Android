@@ -144,6 +144,25 @@ class MapViewModel @Inject constructor(
         }
     }
 
+    fun loadNextPage() {
+        viewModelScope.launch {
+            val type = getLottoType()
+
+            val userLocationInfo = StoreInfoRequestBody(
+                leftLot = leftTopPosition.value.longitude,
+                leftLat = leftTopPosition.value.latitude,
+                rightLot = rightBottomPosition.value.longitude,
+                rightLat = rightBottomPosition.value.latitude,
+                personLot = currentPosition.value.longitude,
+                personLat = currentPosition.value.latitude,
+            )
+
+            runCatching {
+                storeRepository.fetchNextStoreList(type, userLocationInfo)
+            }.onFailure { handleException(it) }
+        }
+    }
+
     fun resetStoreList() {
 //        viewModelScope.launch {
 //            storeRepository.resetStoreList()

@@ -278,6 +278,7 @@ fun MapRoute(
         },
         onChangeCurrentPosition = { vm.changeCurrentPosition(it) },
         onShowSnackBar = { vm.sendSnackBar(it) },
+        onLoadNextPage = { vm.loadNextPage() },
     )
 
     Box(
@@ -321,6 +322,7 @@ private fun MapScreen(
     onClickUnSelectStoreMarker: () -> Unit,
     onClickJustLooking: () -> Unit,
     onShowSnackBar: (String) -> Unit,
+    onLoadNextPage: () -> Unit,
 ) {
     val mapUiSettings by remember {
         mutableStateOf(
@@ -439,6 +441,7 @@ private fun MapScreen(
                 isInSeoul = checkIsInSeoul(currentCameraPosition),
                 onClickJustLooking = onClickJustLooking,
                 onSizeChanged = { bottomSheetHeight = it }
+                onLoadNextPage = onLoadNextPage,
             )
         },
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),

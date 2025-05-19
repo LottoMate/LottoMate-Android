@@ -1,6 +1,6 @@
 package com.lottomate.lottomate.data.remote.repository
 
-import com.lottomate.lottomate.data.mapper.StoreMapper
+import com.lottomate.lottomate.data.mapper.toUiModel
 import com.lottomate.lottomate.data.remote.api.StoreApi
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
@@ -9,6 +9,7 @@ import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMocks
 import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -19,11 +20,12 @@ class StoreRepositoryImpl @Inject constructor(
     private var _stores = MutableStateFlow<List<StoreInfo>>(emptyList())
     private var _store = MutableStateFlow<StoreInfo?>(null)
 
-    override val stores: Flow<List<StoreInfo>> get() = _stores.asStateFlow()
-    override val store: Flow<StoreInfo?> get() = _store.asStateFlow()
+    override val stores: StateFlow<List<StoreInfo>> get() = _stores.asStateFlow()
 
     override suspend fun fetchStoreList(type: Int, locationInfo: StoreInfoRequestBody) {
         val result = storeApi.getStoreList(type = type, body = locationInfo)
+    private var currentPage = 1
+    private var endReached = false
 
         if (result.code == 200) {
             val stores = result.storeInfoList.content.map { storeInfo -> StoreMapper.toModel(storeInfo) }
@@ -37,6 +39,35 @@ class StoreRepositoryImpl @Inject constructor(
 
     override fun selectStore(key: Int) {
         _store.update { _stores.value.firstOrNull { it.key == key } }
+    override suspend fun fetchNextStoreList(
+        type: Int,
+        locationInfo: StoreInfoRequestBody,
+    ): Result<Unit> {
+        if (endReached) return Result.success(Unit)
+
+        return try {
+            val response = storeApi.getStoreList(type = type, page = currentPage, body = locationInfo)
+
+            if (response.code == 200) {
+                if (response.storeInfoList.totalPages == currentPage) {
+                    endReached = true
+                } else {
+                    endReached = false
+                    currentPage++
+                }
+
+                val stores = response.storeInfoList.content.map { it.toUiModel() }.sortedBy { it.distance }
+                _stores.update { it + stores }
+
+                Result.success(Unit)
+            } else {
+                Result.failure(IllegalArgumentException("판매점 데이터를 가져오는 데 실패하였습니다."))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     }
     override fun unselectStore() = _store.update { null }
 
