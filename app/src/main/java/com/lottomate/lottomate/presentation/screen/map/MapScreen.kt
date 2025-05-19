@@ -73,6 +73,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 const val BottomSheetPeekHeight = 48
+private const val ZOOM_LEVEL_MINIMUM = 13.0
+private const val ZOOM_LEVEL_MAXIMUM = 20.0
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -460,6 +462,8 @@ private fun MapScreen(
                 uiSettings = mapUiSettings,
                 properties = MapProperties(
                     locationTrackingMode = LocationTrackingMode.Follow,
+                    minZoom = ZOOM_LEVEL_MINIMUM,
+                    maxZoom = ZOOM_LEVEL_MAXIMUM,
                 ),
                 cameraPositionState = cameraPositionState,
             ) {
