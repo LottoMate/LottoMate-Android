@@ -119,7 +119,7 @@ class MapViewModel @Inject constructor(
             )
 
             runCatching {
-                storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
+                storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo, drwStore = winStoreState.value)
             }.onFailure { handleException(it) }
 
 //            _uiState.update { MapUiState.Loading }
@@ -158,7 +158,7 @@ class MapViewModel @Inject constructor(
             )
 
             runCatching {
-                storeRepository.fetchNextStoreList(type, userLocationInfo)
+                storeRepository.fetchNextStoreList(type, userLocationInfo, winStoreState.value)
             }.onFailure { handleException(it) }
         }
     }

@@ -27,13 +27,28 @@ class StoreRepositoryImpl @Inject constructor(
     private var currentPage = 1
     private var endReached = false
 
-        if (result.code == 200) {
-            val stores = result.storeInfoList.content.map { storeInfo -> StoreMapper.toModel(storeInfo) }
+    override suspend fun fetchStoreList(type: Int, locationInfo: StoreInfoRequestBody, drwStore: Boolean): Result<Unit> {
+        return try {
+            val result = storeApi.getStoreList(type = type, body = locationInfo, drwtStore = drwStore)
 
-            _stores.update { stores.sortedBy { it.distance } }
-        } else {
-            // TODO : 오류 발생 case
-            _stores.update { emptyList() }
+            if (result.code == 200) {
+                val stores = result.storeInfoList.content.map { it.toUiModel() }
+
+                _stores.update { stores.sortedBy { it.distance } }
+                if (result.storeInfoList.totalPages == currentPage) {
+                    endReached = true
+                } else {
+                    currentPage = 2
+                    endReached = false
+                }
+                Result.success(Unit)
+            } else {
+                // TODO : 오류 발생 case
+                _stores.update { emptyList() }
+                Result.failure(IllegalArgumentException("판매점 데이터를 가져오는 데 실패하였습니다."))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
@@ -42,11 +57,12 @@ class StoreRepositoryImpl @Inject constructor(
     override suspend fun fetchNextStoreList(
         type: Int,
         locationInfo: StoreInfoRequestBody,
+        drwStore: Boolean,
     ): Result<Unit> {
         if (endReached) return Result.success(Unit)
 
         return try {
-            val response = storeApi.getStoreList(type = type, page = currentPage, body = locationInfo)
+            val response = storeApi.getStoreList(type = type, page = currentPage, body = locationInfo, drwtStore = drwStore)
 
             if (response.code == 200) {
                 if (response.storeInfoList.totalPages == currentPage) {
