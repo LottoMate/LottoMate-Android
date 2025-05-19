@@ -111,6 +111,8 @@ fun MapRoute(
     val stores by vm.stores.collectAsState()
     val selectedStore by vm.selectedStore.collectAsState(initial = null)
 
+    val cameraCenterState by vm.cameraCenter.collectAsStateWithLifecycle()
+    val isRefreshAvailable by vm.isRefreshAvailable.collectAsStateWithLifecycle()
     val lottoTypeState = vm.lottoTypeState
     val winStoreState by vm.winStoreState
     val favoriteStoreState by vm.favoriteStoreState
@@ -247,6 +249,7 @@ fun MapRoute(
         lottoTypeState = lottoTypeState.toList().joinToString(", "),
         winStoreState = winStoreState,
         favoriteStoreState = favoriteStoreState,
+        isRefreshAvailable= isRefreshAvailable,
         bottomSheetScaffoldState = bottomSheetScaffoldState,
         onClickLottoType = { showLottoTypeSelectorBottomSheet = true },
         onClickWinLottoStore = { vm.changeWinStoreState() },
@@ -279,6 +282,7 @@ fun MapRoute(
         onChangeCurrentPosition = { vm.changeCurrentPosition(it) },
         onShowSnackBar = { vm.sendSnackBar(it) },
         onLoadNextPage = { vm.loadNextPage() },
+        onCheckRefreshAvailable = { vm.onCameraIdle(it) },
     )
 
     Box(
@@ -309,6 +313,7 @@ private fun MapScreen(
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
+    isRefreshAvailable: Boolean,
     bottomSheetScaffoldState: BottomSheetScaffoldState,
     onChangeCurrentPosition: (Pair<Double, Double>) -> Unit,
     onClickRefresh: (Boolean) -> Unit,
@@ -321,6 +326,7 @@ private fun MapScreen(
     onClickSelectStoreMarker: (StoreInfo) -> Unit,
     onClickUnSelectStoreMarker: () -> Unit,
     onClickJustLooking: () -> Unit,
+    onCheckRefreshAvailable: (LatLng) -> Unit,
     onShowSnackBar: (String) -> Unit,
     onLoadNextPage: () -> Unit,
 ) {
@@ -364,6 +370,7 @@ private fun MapScreen(
     LaunchedEffect(cameraPositionState.isMoving) {
         val cameraPosition = cameraPositionState.position.target
         checkIsInSeoul(cameraPosition)
+        onCheckRefreshAvailable(cameraPosition)
 
         expendedType = StoreBottomSheetExpendedType.COLLAPSED
     }
@@ -518,9 +525,8 @@ private fun MapScreen(
             lottoTypeState = lottoTypeState,
             winStoreState = winStoreState,
             favoriteStoreState = favoriteStoreState,
+            isRefreshAvailable = isRefreshAvailable,
             bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
-            currentCameraPosition = currentCameraPosition,
-            cameraPositionState = cameraPositionState,
             onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
             onClickLottoType = onClickLottoType,
             onClickWinLottoStore = onClickWinLottoStore,

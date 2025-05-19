@@ -198,14 +198,24 @@ class MapViewModel @Inject constructor(
         changeCurrentCameraPosition(newCurrentPosition)
     }
 
-    fun changeCurrentCameraPosition(newCurrentCameraPosition: Pair<Double, Double>) {
-        Log.d("MapScreen(VM)", "카메라 GPS 위치 변경 : ${newCurrentCameraPosition.first} / ${newCurrentCameraPosition.second}")
+    fun updateCameraCenter(newCenter: Pair<Double, Double>) {
+        Log.d("MapScreen(VM)", "카메라 GPS 위치 변경 : ${newCenter.first} / ${newCenter.second}")
 
-        currentCameraPosition.value = LatLng(newCurrentCameraPosition.first, newCurrentCameraPosition.second)
+        val newCameraCenter = LatLng(newCenter.first, newCenter.second)
+        _cameraCenter.update { newCameraCenter }
     }
 
     fun changeCurrentZoomLevel(newZoomLevel: Double) {
         currentZoomLevel.value = newZoomLevel
+    fun onCameraIdle(currentCameraCenter: LatLng) {
+        if (lastCameraCenter == null || lastCameraCenter != currentCameraCenter) {
+            _isRefreshAvailable.update { true }
+            lastCameraCenter = currentCameraCenter
+        } else {
+            _isRefreshAvailable.update { false }
+        }
+    }
+
     }
 
     fun sendSnackBar(message: String) {
