@@ -37,13 +37,14 @@ import com.lottomate.lottomate.presentation.component.LottoMateTooltip
 import com.lottomate.lottomate.presentation.component.ToolTipDirection
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.BottomSheetPeekHeight
+import com.lottomate.lottomate.presentation.screen.map.model.MapType
+import com.lottomate.lottomate.presentation.screen.map.model.StoreBottomSheetExpendedType
+import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.compose.CameraPositionState
 import kotlinx.coroutines.delay
 
 /**
@@ -52,6 +53,8 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapButtons(
+    selectedStore: StoreInfo?,
+    expendedType: StoreBottomSheetExpendedType,
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
@@ -62,7 +65,7 @@ fun MapButtons(
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
     onClickRefresh: () -> Unit,
-    onClickStoreList: () -> Unit,
+    onClickMapType: (MapType) -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -79,10 +82,12 @@ fun MapButtons(
 
         BottomButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
+            selectedStore = selectedStore,
+            expendedType = expendedType,
             bottomSheetState = bottomSheetState,
             isRefreshAvailable = isRefreshAvailable,
             onClickRefresh = onClickRefresh,
-            onClickStoreList = onClickStoreList,
+            onClickMapType = onClickMapType,
             onClickLocationFocus = onClickLocationFocus,
         )
     }
@@ -136,10 +141,12 @@ private fun TopFilterButtons(
 @Composable
 private fun BottomButtons(
     modifier: Modifier = Modifier,
+    selectedStore: StoreInfo?,
+    expendedType: StoreBottomSheetExpendedType,
     bottomSheetState: BottomSheetState,
     isRefreshAvailable: Boolean,
     onClickRefresh: () -> Unit,
-    onClickStoreList: () -> Unit,
+    onClickMapType: (MapType) -> Unit,
     onClickLocationFocus: () -> Unit,
 ) {
     var showRefreshToolTip by remember { mutableStateOf(false) }
@@ -206,7 +213,18 @@ private fun BottomButtons(
 
             Column(horizontalAlignment = Alignment.End) {
                 IconButton(
-                    onClick = onClickStoreList,
+                    onClick = {
+                        val type = selectedStore?.let {
+                            MapType.LIST
+                        } ?: run {
+                            when (expendedType) {
+                                StoreBottomSheetExpendedType.COLLAPSED -> MapType.LIST
+                                else -> MapType.MAP
+                            }
+                        }
+
+                        onClickMapType(type)
+                    },
                     modifier = Modifier
                         .dropShadow(
                             shape = CircleShape,
@@ -221,7 +239,16 @@ private fun BottomButtons(
                         .size(40.dp),
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.icon_list),
+                        painter = painterResource(id =
+                            selectedStore?.let {
+                                R.drawable.icon_list
+                            } ?: run {
+                                when (expendedType) {
+                                    StoreBottomSheetExpendedType.COLLAPSED -> R.drawable.icon_list
+                                    else -> R.drawable.icon_map
+                                }
+                            }
+                        ),
                         contentDescription = stringResource(id = R.string.desc_lotto_store_list_icon_map),
                         tint = LottoMateGray100,
                     )

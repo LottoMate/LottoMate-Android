@@ -545,7 +545,15 @@ private fun MapScreen(
 
                 onChangeCameraPositionWithZoom(Pair(cameraPosition.latitude, cameraPosition.longitude), zoomLevel)
             },
-            onClickStoreList = onClickStoreList,
+            onClickMapType = {
+                expendedType = when (it) {
+                    MapType.MAP -> StoreBottomSheetExpendedType.COLLAPSED
+                    MapType.LIST -> {
+                        selectedStore = null
+                        StoreBottomSheetExpendedType.FULL
+                    }
+                }
+            },
             onClickLocationFocus = {
                 currentLocation?.let { location ->
                     onClickLocationFocus(location)
