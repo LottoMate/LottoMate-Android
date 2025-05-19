@@ -412,6 +412,8 @@ private fun MapScreen(
         }
     }
 
+    var selectedStore by remember { mutableStateOf<StoreInfo?>(null) }
+
     BottomSheetScaffold(
         modifier = modifier
             .fillMaxSize()
@@ -446,6 +448,7 @@ private fun MapScreen(
                     },
                 bottomSheetState = bottomSheetScaffoldState,
                 bottomSheetTopPadding = bottomSheetTopPadding,
+                selectedStore = selectedStore,
                 onShowSnackBar = onShowSnackBar,
                 isInSeoul = checkIsInSeoul(currentCameraPosition),
                 onClickJustLooking = onClickJustLooking,
@@ -468,16 +471,14 @@ private fun MapScreen(
                 cameraPositionState = cameraPositionState,
             ) {
                 // 선택한 복권 판매점 표시
-                selectStore?.let { store ->
+                selectedStore?.let { store ->
                     Marker(
                         state = MarkerState(position = store.latLng),
                         icon = OverlayImage.fromResource(R.drawable.marker_select),
                         onClick = {
-                            onClickUnSelectStoreMarker()
+                            selectedStore = null
+                            expendedType = StoreBottomSheetExpendedType.COLLAPSED
 
-                            coroutineScope.launch {
-                                bottomSheetScaffoldState.bottomSheetState.collapse()
-                            }
                             true
                         }
                     )
@@ -494,7 +495,10 @@ private fun MapScreen(
                         else OverlayImage.fromResource(R.drawable.marker_win),
                         onClick = {
                             val zoomLevel = cameraPositionState.position.zoom
-                            onClickSelectStoreMarker(store)
+
+                            selectedStore = store
+                            expendedType = StoreBottomSheetExpendedType.HALF
+
                             onChangeCameraPositionWithZoom(Pair(it.position.latitude, it.position.longitude), zoomLevel)
                             true
                         }
