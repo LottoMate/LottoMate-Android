@@ -332,17 +332,24 @@ private fun MapScreen(
     onShowSnackBar: (String) -> Unit,
     onLoadNextPage: () -> Unit,
 ) {
-    val mapUiSettings by remember {
+    val density = LocalDensity.current
+    val mapNaverLogoTopPadding = Dimens.StatusBarHeight.plus(16.dp)
+    var topButtonsHeight by remember { mutableIntStateOf(0) }
+    var bottomSheetHeight by remember { mutableIntStateOf(0) }
+    val topButtonsHeightDp = with(density) { PaddingValues(top = topButtonsHeight.toDp())  }
+
+    val mapUiSettings by remember(topButtonsHeight) {
         mutableStateOf(
             MapUiSettings(
                 isZoomControlEnabled = false,
+                logoGravity = Gravity.RIGHT or Gravity.TOP,
+                logoMargin = PaddingValues(
+                    top = with(density) { topButtonsHeight.toDp() }.plus(mapNaverLogoTopPadding),
+                    end = Dimens.DefaultPadding20
+                )
             )
         )
     }
-
-    val coroutineScope = rememberCoroutineScope()
-    var bottomSheetTopPadding by remember { mutableIntStateOf(0) }
-    var bottomSheetHeight by remember { mutableIntStateOf(0) }
 
     var showNonSeoulSnackBarAndButton by remember { mutableStateOf(false) }
 
@@ -538,7 +545,7 @@ private fun MapScreen(
             favoriteStoreState = favoriteStoreState,
             isRefreshAvailable = isRefreshAvailable,
             bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
-            onSizeBottomSheetHeight = { height -> bottomSheetTopPadding = height },
+            onSizeTopBottonsHeight = { height -> topButtonsHeight = height },
             onClickLottoType = onClickLottoType,
             onClickWinLottoStore = onClickWinLottoStore,
             onClickFavoriteStore = onClickFavoriteStore,
@@ -567,7 +574,7 @@ private fun MapScreen(
         // 서울이 아닌 경우 스낵바 + 하단 버튼 표시
         if (showNonSeoulSnackBarAndButton) {
             ShowNonSeoulSnackBarWithButton(
-                topSnackBarPadding = topButtonPadding.calculateTopPadding(),
+                topSnackBarPadding = topButtonsHeightDp.calculateTopPadding(),
                 bottomSheetState = bottomSheetScaffoldState.bottomSheetState,
                 onClickRequestOpen = {
 

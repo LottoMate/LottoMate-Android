@@ -60,7 +60,7 @@ fun MapButtons(
     favoriteStoreState: Boolean,
     isRefreshAvailable: Boolean,
     bottomSheetState: BottomSheetState,
-    onSizeBottomSheetHeight: (Int) -> Unit,
+    onSizeTopBottonsHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
@@ -74,7 +74,7 @@ fun MapButtons(
             lottoTypeState = lottoTypeState,
             winStoreState = winStoreState,
             favoriteStoreState = favoriteStoreState,
-            onSizeBottomSheetHeight = onSizeBottomSheetHeight,
+            onSizeTopBottonsHeight = onSizeTopBottonsHeight,
             onClickLottoType = onClickLottoType,
             onClickWinLottoStore = onClickWinLottoStore,
             onClickFavoriteStore = onClickFavoriteStore,
@@ -99,7 +99,7 @@ private fun TopFilterButtons(
     lottoTypeState: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
-    onSizeBottomSheetHeight: (Int) -> Unit,
+    onSizeTopBottonsHeight: (Int) -> Unit,
     onClickLottoType: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
@@ -108,7 +108,7 @@ private fun TopFilterButtons(
         modifier = modifier
             .padding(horizontal = 20.dp)
             .padding(top = Dimens.StatusBarHeight.plus(8.dp))
-            .onSizeChanged { onSizeBottomSheetHeight(it.height) },
+            .onSizeChanged { onSizeTopBottonsHeight(it.height) },
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         FilterButton(
