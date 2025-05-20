@@ -89,9 +89,8 @@ import kotlinx.coroutines.launch
 fun StoreBottomSheet(
     vm: StoreBottomSheetViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-    bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
-    bottomSheetTopPadding: Int,
     bottomSheetExpendedType: StoreBottomSheetExpendedType,
+    selectedStore: StoreInfo? = null,
     isInSeoul: Boolean,
     onClickJustLooking: () -> Unit,
     onShowSnackBar: (String) -> Unit,
@@ -111,10 +110,8 @@ fun StoreBottomSheet(
         selectedStore = store,
         selectStoreListFilter = selectStoreListFilter,
         isInSeoul = isInSeoul,
-        bottomSheetTopPadding = bottomSheetTopPadding,
-        bottomSheetState = bottomSheetState,
-        onClickStore = { vm.selectStore(it) },
         bottomSheetExpendedType = bottomSheetExpendedType,
+        onClickStore = { onClickStore(it) },
         onClickStoreLike = { vm.setFavoriteStore(it) },
         onClickFilter = { vm.changeStoreListFilter(it) },
         onClickStoreInfoCopy = { store ->
@@ -143,10 +140,8 @@ private fun StoreInfoBottomSheetContent(
     selectedStore: StoreInfo?,
     selectStoreListFilter: StoreListFilter,
     isInSeoul: Boolean,
-    bottomSheetTopPadding: Int,
-    bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
-    onClickStore: (Int) -> Unit,
     bottomSheetExpendedType: StoreBottomSheetExpendedType,
+    onClickStore: (StoreInfo) -> Unit,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (StoreListFilter) -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
@@ -181,29 +176,18 @@ private fun StoreInfoBottomSheetContent(
         if (stores.isEmpty()) {
             val isNotCollapsed = bottomSheetExpendedType != StoreBottomSheetExpendedType.COLLAPSED
 
-                    // 서울이 아니면 BottomSheet에 둘러보기 버튼 표시 (농협 본점으로 이동)
-                    if (!isInSeoul) {
-                        LottoMateSolidButton(
-                            text = "로또 지도 둘러보기",
-                            buttonSize = LottoMateButtonProperty.Size.SMALL,
-                            buttonShape = LottoMateButtonProperty.Shape.ROUND,
-                            onClick = onClickJustLooking,
-                            modifier = Modifier.padding(top = 20.dp),
-                        )
-                    }
-                }
-            }
-            else -> {
-                selectedStore?.let { store ->
-                    coroutineScope.launch {
-                        bottomSheetState.bottomSheetState.expand()
-                    }
             if (isNotCollapsed) {
                 StoreEmptyContents(
                     isInSeoul = isInSeoul,
                     onClickJustLooking = onClickJustLooking,
                 )
             }
+        } else {
+            selectedStore?.let { store ->
+//                coroutineScope.launch {
+//                    bottomSheetState.bottomSheetState.expand()
+//                }
+                onChangeBottomSheetExpendedType(StoreBottomSheetExpendedType.HALF)
 
                     SelectStoreInfoContent(
                         modifier = Modifier
@@ -299,14 +283,34 @@ private fun StoreInfoListContent(
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (StoreListFilter) -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
+    onLoadNextPage: () -> Unit,
 ) {
-    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
-        FilterRow(
-            modifier = Modifier.fillMaxWidth(),
-            filters = stringArrayResource(id = R.array.map_store_info_top_filters),
-            selectStoreListFilter = selectStoreListFilter,
-            onClickFilter = onClickFilter,
-        )
+    val listState = rememberLazyListState()
+    var expendHistoryStore by remember { mutableStateOf<Int?>(null) }
+    val shouldLoadNext = remember {
+        derivedStateOf {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val total = listState.layoutInfo.totalItemsCount
+            lastVisible?.index != 0 && lastVisible?.index == total - 5
+        }
+    }
+
+    LaunchedEffect(shouldLoadNext.value) {
+        if (shouldLoadNext.value) { onLoadNextPage() }
+    }
+
+    LazyColumn(
+        modifier = modifier,
+        state = listState,
+    ) {
+        item {
+            FilterRow(
+                modifier = Modifier.fillMaxWidth(),
+                filters = stringArrayResource(id = R.array.map_store_info_top_filters),
+                selectStoreListFilter = selectStoreListFilter,
+                onClickFilter = onClickFilter,
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -335,18 +339,15 @@ private fun StoreInfoListItem(
     modifier: Modifier = Modifier,
     store: StoreInfo,
     isSelect: Boolean = false,
-    onClickStore: (Int) -> Unit = {},
+    isExpendHistory: Boolean = false,
     onClickStoreLike: () -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
+    onClickExpend: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var storeNameLineCount by remember { mutableIntStateOf(1) }
-    var expendStoreWinHistory by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier
-            .noInteractionClickable { onClickStore(store.key) }
-    ) {
+    Column {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -526,21 +527,19 @@ private fun StoreInfoListItem(
 
                     if (!isSelect) {
                         Icon(
-                            painter = painterResource(id = if (expendStoreWinHistory) R.drawable.icon_arrow_up else R.drawable.icon_arrow_down),
+                            painter = painterResource(id = if (isExpendHistory) R.drawable.icon_arrow_up else R.drawable.icon_arrow_down),
                             contentDescription = "Win Lotto History More Button Icon",
                             tint = LottoMateGray80,
                             modifier = Modifier
                                 .size(20.dp)
-                                .noInteractionClickable {
-                                    expendStoreWinHistory = !expendStoreWinHistory
-                                },
+                                .noInteractionClickable { onClickExpend() },
                         )
                     }
                 }
             }
         }
 
-        if (expendStoreWinHistory || isSelect) {
+        if (isExpendHistory || isSelect) {
             val winHistories = store.winCountOfLottoType.flatMap { it.winningDetails }
 
             StoreWinHistory(
@@ -549,7 +548,7 @@ private fun StoreInfoListItem(
                     .padding(
                         bottom = when {
                             isSelect && store.winCountOfLottoType.isEmpty() -> 0.dp
-                            else -> 20.dp
+                            else -> 0.dp
                         }
                     ),
                 histories = winHistories,
