@@ -71,8 +71,8 @@ object GeoPositionCalculator {
      * 화면에서 현재 중심 위도/경도와 줌 레벨을 바탕으로
      * 해당 위치를 기준으로 화면 내 좌표 변화량을 계산하는 함수입니다.
      *
-     * @param currentLat 현재 중심 위도
-     * @param currentLon 현재 중심 경도
+     * @param centerLat 현재 중심 위도
+     * @param centerLon 현재 중심 경도
      * @param zoom 줌 레벨
      * @param screenWidth 화면 가로 크기 (픽셀 단위)
      * @param screenHeight 화면 세로 크기 (픽셀 단위)
@@ -80,8 +80,8 @@ object GeoPositionCalculator {
      */
     @Composable
     private fun calculateGeoPosition(
-        currentLat: Double,  // 현재 중심 위도
-        currentLon: Double,  // 현재 중심 경도
+        centerLat: Double,  // 현재 중심 위도
+        centerLon: Double,  // 현재 중심 경도
         zoom: Double,        // 줌 레벨
         screenWidth: Int,    // 화면 가로 크기 (픽셀 단위)
         screenHeight: Int    // 화면 세로 크기 (픽셀 단위)
@@ -90,18 +90,18 @@ object GeoPositionCalculator {
         val density = LocalDensity.current.density
 
         // 네이버 지도에서 제공하는 1dp 당 미터 변환 값
-        val mapPerDp = Projection.getMetersPerDp(currentLat, zoom)
+        val mapPerDp = Projection.getMetersPerDp(centerLat, zoom)
         val mapPerPixel = mapPerDp * density  // 픽셀 당 미터 변환 값
 
         // 화면의 크기와 줌 레벨을 바탕으로 이동 거리 계산 (미터 단위)
-        val dx = (screenWidth / zoom) * mapPerPixel // 가로 이동 거리 (m)
-        val dy = (screenHeight / zoom) * mapPerPixel // 세로 이동 거리 (m)
+        val dx = (screenWidth / 1.5 / zoom) * mapPerPixel // 가로 이동 거리 (m)
+        val dy = (screenHeight / 1.2 / zoom) * mapPerPixel // 세로 이동 거리 (m)
 
         // 위도 변화량 계산 (위도는 1도당 111320m)
         val deltaLat = dy / 111_320  // 위도 변화량 (미터 → 위도)
 
         // 경도 변화량 계산 (경도는 위도에 따라 다르기 때문에 cos(위도) 값으로 변환)
-        val deltaLon = dx / (88_850 * cos(Math.toRadians(currentLat)))  // 경도 변화량 (미터 → 경도)
+        val deltaLon = dx / (88_850 * cos(Math.toRadians(centerLat)))  // 경도 변화량 (미터 → 경도)
 
         // 변화된 위도와 경도 값 반환
         return Pair(deltaLat, deltaLon)
