@@ -59,6 +59,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateTextButton
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.map.StoreBottomSheetViewModel
 import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
+import com.lottomate.lottomate.presentation.screen.map.model.StoreBottomSheetExpendedType
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfoMock
 import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
@@ -90,6 +91,7 @@ fun StoreBottomSheet(
     modifier: Modifier = Modifier,
     bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     bottomSheetTopPadding: Int,
+    bottomSheetExpendedType: StoreBottomSheetExpendedType,
     isInSeoul: Boolean,
     onClickJustLooking: () -> Unit,
     onShowSnackBar: (String) -> Unit,
@@ -112,6 +114,7 @@ fun StoreBottomSheet(
         bottomSheetTopPadding = bottomSheetTopPadding,
         bottomSheetState = bottomSheetState,
         onClickStore = { vm.selectStore(it) },
+        bottomSheetExpendedType = bottomSheetExpendedType,
         onClickStoreLike = { vm.setFavoriteStore(it) },
         onClickFilter = { vm.changeStoreListFilter(it) },
         onClickStoreInfoCopy = { store ->
@@ -143,6 +146,7 @@ private fun StoreInfoBottomSheetContent(
     bottomSheetTopPadding: Int,
     bottomSheetState: androidx.compose.material.BottomSheetScaffoldState,
     onClickStore: (Int) -> Unit,
+    bottomSheetExpendedType: StoreBottomSheetExpendedType,
     onClickStoreLike: (Int) -> Unit,
     onClickFilter: (StoreListFilter) -> Unit,
     onClickStoreInfoCopy: (StoreInfo) -> Unit,
@@ -174,16 +178,8 @@ private fun StoreInfoBottomSheetContent(
                         contentDescription = null,
                     )
 
-                    LottoMateText(
-                        text = "해당 지역엔 로또 판매점이 없어요.\n" +
-                                "위치를 이동해서 다른 지점을 찾아볼까요?",
-                        style = LottoMateTheme.typography.body2
-                            .copy(color = LottoMateGray100),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp),
-                    )
+        if (stores.isEmpty()) {
+            val isNotCollapsed = bottomSheetExpendedType != StoreBottomSheetExpendedType.COLLAPSED
 
                     // 서울이 아니면 BottomSheet에 둘러보기 버튼 표시 (농협 본점으로 이동)
                     if (!isInSeoul) {
@@ -202,6 +198,12 @@ private fun StoreInfoBottomSheetContent(
                     coroutineScope.launch {
                         bottomSheetState.bottomSheetState.expand()
                     }
+            if (isNotCollapsed) {
+                StoreEmptyContents(
+                    isInSeoul = isInSeoul,
+                    onClickJustLooking = onClickJustLooking,
+                )
+            }
 
                     SelectStoreInfoContent(
                         modifier = Modifier
@@ -245,6 +247,46 @@ private fun SelectStoreInfoContent(
             onClickStoreLike = { onClickStoreLike(store.key) },
             onClickStoreInfoCopy = onClickStoreInfoCopy,
         )
+    }
+}
+
+@Composable
+private fun StoreEmptyContents(
+    modifier: Modifier = Modifier,
+    isInSeoul: Boolean,
+    onClickJustLooking: () -> Unit,
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            bitmap = ImageBitmap.imageResource(id = R.drawable.img_pochi_black),
+            contentDescription = null,
+        )
+
+        LottoMateText(
+            text = "해당 지역엔 로또 판매점이 없어요.\n" +
+                    "위치를 이동해서 다른 지점을 찾아볼까요?",
+            style = LottoMateTheme.typography.body2
+                .copy(color = LottoMateGray100),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+        )
+
+        // 서울이 아니면 BottomSheet에 둘러보기 버튼 표시 (농협 본점으로 이동)
+        if (!isInSeoul) {
+            LottoMateSolidButton(
+                text = "로또 지도 둘러보기",
+                buttonSize = LottoMateButtonProperty.Size.SMALL,
+                buttonShape = LottoMateButtonProperty.Shape.ROUND,
+                onClick = onClickJustLooking,
+                modifier = Modifier.padding(top = 20.dp),
+            )
+        }
     }
 }
 

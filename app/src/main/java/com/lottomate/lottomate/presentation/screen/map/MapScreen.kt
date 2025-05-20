@@ -355,7 +355,7 @@ private fun MapScreen(
 
     val screenHeightDp = LocalConfiguration.current.screenHeightDp.minus(62)
     // BottomSheet Height 설정
-    var expendedType by remember {
+    var bottomSheetExpendedType by remember {
         mutableStateOf(StoreBottomSheetExpendedType.COLLAPSED)
     }
     val storeBottomSheetHeight by animateIntAsState(
@@ -374,7 +374,7 @@ private fun MapScreen(
         checkIsInSeoul(cameraPosition)
         onCheckRefreshAvailable(cameraPosition)
 
-        expendedType = StoreBottomSheetExpendedType.COLLAPSED
+        bottomSheetExpendedType = StoreBottomSheetExpendedType.COLLAPSED
     }
 
     val density = LocalDensity.current
@@ -446,13 +446,16 @@ private fun MapScreen(
                             onDragEnd = { isUpdated = false }
                         )
                     },
-                bottomSheetState = bottomSheetScaffoldState,
-                bottomSheetTopPadding = bottomSheetTopPadding,
+                bottomSheetExpendedType = bottomSheetExpendedType,
                 selectedStore = selectedStore,
                 onShowSnackBar = onShowSnackBar,
                 isInSeoul = checkIsInSeoul(currentCameraPosition),
-                onClickJustLooking = onClickJustLooking,
-                onSizeChanged = { bottomSheetHeight = it }
+                onClickJustLooking = {
+                    bottomSheetExpendedType = StoreBottomSheetExpendedType.COLLAPSED
+                    onClickJustLooking()
+                },
+                onClickStore = onClickStore,
+                onSizeChanged = { bottomSheetHeight = it },
                 onLoadNextPage = onLoadNextPage,
             )
         },
