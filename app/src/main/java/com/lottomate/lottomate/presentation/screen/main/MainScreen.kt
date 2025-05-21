@@ -24,8 +24,6 @@ import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.main.component.LottoMateBottomBar
-import com.lottomate.lottomate.presentation.screen.main.component.ShowFullScreen
-import com.lottomate.lottomate.presentation.screen.main.model.FullScreenType
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.launch
@@ -67,7 +65,6 @@ private fun MainScreenContent(
 ) {
     val context = LocalContext.current
 
-    var showFullScreen by remember { mutableStateOf<FullScreenType?>(null) }
     var showErrorDialog by remember { mutableStateOf<LottoMateErrorType?>(null) }
 
     Scaffold(
@@ -88,7 +85,6 @@ private fun MainScreenContent(
                     navigator = navigator,
                     padding = innerPadding,
                     onShowGlobalSnackBar = { onShowGlobalSnackBar(it) },
-                    onShowFullScreen = { showFullScreen = it },
                     onShowErrorSnackBar = { showErrorDialog = it }
                 )
 
@@ -118,10 +114,6 @@ private fun MainScreenContent(
         snackbarHost = { SnackbarHost(snackBarHostState) },
         containerColor = LottoMateWhite,
     )
-
-    showFullScreen?.let { type ->
-        ShowFullScreen(screenType = type)
-    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)

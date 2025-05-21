@@ -20,13 +20,11 @@ fun NavController.navigateToMap() {
 
 fun NavGraphBuilder.mapNavGraph(
     padding: PaddingValues,
-    onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Map> {
         MapRoute(
             padding = padding,
-            onShowFullScreen = onShowFullScreen,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }

@@ -81,7 +81,6 @@ private const val ZOOM_LEVEL_MAXIMUM = 20.0
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
-    onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     val locationState by LocationStateManager.shouldShowLocationSettingDialog.collectAsState()
@@ -91,8 +90,6 @@ fun MapRoute(
 
     // 지도 진입 시, 로딩 화면 표시
     LaunchedEffect(true) {
-        onShowFullScreen(FullScreenType.MAP_LOADING)
-
         vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
     }
 
@@ -195,6 +192,7 @@ fun MapRoute(
     // 다이얼로그
     when {
         showInitPopupBottomSheet -> {
+        uiState.isLoading -> { MapLoadingScreen() }
             MapInitPopupBottomSheet(
                 onDismiss = {
                     coroutineScope.launch {
