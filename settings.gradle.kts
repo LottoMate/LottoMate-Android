@@ -18,6 +18,7 @@ dependencyResolutionManagement {
         mavenCentral()
 
         maven(url = "https://repository.map.naver.com/archive/maven")
+        maven(url = uri ("https://oss.sonatype.org/content/repositories/snapshots/"))
     }
 }
 

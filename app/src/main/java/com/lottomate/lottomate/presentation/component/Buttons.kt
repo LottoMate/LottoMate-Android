@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -296,7 +297,7 @@ private fun LottoMateBaseButton(
             .then(
                 if (enabled) Modifier.clickable(
                         interactionSource = interactionSource,
-                        indication = rememberRipple(
+                        indication = ripple(
                             bounded = true,
                             color = pressedButtonColor,
                         ),

@@ -48,7 +48,7 @@ private fun StoreWinHistoryChip(
     modifier: Modifier = Modifier,
     history: WinningDetail,
 ) {
-    val backgroundColor = when (history.lottoType) {
+    val backgroundColor = when (history.lottoType.kr) {
         LottoTypeFilter.Lotto645.kr -> LottoMateGreen5
         LottoTypeFilter.Lotto720.kr -> LottoMateBlue5
         else -> LottoMatePeach5
@@ -64,7 +64,7 @@ private fun StoreWinHistoryChip(
             verticalAlignment = Alignment.Bottom,
         ) {
             LottoMateText(
-                text = history.lottoType.plus(" ${history.rank}"),
+                text = history.lottoType.displayName.plus(" ${history.rank}"),
                 style = LottoMateTheme.typography.label2
                     .copy(fontWeight = FontWeight.Medium),
             )

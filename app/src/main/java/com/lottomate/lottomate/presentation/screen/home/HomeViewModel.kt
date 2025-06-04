@@ -15,6 +15,7 @@ import com.lottomate.lottomate.presentation.screen.home.model.HomeLottoInfo
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
+import com.lottomate.lottomate.utils.LocationStateManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,6 +46,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         loadAllData()
+        LocationStateManager.updateLocation()
     }
 
     /**

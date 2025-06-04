@@ -4,49 +4,52 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.component.GifImageResourceType
+import com.lottomate.lottomate.presentation.component.LottoMateGifImage
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
-import com.lottomate.lottomate.presentation.ui.LottoMateDim1
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.dropShadow
-import kotlinx.coroutines.delay
 
 private val LoadingBackgroundSize = 160.dp
 
 /**
  * 지도 화면 첫 진입 시 보여지는 로딩 화면 입니다.
  */
+@Preview
 @Composable
-fun MapLoadingScreen(
-    modifier: Modifier = Modifier,
-) {
-    var showLoading by remember { mutableStateOf(true) }
+fun MapLoadingScreen() {
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            dismissOnClickOutside = false,
+            dismissOnBackPress = false,
+            usePlatformDefaultWidth = false,
+        )
+    ) {
+        val dialogWindowProvider = LocalView.current.parent as? DialogWindowProvider
+        dialogWindowProvider?.window?.setDimAmount(0.4f)
 
-    LaunchedEffect(Unit) {
-        delay(5_000)
-        showLoading = false
-    }
-
-    if (showLoading) {
         Box(
-            modifier = modifier.background(LottoMateDim1),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -60,8 +63,15 @@ fun MapLoadingScreen(
                             offsetX = 0.dp,
                         )
                         .clip(CircleShape)
-                        .background(LottoMateWhite)
-                )
+                        .background(LottoMateWhite),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    LottoMateGifImage(
+                        modifier = Modifier
+                            .height(104.dp),
+                        gifImageResourceType = GifImageResourceType.MAP_LOADING
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 

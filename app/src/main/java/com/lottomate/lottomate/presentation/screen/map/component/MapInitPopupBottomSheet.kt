@@ -54,7 +54,7 @@ internal fun MapInitPopupBottomSheet(
         containerColor = LottoMateWhite,
         scrimColor = LottoMateDim1,
         dragHandle = null,
-        windowInsets = WindowInsets.navigationBars
+        contentWindowInsets = { WindowInsets.navigationBars }
     ) {
         MapInitPopupBottomSheetContent(
             onClickClose = {

@@ -1,24 +1,25 @@
 package com.lottomate.lottomate.presentation.screen.map
 
 import android.util.Log
-import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
-import com.lottomate.lottomate.presentation.screen.map.model.LottoTypeFilter
-import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
+import com.lottomate.lottomate.presentation.screen.map.model.MapContract
+import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
 import com.naver.maps.geometry.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,195 +28,268 @@ class MapViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
     private val storeRepository: StoreRepository,
 ) : BaseViewModel(errorHandler) {
-    val stores: StateFlow<List<StoreInfo>> = storeRepository.stores
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = emptyList(),
-        )
-    val selectedStore = storeRepository.store
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = null,
-        )
+    private var lastCameraCenter: LatLng? = null
 
-    private var isFirstLoading = true
-    private var leftTopPosition = mutableStateOf(DEFAULT_LATLNG)
-    private var rightBottomPosition = mutableStateOf(DEFAULT_LATLNG)
-    var currentPosition = mutableStateOf(DEFAULT_LATLNG)
-        private set
-    var currentCameraPosition = mutableStateOf(DEFAULT_LATLNG)
-        private set
-    var currentZoomLevel = mutableDoubleStateOf(DEFAULT_ZOOM_LEVEL)
-        private set
-    var lottoTypeState = mutableStateListOf(LottoTypeFilter.All.kr)
-        private set
-    var winStoreState = mutableStateOf(false)
-        private set
-    var favoriteStoreState = mutableStateOf(false)
-        private set
+    private val _effect = Channel<MapContract.Effect>()
+    val effect = _effect.receiveAsFlow()
 
-    private var _snackBarFlow = MutableSharedFlow<String>()
-    val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
+    private val _state = MutableStateFlow(MapContract.State())
+    val state get() = _state.asStateFlow()
 
-    fun selectStoreMarker(store: StoreInfo) = storeRepository.selectStore(store.key)
-    fun unselectStoreMarker() = storeRepository.unselectStore()
-    fun showStoreList() = storeRepository.unselectStore()
+    private val _cameraCenter = MutableStateFlow(DEFAULT_LATLNG)
+    val cameraCenter get() = _cameraCenter.asStateFlow()
 
-    fun changeLottoTypeState(selectedLottoTypes: List<Boolean>) {
-        val tempLottoTypeState = mutableListOf<String>()
+    init {
+        observeStoresFlow()
+        fetchStores()
+    }
 
-        if (selectedLottoTypes.all { it }) {
-            tempLottoTypeState.add(LottoTypeFilter.All.kr)
-        } else {
-            selectedLottoTypes.forEachIndexed { index, isSelected ->
-                if (isSelected) {
-                    tempLottoTypeState.add(LottoTypeFilter.find(index.plus(1)))
-                }
+    fun handleEvent(event: MapContract.Event) {
+        when (event) {
+            MapContract.Event.ClickLotterySelection -> {
+                sendEffect(MapContract.Effect.ShowLotterySelectionBottomSheet)
+            }
+            is MapContract.Event.ClickMyLocation -> {
+                handleMyLocationClick(event.currentMyLocation)
+            }
+            is MapContract.Event.ClickRefresh -> {
+                handleRefreshClick(event.currentCameraCenter)
+            }
+            is MapContract.Event.ClickExploreMap -> {
+                handleExploreMap(event.topLeft, event.bottomRight)
+            }
+            MapContract.Event.ClickWinStores -> {
+                handleWinStoresClick()
+            }
+            MapContract.Event.ClickFavoriteStores -> {
+                handleFavoriteStoresClick()
+            }
+            MapContract.Event.DeselectStore -> {
+                _state.update { it.copy(selectedStore = null) }
+            }
+            is MapContract.Event.SelectStoreListFilter -> {
+                handleStoreListFilterSelect(event.selectedFilter)
+            }
+            is MapContract.Event.MoveCamera -> {
+                handleCameraMove(event.center)
+            }
+            is MapContract.Event.SelectStore -> {
+                _state.update { it.copy(selectedStore = event.store) }
+            }
+            is MapContract.Event.SelectLotteryType -> {
+                handleLotteryTypeSelect(event.selectedType)
             }
         }
-
-        lottoTypeState.clear()
-        lottoTypeState.addAll(tempLottoTypeState)
-
-        fetchStoreList()
     }
 
-    fun changeWinStoreState() {
-        winStoreState.value = !winStoreState.value
+    fun handleTopLeftViewport(newViewport: Pair<Double, Double>) {
+        val newTopLeftViewport = LatLng(newViewport.first, newViewport.second)
 
-        fetchStoreList()
+        _state.update { state ->
+            state.copy(mapState = state.mapState.copy(viewportTopLeft = newTopLeftViewport))
+        }
     }
 
-    fun changeFavoriteStoreState() {
-        favoriteStoreState.value = !favoriteStoreState.value
+    fun handleBottomRightViewport(newViewport: Pair<Double, Double>) {
+        val newBottomRightViewport = LatLng(newViewport.first, newViewport.second)
 
-        fetchStoreList()
-    }
-
-    fun changeLeftTopPosition(newLeftTopPosition: Pair<Double, Double>) {
-        leftTopPosition.value = LatLng(newLeftTopPosition.first, newLeftTopPosition.second)
-    }
-
-    fun changeRightBottomPosition(newRightBottomPosition: Pair<Double, Double>) {
-        rightBottomPosition.value = LatLng(newRightBottomPosition.first, newRightBottomPosition.second)
+        _state.update { state ->
+            state.copy(mapState = state.mapState.copy(viewportBottomRight = newBottomRightViewport))
+        }
     }
 
     /**
      * 로또 판매점을 가져옵니다.
      */
-    fun fetchStoreList() {
+    fun fetchStores(isNextPage: Boolean = false) {
         viewModelScope.launch {
-            val type = getLottoType()
+            if (!isNextPage) {
+                _state.update { it.copy(isLoading = true, isRefreshAvailable = false) }
+            }
+
+            val type = LottoType.Group.toServerCode(state.value.selectedLotteryType)
 
             val userLocationInfo = StoreInfoRequestBody(
-                leftLot = leftTopPosition.value.longitude,
-                leftLat = leftTopPosition.value.latitude,
-                rightLot = rightBottomPosition.value.longitude,
-                rightLat = rightBottomPosition.value.latitude,
-                personLot = currentPosition.value.longitude,
-                personLat = currentPosition.value.latitude,
+                leftLot = state.value.mapState.viewportTopLeft.longitude,
+                leftLat = state.value.mapState.viewportTopLeft.latitude,
+                rightLot = state.value.mapState.viewportBottomRight.longitude,
+                rightLat = state.value.mapState.viewportBottomRight.latitude,
+                personLot = if (state.value.isInSeoul) {
+                    state.value.myLocation?.longitude ?: cameraCenter.value.longitude
+                } else {
+                    cameraCenter.value.longitude
+                },
+                personLat = if (state.value.isInSeoul) {
+                    state.value.myLocation?.latitude ?: cameraCenter.value.latitude
+                } else {
+                    cameraCenter.value.latitude
+                },
             )
 
             runCatching {
-                storeRepository.fetchStoreList(type = type, locationInfo = userLocationInfo)
-            }.onFailure { handleException(it) }
+                val dis = state.value.selectedStoreListFilter == StoreListFilter.DISTANCE
+                val drwt = state.value.selectedStoreListFilter == StoreListFilter.RANK
 
-//            _uiState.update { MapUiState.Loading }
-//
-//            storeRepository.stores
-//                .onStart {
-//                    // 처음으로 진입했을 때에만 로딩 화면 표시
-//                    if (isFirstLoading) {
-//                        _uiState.update { MapUiState.Loading }
-//                        isFirstLoading = false
-//                    }
-//                }
-//                .catch {throwable ->
-//                    Log.d("MapVM", throwable.stackTraceToString())
-//                    _uiState.update { MapUiState.Failed("네트워크 오류가 발생했습니다.", throwable) }
-//                }
-//                .collectLatest { collectStoreInfo ->
-//                    _uiState.update {
-//                        MapUiState.Success(collectStoreInfo)
-//                    }
-//                }
+                if (isNextPage) {
+                    storeRepository.fetchNextStoreList(type, userLocationInfo, state.value.isWinStores, state.value.isFavoriteStores, dis, drwt)
+                } else {
+                    storeRepository.fetchStoreList(type, userLocationInfo, state.value.isWinStores, state.value.isFavoriteStores, dis, drwt)
+                        .onSuccess {
+                            _state.update { it.copy(isLoading = false, isRefreshAvailable = false) }
+                        }
+                        .onFailure {
+                            handleException(it)
+                            _state.update { it.copy(isLoading = false, isRefreshAvailable = false) }
+                            Log.d("MapVM(fetchStores)", it.stackTraceToString())
+                        }
+                }
+            }.onFailure {
+                handleException(it)
+            }
         }
     }
 
-    fun resetStoreList() {
-//        viewModelScope.launch {
-//            storeRepository.resetStoreList()
-//
-//            storeRepository.stores
-//                .onStart {
-//                    // 처음으로 진입했을 때에만 로딩 화면 표시
-//                    if (isFirstLoading) {
-//                        _uiState.update { MapUiState.Loading }
-//                        isFirstLoading = false
-//                    }
-//                }
-//                .catch {throwable ->
-//                    Log.d("MapVM", throwable.stackTraceToString())
-//                    _uiState.update { MapUiState.Failed("네트워크 오류가 발생했습니다.", throwable) }
-//                }
-//                .collectLatest { collectStoreInfo ->
-//                    _uiState.update {
-//                        MapUiState.Success(collectStoreInfo)
-//                    }
-//                }
-//        }
+    private fun handleLotteryTypeSelect(selectedTypes: List<LottoType.Group>) {
+        _state.update { it.copy (selectedLotteryType = selectedTypes) }
+        fetchStores()
+    }
+
+    private fun handleStoreListFilterSelect(selectedFilter: StoreListFilter) {
+        val isInSeoul = checkIsInSeoul(cameraCenter.value)
+
+        _state.update {
+            it.copy(
+                isInSeoul = isInSeoul,
+                showNonSeoulSnackBar = !isInSeoul,
+                selectedStoreListFilter = selectedFilter,
+            )
+        }
+
+        fetchStores()
+    }
+    private fun handleWinStoresClick() {
+        val isInSeoul = checkIsInSeoul(cameraCenter.value)
+
+        _state.update {
+            it.copy(
+                isInSeoul = isInSeoul,
+                showNonSeoulSnackBar = !isInSeoul,
+                isWinStores = !it.isWinStores
+            )
+        }
+
+        fetchStores()
+    }
+
+    private fun handleFavoriteStoresClick() {
+        val isInSeoul = checkIsInSeoul(cameraCenter.value)
+
+        _state.update {
+            it.copy(
+                isInSeoul = isInSeoul,
+                showNonSeoulSnackBar = !isInSeoul,
+                isFavoriteStores = !it.isFavoriteStores
+            )
+        }
+
+        fetchStores()
+    }
+
+    private fun handleExploreMap(topLeft: LatLng, bottomRight: LatLng) {
+        _state.update { state ->
+            state.copy(mapState = state.mapState.copy(viewportTopLeft = topLeft, viewportBottomRight = bottomRight))
+        }
+
+        handleRefreshClick(DEFAULT_LATLNG)
+    }
+
+    private fun handleCameraMove(target: LatLng) {
+        handleCameraChange(target)
+    }
+
+    private fun handleRefreshClick(currentCameraCenter: LatLng) {
+        _state.update { it.copy(selectedStore = null) }
+
+        handleCameraChange(currentCameraCenter)
+        fetchStores()
+
+        val isInSeoul = checkIsInSeoul(currentCameraCenter)
+        _state.update {
+            it.copy(
+                isInSeoul = isInSeoul,
+                showNonSeoulSnackBar = !isInSeoul,
+            )
+        }
+    }
+
+    private fun handleMyLocationClick(myLocation: LatLng) {
+        handleCameraChange(myLocation)
     }
 
     /**
-     * 사용자의 GPS 위치를 변경합니다.
+     * 카메라가 이동했을 때 호출됩니다.
      */
-    fun changeCurrentPosition(newCurrentPosition: Pair<Double, Double>) {
-        Log.d("MapScreen(VM)", "변경된 사용자 GPS 위치 : ${newCurrentPosition.first} / ${newCurrentPosition.second}")
+    private fun handleCameraChange(target: LatLng) {
+        val hasRefresh = checkCameraCenterMoved(target)
 
-        currentPosition.value = LatLng(newCurrentPosition.first, newCurrentPosition.second)
-
-        changeCurrentCameraPosition(newCurrentPosition)
-    }
-
-    fun changeCurrentCameraPosition(newCurrentCameraPosition: Pair<Double, Double>) {
-        Log.d("MapScreen(VM)", "카메라 GPS 위치 변경 : ${newCurrentCameraPosition.first} / ${newCurrentCameraPosition.second}")
-
-        currentCameraPosition.value = LatLng(newCurrentCameraPosition.first, newCurrentCameraPosition.second)
-    }
-
-    fun changeCurrentZoomLevel(newZoomLevel: Double) {
-        currentZoomLevel.value = newZoomLevel
-    }
-
-    fun sendSnackBar(message: String) {
-        viewModelScope.launch {
-            _snackBarFlow.emit(message)
+        _cameraCenter.update { target }
+        _state.update { state ->
+            state.copy(
+                isRefreshAvailable = hasRefresh,
+                showRefreshToolTip = hasRefresh,
+            )
         }
     }
 
-    private fun getLottoType(): Int {
-        return when {
-            lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 6
-            lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 5
-            lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) && lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 4
-            lottoTypeState.contains(LottoTypeFilter.Speetto.kr) -> 3
-            lottoTypeState.contains(LottoTypeFilter.Lotto720.kr) -> 2
-            lottoTypeState.contains(LottoTypeFilter.Lotto645.kr) -> 1
-            lottoTypeState.contains(LottoTypeFilter.All.kr) -> 0
-            else -> 0
+    private fun checkCameraCenterMoved(currentCameraCenter: LatLng): Boolean {
+        return if (lastCameraCenter == null || lastCameraCenter != currentCameraCenter) {
+            lastCameraCenter = currentCameraCenter
+            true
+        } else { false }
+    }
+
+    fun changeInitPopupBottomSheet() {
+        _state.update { it.copy(showInitPopupBottomSheet = !it.showInitPopupBottomSheet) }
+    }
+
+    fun changeRefreshToolTipState(state: Boolean) {
+        _state.update { it.copy(showRefreshToolTip = state) }
+    }
+
+    fun sendEffect(effect: MapContract.Effect) {
+        viewModelScope.launch {
+            _effect.send(effect)
+        }
+    }
+
+    private fun checkIsInSeoul(position: LatLng): Boolean {
+        return position.latitude in (SEOUL_LATITUDE_RANGE) && position.longitude in (SEOUL_LONGITUDE_RANGE)
+    }
+
+    private fun observeStoresFlow() {
+        viewModelScope.launch {
+            storeRepository.stores
+                .onStart { _state.update { it.copy(isLoading = true) } }
+                .catch { handleException(it) }
+                .onEach { stores ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            stores = stores,
+                            showNoStoresSnackBar = stores.isEmpty(),
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
         }
     }
 
     companion object {
         val DEFAULT_LATLNG = LatLng(37.566499, 126.968555)
-        const val DEFAULT_ZOOM_LEVEL = 17.0
+        val TOP_LEFT_DEFAULT_LATLNG = LatLng(37.572364194154034, 126.96492563913249)
+        val BOTTOM_RIGHT_DEFAULT_LATLNG = LatLng(37.56063380584597, 126.9721843608675)
+        const val DEFAULT_ZOOM_LEVEL = 15.0
+        private val SEOUL_LATITUDE_RANGE = 37.413294..37.715133
+        private val SEOUL_LONGITUDE_RANGE = 126.269311..127.734086
     }
 }
-
-//sealed interface MapUiState {
-//    data object Loading : MapUiState
-//    data class Success(val storeInfo: List<StoreInfo>) : MapUiState
-//    data class Failed(val message: String, val throwable: Throwable?) : MapUiState
-//}

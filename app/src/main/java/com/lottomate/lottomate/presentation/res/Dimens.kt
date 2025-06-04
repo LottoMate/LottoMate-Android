@@ -9,21 +9,27 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.pixelsToDp
 
 object Dimens {
+    /** 4dp */
     val RadiusExtraSmall: Dp
         @Composable get() = dimensionResource(id = R.dimen.radius_extra_small)
 
+    /** 8dp */
     val RadiusSmall: Dp
         @Composable get() = dimensionResource(id = R.dimen.radius_small)
 
+    /** 12dp */
     val RadiusMedium: Dp
         @Composable get() = dimensionResource(id = R.dimen.radius_medium)
 
+    /** 16dp */
     val RadiusLarge: Dp
         @Composable get() = dimensionResource(id = R.dimen.radius_large)
 
+    /** 20dp */
     val RadiusExtraLarge: Dp
         @Composable get() = dimensionResource(id = R.dimen.radius_extra_large)
-    
+
+    /** 56dp */
     val TopAppBarHeight: Dp
         @Composable get() = dimensionResource(id = R.dimen.top_app_bar_height)
     

@@ -30,6 +30,7 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.main.MainBottomTab
@@ -64,9 +65,9 @@ enum class BannerType(
         img = R.drawable.img_banner_map,
         route = MainBottomTab.MAP.route,
     ),
-    MAP2(
+    INTERVIEW(
         title = "로또 1등 당첨\n기 받아가요",
-        subTitle = "당첨 판매점 보기",
+        subTitle = "당첨자 후기 보기",
         backgroundColor = LottoMatePeach5,
         img = R.drawable.img_banner02,
         route = MainBottomTab.MAP.route,
@@ -91,14 +92,14 @@ enum class BannerType(
         subTitle = "QR로 당첨 확인하기",
         backgroundColor = LottoMateBlue10,
         img = R.drawable.img_banner05,
-        route = MainBottomTab.MAP.route,
+        route = LottoMateRoute.LottoScan,
     ),
     RANDOM_LOTTO_NUMBER(
         title = "나만의 로또 번호\n뽑아봐요!",
         subTitle = "로또 번호 뽑으러 가기",
         backgroundColor = LottoMateYellow10,
         img = R.drawable.img_banner06,
-        route = MainBottomTab.MAP.route,
+        route = BottomTabRoute.Pocket,
     ),
     REQUEST_WINNER_LOTTO_STORE(
         title = "우리 동네 로또 명당\n알고 싶어요",
@@ -118,6 +119,23 @@ enum class BannerType(
     companion object {
         fun find(index: Int): BannerType {
             return entries.find { it.ordinal == index } ?: MAP
+        }
+        fun getRandomGeneralBannerType(): BannerType {
+            val randomOrdinal = (0..entries.size).random()
+            return find(randomOrdinal)
+        }
+
+        fun getRandomBannerTypeBeforeResult(): BannerType {
+            return listOf(DRAW_LOTTO, INTERVIEW).random()
+        }
+
+        fun getRandomBannerTypeAfterResult(isExpired: Boolean): BannerType {
+            return if (isExpired) REQUEST_WINNER_LOTTO_STORE
+            else WINNER_GUIDE
+        }
+
+        fun getResultScreenBannerType(isWinner: Boolean): BannerType {
+            return if (isWinner) WINNER_GUIDE else MAP
         }
     }
 }

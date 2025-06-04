@@ -31,17 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.ImageLoader
-import coil.compose.SubcomposeAsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
-import coil.request.ImageRequest
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.error.LottoMateErrorType
+import com.lottomate.lottomate.presentation.component.GifImageResourceType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
+import com.lottomate.lottomate.presentation.component.LottoMateGifImage
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
@@ -216,13 +216,9 @@ private fun GeneratingRandomNumbersScreen() {
         Box(
             modifier = Modifier.padding(top = 16.dp),
         ) {
-            SubcomposeAsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data("file:///android_asset/gif_pocket_random_number.gif")
-                    .build(),
-                imageLoader = imageLoader,
-                contentDescription = null,
+            LottoMateGifImage(
                 modifier = Modifier.size(width = 262.dp, height = 284.dp),
+                gifImageResourceType = GifImageResourceType.RANDOM_NUMBER,
             )
 
             Image(

@@ -18,7 +18,6 @@ fun MainNavHost(
     navigator: MainNavigator,
     padding: PaddingValues,
     onShowGlobalSnackBar: (message: String) -> Unit,
-    onShowFullScreen: (FullScreenType) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     NavHost(
@@ -38,7 +37,6 @@ fun MainNavHost(
 
         mapNavGraph(
             padding = padding,
-            onShowFullScreen = onShowFullScreen,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
 

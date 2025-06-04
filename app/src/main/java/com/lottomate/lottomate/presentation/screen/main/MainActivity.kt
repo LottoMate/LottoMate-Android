@@ -14,6 +14,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        setHideSoftKey()
+
         setContent {
             val navigator: MainNavigator = rememberMainNavigator()
 
@@ -23,8 +25,6 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-
-        setHideSoftKey()
     }
 
     /**
