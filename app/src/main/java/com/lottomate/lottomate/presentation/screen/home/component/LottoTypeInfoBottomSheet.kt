@@ -48,7 +48,7 @@ internal fun LottoTypeInfoBottomSheet(
         containerColor = LottoMateWhite,
         scrimColor = LottoMateDim1,
         dragHandle = null,
-        windowInsets = WindowInsets.navigationBars
+        contentWindowInsets = { WindowInsets.navigationBars }
     ) {
         LottoTypeInfoBottomSheetContent(
             onClickClose = onDismiss,

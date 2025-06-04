@@ -65,6 +65,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    sourceSets["main"].assets.srcDirs("src/main/assets")
 }
 
 dependencies {
@@ -79,6 +80,8 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.com.google.accompanist.systemuicontroller)
 
     // Compose
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -87,6 +90,7 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.material3.android)
     ksp(libs.hilt.compiler)
 
     // Retrofit2 + okhttp3
@@ -101,6 +105,7 @@ dependencies {
 
     // Coil
     implementation(libs.io.coil.compose)
+    implementation(libs.io.coil.gif)
 
     // Naver Maps
     implementation(libs.com.naver.maps)
@@ -116,9 +121,9 @@ dependencies {
 
     // Oauth
     implementation(libs.google.gms.play.services.auth)
-    implementation(libs.google.identity.googleid)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.androidx.credentials.credentials)
+//    implementation(libs.google.identity.googleid)
+//    implementation(libs.androidx.credentials.play.services.auth)
+//    implementation(libs.androidx.credentials.credentials)
     implementation("androidx.browser:browser:1.5.0")
 
     // QR Scanner
@@ -129,6 +134,9 @@ dependencies {
 
     // Permission
     implementation(libs.com.google.accompanist.permissions)
+
+    // Lottie
+    implementation(libs.com.airbnb.lottie.compose)
 
     // Splash Screen
     implementation(libs.androidx.splash)

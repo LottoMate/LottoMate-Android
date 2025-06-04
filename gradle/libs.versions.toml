@@ -12,6 +12,8 @@ activityCompose = "1.9.0"
 composeBom = "2023.08.00"
 composeNavigation = "2.8.6"
 constraintlayout = "2.2.1"
+appcompat = "1.7.0"
+accompanist-system-ui-controller = "0.36.0"
 
 ksp = "1.9.0-1.0.12"
 hilt = "2.51.1"
@@ -22,12 +24,15 @@ serialization = "2.0.0"
 serialization-json = "1.6.0"
 serialization-converter = "1.0.0"
 coil = "2.7.0"
+coil-gif = "2.5.0"
 naver-map = "3.19.1"
 naver-map-compose = "1.7.2"
 google-services-location = "21.0.1"
 
 # Oauth
 google-auth = "21.2.0"
+credentials = "1.3.0"
+google-id = "1.1.1"
 
 # Room
 room = "2.6.1"
@@ -46,6 +51,7 @@ lottie = "6.6.3"
 
 # Splash
 splash = "1.0.0"
+material3Android = "1.3.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -67,6 +73,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigation" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+com-google-accompanist-systemuicontroller = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist-system-ui-controller" }
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
@@ -83,9 +91,13 @@ com-naver-maps = { group = "com.naver.maps", name = "map-sdk", version.ref = "na
 io-github-fornewid-naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", version.ref = "naver-map-compose" }
 
 io-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+io-coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "coil-gif" }
 
 # Oauth
 google-gms-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-auth" }
+androidx-credentials-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
+androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
+google-identity-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "google-id" }
 
 # Room
 androidx-room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -109,6 +121,8 @@ com-airbnb-lottie-compose = { group = "com.airbnb.android", name = "lottie-compo
 
 # Splash
 androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
+
 # Test
 jetbrains-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutineTest" }
 

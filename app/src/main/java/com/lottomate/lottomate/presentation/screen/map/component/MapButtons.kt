@@ -54,28 +54,30 @@ import kotlinx.coroutines.delay
 @Composable
 fun MapButtons(
     selectedStore: StoreInfo?,
-    expendedType: StoreBottomSheetExpendedType,
-    lottoTypeState: String,
+    bottomSheetExpendedType: StoreBottomSheetExpendedType,
+    selectedLotteryType: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
     isRefreshAvailable: Boolean,
+    showRefreshToolTip: Boolean,
     bottomSheetState: BottomSheetState,
     onSizeTopBottonsHeight: (Int) -> Unit,
-    onClickLottoType: () -> Unit,
+    onLotteryTypeClicked: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
-    onClickRefresh: () -> Unit,
+    onRefreshClicked: () -> Unit,
     onClickMapType: (MapType) -> Unit,
-    onClickLocationFocus: () -> Unit,
+    onMyLocationClicked: () -> Unit,
+    onChangeRefreshToolTip: (Boolean) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         TopFilterButtons(
             modifier = Modifier.fillMaxWidth(),
-            lottoTypeState = lottoTypeState,
+            selectedLotteryType = selectedLotteryType,
             winStoreState = winStoreState,
             favoriteStoreState = favoriteStoreState,
             onSizeTopBottonsHeight = onSizeTopBottonsHeight,
-            onClickLottoType = onClickLottoType,
+            onLotteryTypeClicked = onLotteryTypeClicked,
             onClickWinLottoStore = onClickWinLottoStore,
             onClickFavoriteStore = onClickFavoriteStore,
         )
@@ -83,12 +85,14 @@ fun MapButtons(
         BottomButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
             selectedStore = selectedStore,
-            expendedType = expendedType,
+            showRefreshToolTip = showRefreshToolTip,
+            bottomSheetExpendedType = bottomSheetExpendedType,
             bottomSheetState = bottomSheetState,
             isRefreshAvailable = isRefreshAvailable,
-            onClickRefresh = onClickRefresh,
+            onRefreshClicked = onRefreshClicked,
             onClickMapType = onClickMapType,
-            onClickLocationFocus = onClickLocationFocus,
+            onMyLocationClicked = onMyLocationClicked,
+            onChangeRefreshToolTip = onChangeRefreshToolTip,
         )
     }
 }
@@ -96,11 +100,11 @@ fun MapButtons(
 @Composable
 private fun TopFilterButtons(
     modifier: Modifier = Modifier,
-    lottoTypeState: String,
+    selectedLotteryType: String,
     winStoreState: Boolean,
     favoriteStoreState: Boolean,
     onSizeTopBottonsHeight: (Int) -> Unit,
-    onClickLottoType: () -> Unit,
+    onLotteryTypeClicked: () -> Unit,
     onClickWinLottoStore: () -> Unit,
     onClickFavoriteStore: () -> Unit,
 ) {
@@ -112,11 +116,11 @@ private fun TopFilterButtons(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         FilterButton(
-            text = lottoTypeState,
+            text = selectedLotteryType,
             iconRes = R.drawable.icon_filter_12,
             iconDescription = stringResource(id = R.string.desc_filter_icon_map),
             isSelected = true,
-            onClick = onClickLottoType,
+            onClick = onLotteryTypeClicked,
         )
 
         Row {
@@ -142,21 +146,21 @@ private fun TopFilterButtons(
 private fun BottomButtons(
     modifier: Modifier = Modifier,
     selectedStore: StoreInfo?,
-    expendedType: StoreBottomSheetExpendedType,
+    showRefreshToolTip: Boolean,
+    bottomSheetExpendedType: StoreBottomSheetExpendedType,
     bottomSheetState: BottomSheetState,
     isRefreshAvailable: Boolean,
-    onClickRefresh: () -> Unit,
+    onRefreshClicked: () -> Unit,
     onClickMapType: (MapType) -> Unit,
-    onClickLocationFocus: () -> Unit,
+    onMyLocationClicked: () -> Unit,
+    onChangeRefreshToolTip: (Boolean) -> Unit,
 ) {
-    var showRefreshToolTip by remember { mutableStateOf(false) }
-
     LaunchedEffect(isRefreshAvailable) {
         if (!showRefreshToolTip) {
-            showRefreshToolTip = true
+            onChangeRefreshToolTip(true)
         } else {
             delay(5_000)
-            showRefreshToolTip  = false
+            onChangeRefreshToolTip(false)
         }
     }
     val density = LocalDensity.current
@@ -190,7 +194,7 @@ private fun BottomButtons(
             verticalAlignment = Alignment.Bottom,
         ) {
             IconButton(
-                onClick = onClickLocationFocus,
+                onClick = onMyLocationClicked,
                 modifier = Modifier
                     .dropShadow(
                         shape = CircleShape,
@@ -217,7 +221,7 @@ private fun BottomButtons(
                         val type = selectedStore?.let {
                             MapType.LIST
                         } ?: run {
-                            when (expendedType) {
+                            when (bottomSheetExpendedType) {
                                 StoreBottomSheetExpendedType.COLLAPSED -> MapType.LIST
                                 else -> MapType.MAP
                             }
@@ -243,7 +247,7 @@ private fun BottomButtons(
                             selectedStore?.let {
                                 R.drawable.icon_list
                             } ?: run {
-                                when (expendedType) {
+                                when (bottomSheetExpendedType) {
                                     StoreBottomSheetExpendedType.COLLAPSED -> R.drawable.icon_list
                                     else -> R.drawable.icon_map
                                 }
@@ -268,7 +272,7 @@ private fun BottomButtons(
                     }
 
                     IconButton(
-                        onClick = onClickRefresh,
+                        onClick = onRefreshClicked,
                         modifier = Modifier
                             .dropShadow(
                                 shape = CircleShape,

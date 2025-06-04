@@ -26,7 +26,7 @@ class LottoInfoRepositoryImpl @Inject constructor(
         get() = _allLatestLottoInfo.asStateFlow()
 
     override suspend fun fetchAllLatestLottoInfo() {
-        kotlin.runCatching {
+        try {
             val result = lottoInfoApi.getAllLatestLottoInfo()
 
             if (result.code == 200) {
@@ -42,9 +42,7 @@ class LottoInfoRepositoryImpl @Inject constructor(
                     lottoRound[LottoType.L720.num] = LatestRoundInfo(it.drwNum, it.drwDate)
                 }
 
-                _allLatestLottoInfo.update {
-                    lottoInfos.toMap()
-                }
+                _allLatestLottoInfo.update { lottoInfos.toMap() }
                 _latestLottoRoundInfo.update { lottoRound }
             } else {
                 // TODO : 예외 처리
@@ -54,14 +52,12 @@ class LottoInfoRepositoryImpl @Inject constructor(
                 lottoRound[LottoType.L645.num] = LatestRoundInfo(1165, "2025-03-29")
                 _latestLottoRoundInfo.update { lottoRound }
             }
-        }.onFailure {
+        } catch (e: Exception) {
             val lottoRound = mutableMapOf<Int, LatestRoundInfo>()
             lottoRound[LottoType.L720.num] = LatestRoundInfo(256, "2025-03-27")
             lottoRound[LottoType.L645.num] = LatestRoundInfo(1165, "2025-03-29")
             _latestLottoRoundInfo.update { lottoRound }
         }
-
-
     }
 
     override fun fetchLottoInfo(lottoType: Int, lottoRndNum: Int?): Flow<LottoInfo> = flow {

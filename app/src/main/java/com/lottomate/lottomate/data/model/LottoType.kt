@@ -44,6 +44,9 @@ enum class LottoType(
     );
 
     enum class Group(val displayKr: String) {
+        ALL(
+            displayKr = "복권 전체"
+        ),
         LOTTO645(
             displayKr = "로또",
         ),
@@ -52,7 +55,37 @@ enum class LottoType(
         ),
         SPEETTO(
             displayKr = "스피또",
-        ),
+        );
+
+        companion object {
+            fun getGroupsWithoutAll(): List<Group> {
+                return entries.subList(ALL.ordinal + 1, entries.size)
+            }
+
+            fun getDisplayNames(groups: List<Group>): String {
+                return groups.joinToString(", ") { it.displayKr }
+            }
+
+            fun selectableValues(): List<Group> {
+                return entries.filter { it != LottoType.Group.ALL }
+            }
+
+            /**
+             * 서버에 전달할 code (0 ~ 6) 계산
+             */
+            fun toServerCode(selected: List<Group>): Int {
+                return when {
+                    selected.containsAll(listOf(LOTTO720, SPEETTO)) -> 6
+                    selected.containsAll(listOf(LOTTO645, SPEETTO)) -> 5
+                    selected.containsAll(listOf(LOTTO645, LOTTO720)) -> 4
+                    selected.contains(SPEETTO) -> 3
+                    selected.contains(LOTTO720) -> 2
+                    selected.contains(LOTTO645) -> 1
+                    selected.contains(ALL) -> 0
+                    else -> 0
+                }
+            }
+        }
     }
 
     companion object {

@@ -8,13 +8,9 @@ import kotlinx.coroutines.flow.StateFlow
 interface StoreRepository {
     val stores: StateFlow<List<StoreInfo>>
 
-    suspend fun fetchStoreList(type: Int, locationInfo: StoreInfoRequestBody)
-    fun selectStore(key: Int)
-    fun unselectStore()
-    suspend fun fetchStoreList(type: Int, locationInfo: StoreInfoRequestBody): Result<Unit>
-    suspend fun fetchNextStoreList(type: Int, locationInfo: StoreInfoRequestBody): Result<Unit>
-    suspend fun fetchStoreList(type: Int, locationInfo: StoreInfoRequestBody, drwStore: Boolean): Result<Unit>
-    suspend fun fetchNextStoreList(type: Int, locationInfo: StoreInfoRequestBody, drwStore: Boolean): Result<Unit>
+    suspend fun fetchStoreList(type: Int, locationInfo: StoreInfoRequestBody, drwStore: Boolean, favorite: Boolean, dis: Boolean, drwt: Boolean): Result<Unit>
+    suspend fun fetchNextStoreList(type: Int, locationInfo: StoreInfoRequestBody, drwStore: Boolean, favorite: Boolean, dis: Boolean, drwt: Boolean): Result<Unit>
+    fun resetStoreList()
     fun setFavoriteStore(key: Int)
     fun applyStoreFilter(filter: StoreListFilter)
 }

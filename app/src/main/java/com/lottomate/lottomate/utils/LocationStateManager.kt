@@ -69,7 +69,7 @@ object LocationStateManager {
      * @param context 애플리케이션의 Context
      * @return 위치 권한이 부여되었으면 true, 그렇지 않으면 false
      */
-    fun hasLocationPermission(context: Context): Boolean {
+    fun hasLocationPermission(): Boolean {
         return when (PackageManager.PERMISSION_GRANTED) {
             ContextCompat.checkSelfPermission(
                 context,

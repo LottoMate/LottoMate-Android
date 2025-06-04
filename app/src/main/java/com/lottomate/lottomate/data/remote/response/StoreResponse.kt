@@ -1,6 +1,6 @@
 package com.lottomate.lottomate.data.remote.response
 
-import com.lottomate.lottomate.data.remote.model.StoreDetail
+import com.lottomate.lottomate.data.remote.model.StoreDetailEntity
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -17,5 +17,5 @@ data class StoreInfoEntity(
     val pageSize: Int,
     val totalPages: Int,
     val totalElements: Int,
-    val content: List<StoreDetail>,
+    val content: List<StoreDetailEntity>,
 )

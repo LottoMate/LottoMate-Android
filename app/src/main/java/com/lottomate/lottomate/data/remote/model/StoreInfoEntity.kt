@@ -3,14 +3,24 @@ package com.lottomate.lottomate.data.remote.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class StoreDetail(
-    val storeNo: Int,
-    val storeNm: String,
-    val storeTel: String,
-    val storeAddr: String,
-    val addrLot: Double,
-    val addrLat: Double,
-    val lottoTypeList: List<String>
+data class StoreDetailEntity(
+    val storeNo: Int = 0,
+    val storeNm: String = "",
+    val storeTel: String = "",
+    val storeAddr: String = "",
+    val addrLot: Double = 0.0,
+    val addrLat: Double = 0.0,
+    val distance: String = "",
+    val lottoTypeList: List<String> = emptyList(),
+    val lottoInfos: List<LottoInfoEntity> = emptyList(),
+)
+
+@Serializable
+data class LottoInfoEntity(
+    val lottoType: String = "",
+    val place: Long = 0,
+    val lottoJackpot: Long? = null,
+    val drwNum: Int = 0,
 )
 
 @Serializable

@@ -16,6 +16,7 @@ val LottoMateTransparent = Color(0x00000000)
 val LottoMateDim1 = Color(0x66000000)
 val LottoMateDim2 = Color(0xCC000000)
 val LottoMateDim3 = Color(0x14000000)
+val LottoMateGradient1 = Color(0xFF525252)
 val LottoMateBottomTabDivider = Color(0xFFD9D9D9)
 
 val LottoMateBlue5 = Color(0xFFF1F1FE)

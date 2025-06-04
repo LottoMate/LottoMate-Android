@@ -13,6 +13,9 @@ interface StoreApi {
         @Query("drwtStore") drwtStore: Boolean = false,
         @Query("page") page: Int = 1,
         @Query("size") size: Int = 20,
+        @Query("like") favorite: Boolean = false,
+        @Query("dis") dis: Boolean = true,
+        @Query("drwt") drwt: Boolean = false,
         @Body body: StoreInfoRequestBody,
     ): StoreListResponse
 }

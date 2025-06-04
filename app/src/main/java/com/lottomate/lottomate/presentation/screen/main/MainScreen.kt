@@ -1,5 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.main
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -41,7 +44,7 @@ fun MainScreen(
         }
     }
 
-    val onShowGlobalSnackBar: (message: String) -> Unit = { message ->
+    val onShowGlobalErrorSnackBar: (message: String) -> Unit = { message ->
         coroutineScope.launch {
             snackBarHostState.showSnackbar(message)
         }
@@ -50,7 +53,7 @@ fun MainScreen(
     MainScreenContent(
         navigator = navigator,
         snackBarHostState = snackBarHostState,
-        onShowGlobalSnackBar = onShowGlobalSnackBar,
+        onShowGlobalSnackBar = {  },
         onShowErrorSnackBar = onShowErrorSnackBar
     )
 }
@@ -70,7 +73,11 @@ private fun MainScreenContent(
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            if (navigator.isInMainBottomTab) {
+            AnimatedVisibility(
+                visible = navigator.isInMainBottomTab,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
                 LottoMateBottomBar(
                     modifier = Modifier.navigationBarsPadding(),
                     tabs = MainBottomTab.entries.toList(),
@@ -111,7 +118,6 @@ private fun MainScreenContent(
                 }
             }
         },
-        snackbarHost = { SnackbarHost(snackBarHostState) },
         containerColor = LottoMateWhite,
     )
 }

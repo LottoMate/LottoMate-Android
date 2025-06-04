@@ -4,8 +4,6 @@ import android.icu.text.DecimalFormat
 import com.lottomate.lottomate.data.model.LottoType
 import com.naver.maps.geometry.LatLng
 
-// TODO : 전달되는 데이터 형식이 아직 정해지지 않아서 추후 수정할 예정
-
 data class StoreInfo(
     val key: Int,
     val storeName: String,
@@ -17,15 +15,16 @@ data class StoreInfo(
     val winCountOfLottoType: List<StoreWinCount>,
     val isLike: Boolean = false,
     val countLike: Int = 0,
+    val winningDetails: List<WinningDetail> = emptyList(),
 ) {
     val hasWinLotto645 = getCountLotto645() != 0
     val hasWinLotto720 = getCountLotto720() != 0
     val hasWinSpeetto = getCountSpeetto() != 0
 
-    fun getCountLotto645(): Int = winCountOfLottoType.firstOrNull { it.lottoType == LottoType.L645 }?.count ?: 0
-    fun getCountLotto720(): Int = winCountOfLottoType.firstOrNull { it.lottoType == LottoType.L720 }?.count ?: 0
+    fun getCountLotto645(): Int = winCountOfLottoType.firstOrNull { it.lottoType == LottoType.Group.LOTTO645 }?.count ?: 0
+    fun getCountLotto720(): Int = winCountOfLottoType.firstOrNull { it.lottoType == LottoType.Group.LOTTO720 }?.count ?: 0
     fun getCountSpeetto(): Int = winCountOfLottoType.firstOrNull {
-        it.lottoType == LottoType.S2000 || it.lottoType == LottoType.S1000 || it.lottoType == LottoType.S500
+        it.lottoType == LottoType.Group.SPEETTO
     }?.count ?: 0
 
     fun getCountLike(): String {
@@ -46,13 +45,13 @@ data class StoreInfo(
 }
 
 data class StoreWinCount(
-    val lottoType: LottoType,
+    val lottoType: LottoType.Group,
     val count: Int,
     val winningDetails: List<WinningDetail>,
 )
 
 data class WinningDetail(
-    val lottoType: String,
+    val lottoType: LottoType,
     val rank: String = "1등",
     val prize: String,
     val round: String,
@@ -67,33 +66,33 @@ val StoreInfoMock = StoreInfo(
     phone = "02-123-4567",
     winCountOfLottoType = listOf(
         StoreWinCount(
-            lottoType = LottoType.L645,
+            lottoType = LottoType.Group.LOTTO645,
             count = 11,
             winningDetails = List(11) {
                 WinningDetail(
-                    lottoType = "로또",
+                    lottoType = LottoType.L645,
                     prize = "25억원",
                     round = "6102회"
                 )
             },
         ),
         StoreWinCount(
-            lottoType = LottoType.L720,
+            lottoType = LottoType.Group.LOTTO720,
             count = 9,
             winningDetails = List(9) {
                 WinningDetail(
-                    lottoType = "연금복권",
+                    lottoType = LottoType.L720,
                     prize = "25억원",
                     round = "6102회"
                 )
             },
         ),
         StoreWinCount(
-            lottoType = LottoType.S2000,
+            lottoType = LottoType.Group.SPEETTO,
             count = 4,
             winningDetails = List(4) {
                 WinningDetail(
-                    lottoType = "스피또 2000",
+                    lottoType = LottoType.S2000,
                     prize = "25억원",
                     round = "6102회"
                 )
@@ -118,7 +117,41 @@ val StoreInfoMocks = listOf(
         storeName = "버스표판매소",
         address = "서울 강남구 압구정로 151-2 신현대9차 상가1동 출입구 앞",
         latLng = LatLng(37.5252805267207, 127.02440030268),
-        winCountOfLottoType = emptyList(),
+        winCountOfLottoType = listOf(
+            StoreWinCount(
+                lottoType = LottoType.Group.LOTTO645,
+                count = 3,
+                winningDetails = List(3) {
+                    WinningDetail(
+                        lottoType = LottoType.L645,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+            StoreWinCount(
+                lottoType = LottoType.Group.LOTTO720,
+                count = 5,
+                winningDetails = List(5) {
+                    WinningDetail(
+                        lottoType = LottoType.L720,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+            StoreWinCount(
+                lottoType = LottoType.Group.SPEETTO,
+                count = 1,
+                winningDetails = List(1) {
+                    WinningDetail(
+                        lottoType = LottoType.S2000,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+        ).shuffled(),
         phone = "-",
         distance = 100,
     ),
@@ -162,6 +195,41 @@ val StoreInfoMocks = listOf(
         address = "서울 강남구 개포로22길 19 1층",
         latLng = LatLng(37.477752673752, 127.048542099489),
         isLike = true,
+        winCountOfLottoType = listOf(
+            StoreWinCount(
+                lottoType = LottoType.Group.LOTTO645,
+                count = 1,
+                winningDetails = List(1) {
+                    WinningDetail(
+                        lottoType = LottoType.L645,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+            StoreWinCount(
+                lottoType = LottoType.Group.LOTTO720,
+                count = 0,
+                winningDetails = List(0) {
+                    WinningDetail(
+                        lottoType = LottoType.L720,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+            StoreWinCount(
+                lottoType = LottoType.Group.SPEETTO,
+                count = 2,
+                winningDetails = List(2) {
+                    WinningDetail(
+                        lottoType = LottoType.S2000,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+        ).shuffled(),
         countLike = 99999,
         distance = 10,
     ),
@@ -196,6 +264,41 @@ val StoreInfoMocks = listOf(
         latLng = LatLng(37.4971298698887, 127.0303844347),
         countLike = 19,
         distance = 35000,
+        winCountOfLottoType = listOf(
+            StoreWinCount(
+                lottoType = LottoType.Group.LOTTO645,
+                count = 8,
+                winningDetails = List(8) {
+                    WinningDetail(
+                        lottoType = LottoType.L645,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+            StoreWinCount(
+                lottoType = LottoType.Group.LOTTO720,
+                count = 22,
+                winningDetails = List(22) {
+                    WinningDetail(
+                        lottoType = LottoType.L720,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+            StoreWinCount(
+                lottoType = LottoType.Group.SPEETTO,
+                count = 1,
+                winningDetails = List(1) {
+                    WinningDetail(
+                        lottoType = LottoType.S2000,
+                        prize = "25억원",
+                        round = "6102회"
+                    )
+                },
+            ),
+        ).shuffled()
     ),
     StoreInfoMock.copy(
         key = 13,
