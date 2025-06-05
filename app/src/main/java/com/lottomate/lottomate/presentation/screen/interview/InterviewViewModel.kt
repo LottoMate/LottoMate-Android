@@ -26,14 +26,14 @@ class InterviewViewModel @Inject constructor(
     val state: StateFlow<InterviewUiState> get() = _state.asStateFlow()
     val interviews: StateFlow<List<InterviewUiModel>> = interviewRepository.interviews
 
-    fun getInterview(interviewNo: Int) {
+    fun getInterview(interviewNo: Int, place: String) {
         viewModelScope.launch {
             combine(
                 interviewRepository.fetchInterview(interviewNo),
                 interviewRepository.interviews
             ) { interview, interviews ->
                 InterviewUiState.Success(
-                    interview,
+                    interview.copy(place = place),
                     interviews
                 )
             }

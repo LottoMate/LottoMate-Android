@@ -32,9 +32,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.lottomate.lottomate.R
-import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUiModel
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
@@ -46,7 +46,7 @@ import com.lottomate.lottomate.utils.dropShadow
 @Composable
 internal fun WinInterviewCardsSection(
     modifier: Modifier = Modifier,
-    interviews: List<ResponseInterviewsInfo>,
+    interviews: List<InterviewUiModel>,
     onClickInterview: (Int, String) -> Unit,
 ) {
     val pagerState = rememberPagerState(
@@ -102,8 +102,8 @@ internal fun WinInterviewCardsSection(
                         .clip(RoundedCornerShape(Dimens.RadiusLarge))
                         .clickable {
                             onClickInterview(
-                                interviews[page].reviewNo,
-                                interviews[page].reviewPlace
+                                interviews[page].no,
+                                interviews[page].place
                             )
                         },
                     shape = RoundedCornerShape(Dimens.RadiusLarge),
@@ -111,7 +111,7 @@ internal fun WinInterviewCardsSection(
                     Column(
                         modifier = Modifier.background(LottoMateWhite)
                     ) {
-                        if (interviews[page].reviewThumb.isEmpty()) {
+                        if (interviews[page].thumbs.isEmpty()) {
 
                             Image(
                                 painter = painterResource(id = interviewCoverImgList[page]),
@@ -123,7 +123,7 @@ internal fun WinInterviewCardsSection(
                         } else {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalContext.current)
-                                    .data(interviews[page].reviewThumb)
+                                    .data(interviews[page].thumbs)
                                     .build(),
                                 contentDescription = "Lotto Interview Image",
                                 contentScale = ContentScale.Crop,
@@ -143,13 +143,13 @@ internal fun WinInterviewCardsSection(
                                 .padding(horizontal = 16.dp)
                         ) {
                             LottoMateText(
-                                text = interviews[page].reviewPlace,
+                                text = interviews[page].place,
                                 style = LottoMateTheme.typography.caption
                                     .copy(color = LottoMateGray80),
                             )
 
                             LottoMateText(
-                                text = interviews[page].reviewTitle,
+                                text = interviews[page].title,
                                 style = LottoMateTheme.typography.headline1
                                     .copy(color = LottoMateBlack),
                                 maxLines = 2,
@@ -159,7 +159,7 @@ internal fun WinInterviewCardsSection(
                             )
 
                             LottoMateText(
-                                text = interviews[page].intrvDate.replace("-", "."),
+                                text = interviews[page].date,
                                 style = LottoMateTheme.typography.caption
                                     .copy(color = LottoMateGray80),
                             )

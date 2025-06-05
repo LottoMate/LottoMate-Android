@@ -14,6 +14,7 @@ data class InterviewDetailUiModel(
     val imgs: List<String>,
     val contents: List<InterviewQnA>,
     val originalNo: Int,
+    val place: String = "",
 )
 
 @Serializable
