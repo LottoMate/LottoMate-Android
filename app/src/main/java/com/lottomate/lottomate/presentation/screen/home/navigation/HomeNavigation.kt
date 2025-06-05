@@ -12,7 +12,7 @@ import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.HomeRoute
-import com.lottomate.lottomate.presentation.screen.interview.InterviewRoute
+import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateToInterviewDetail
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
@@ -25,10 +25,6 @@ import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.naviga
 
 fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
-}
-
-fun NavController.navigateToInterviewDetail(no: Int, place: String) {
-    navigate(LottoMateRoute.InterviewDetail(no, place))
 }
 
 fun NavController.navigateToLottoDetail(type: LottoType, round: Int) {
@@ -78,20 +74,6 @@ fun NavGraphBuilder.homeNavGraph(
             type = type,
             round = round,
             onClickBottomBanner = {},
-            onShowErrorSnackBar = onShowErrorSnackBar,
-            onBackPressed = { navController.navigateUp() },
-        )
-    }
-
-    // 인터뷰 상세 화면
-    composable<LottoMateRoute.InterviewDetail> {navBackStackEntry ->
-        val no = navBackStackEntry.toRoute<LottoMateRoute.InterviewDetail>().no
-        val place = navBackStackEntry.toRoute<LottoMateRoute.InterviewDetail>().place
-
-        InterviewRoute(
-            no = no,
-            place = place,
-            onClickBanner = { navController.navigateToBanner(BannerType.MAP) },
             onShowErrorSnackBar = onShowErrorSnackBar,
             onBackPressed = { navController.navigateUp() },
         )
