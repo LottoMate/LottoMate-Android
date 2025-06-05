@@ -7,8 +7,12 @@ import android.webkit.WebViewClient
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,31 +35,38 @@ fun LottoMateBasicWebView(
             .fillMaxSize()
             .background(LottoMateWhite),
     ) {
-        AndroidView(
+        Column(
             modifier = Modifier
-                .padding(top = Dimens.BaseTopPadding)
-                .fillMaxSize(),
-            factory = {
-                WebView(context).apply {
-                    settings.javaScriptEnabled = true
-                    settings.domStorageEnabled = true
-                    settings.useWideViewPort = true
-                    settings.loadWithOverviewMode = true
-                    settings.setSupportZoom(true)
-                    settings.builtInZoomControls = true
-                    settings.displayZoomControls = false
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
 
-                    clearCache(true) // 캐시 제거
-                    clearHistory()   // 기록 제거
-                    settings.cacheMode = WebSettings.LOAD_NO_CACHE // 캐시 사용하지 않도록 설정
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = {
+                    WebView(context).apply {
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.useWideViewPort = true
+                        settings.loadWithOverviewMode = true
+                        settings.setSupportZoom(true)
+                        settings.builtInZoomControls = true
+                        settings.displayZoomControls = false
 
-                    this.webViewClient = webViewClient
-                    this.webChromeClient = webChromeClient
+                        clearCache(true) // 캐시 제거
+                        clearHistory()   // 기록 제거
+                        settings.cacheMode = WebSettings.LOAD_NO_CACHE // 캐시 사용하지 않도록 설정
 
-                    loadUrl(url)
-                }
-            },
-        )
+                        this.webViewClient = webViewClient
+                        this.webChromeClient = webChromeClient
+
+                        loadUrl(url)
+                    }
+                },
+            )
+        }
+
 
         LottoMateTopAppBar(
             titleRes = title,
