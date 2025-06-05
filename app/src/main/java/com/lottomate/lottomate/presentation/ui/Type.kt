@@ -128,7 +128,7 @@ private val caption = pretendardStyle.copy(
 )
 
 private val caption2 = pretendardStyle.copy(
-    fontWeight = FontWeight.Medium,
+    fontWeight = FontWeight.Normal,
     fontSize = 10.sp,
 //    lineHeight = 16.sp,
     lineHeight = 14.sp,

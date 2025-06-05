@@ -1,11 +1,12 @@
 package com.lottomate.lottomate.presentation.screen.interview
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +20,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -46,14 +50,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
+import coil.size.Scale
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.component.BannerCard
@@ -62,8 +67,9 @@ import com.lottomate.lottomate.presentation.component.LottoMateIconButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewDetailUiModel
 import com.lottomate.lottomate.presentation.screen.interview.model.InterviewQnA
-import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUIModel
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUiModel
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateDim2
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
@@ -82,43 +88,48 @@ fun InterviewRoute(
     vm: InterviewViewModel = hiltViewModel(),
     no: Int,
     place: String,
+    moveToOriginalInterview: (Int) -> Unit,
     onClickBanner: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
-        vm.getInterview(no)
+        vm.getInterview(no, place)
     }
 
-    val interviewUiState by vm.interview.collectAsStateWithLifecycle()
-    val winnerInterviewsUiState by vm.winnerInterviews.collectAsStateWithLifecycle()
+    val scrollState = rememberLazyListState()
+    val uiState by vm.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(true) {
         vm.errorFlow.collectLatest{ error -> onShowErrorSnackBar(error) }
     }
 
+    LaunchedEffect(uiState) {
+        if (uiState is InterviewUiState.Success) {
+            scrollState.animateScrollToItem(0)
+        }
+    }
+
     InterviewScreen(
-        interviewUiState = interviewUiState,
-        winnerInterviewsUiState = winnerInterviewsUiState,
+        uiState = uiState,
+        scrollState = scrollState,
         onBackPressed = onBackPressed,
         onClickBanner = onClickBanner,
-        onClickWinnerInterview = {
-
+        onClickWinnerInterview = { no, place ->
+            vm.getInterview(no, place)
         },
-        onClickOriginArticle = {
-
-        },
+        onClickOriginArticle = moveToOriginalInterview,
     )
 }
 
 @Composable
 private fun InterviewScreen(
-    interviewUiState: InterviewUiState<InterviewUIModel>,
-    winnerInterviewsUiState: InterviewUiState<List<InterviewUIModel>>,
+    uiState: InterviewUiState,
+    scrollState: LazyListState,
     onBackPressed: () -> Unit,
     onClickBanner: () -> Unit,
-    onClickWinnerInterview: () -> Unit,
-    onClickOriginArticle: () -> Unit,
+    onClickWinnerInterview: (Int, String) -> Unit,
+    onClickOriginArticle: (Int) -> Unit,
 ) {
     var showInterviewImage by remember { mutableStateOf(false) }
     var showInterviewImageIndex by remember { mutableStateOf(0) }
@@ -128,64 +139,64 @@ private fun InterviewScreen(
             .fillMaxSize()
             .background(LottoMateWhite),
     ) {
-        Column(
-            modifier = Modifier.verticalScroll(rememberScrollState())
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = scrollState,
         ) {
-            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding))
-            when (interviewUiState) {
-                InterviewUiState.Loading -> {
-                    // TODO : Interview Screen loading
-                }
+            item { Spacer(modifier = Modifier.height(Dimens.BaseTopPadding)) }
+
+            when (uiState) {
+                InterviewUiState.Loading -> {}
                 is InterviewUiState.Success -> {
-                    val interview = interviewUiState.data
+                    val interview = uiState.interview
+                    val interviews = uiState.interviews
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    item { Spacer(modifier = Modifier.height(12.dp)) }
 
-                    InterviewContentDetail(
-                        modifier = Modifier.fillMaxWidth(),
-                        interview = interview,
-                        onClickOriginArticle = onClickOriginArticle,
-                        onClickInterviewImage = {
-                            showInterviewImageIndex = it
-                            showInterviewImage = true
-                        },
-                    )
+                    item {
+                        InterviewContentDetail(
+                            modifier = Modifier.fillMaxWidth(),
+                            interview = interview,
+                            onClickOriginArticle = onClickOriginArticle,
+                            onClickInterviewImage = {
+                                showInterviewImageIndex = it
+                                showInterviewImage = true
+                            },
+                        )
+                    }
+
+                    item {
+                        HorizontalDivider(
+                            modifier = Modifier
+                                .padding(top = 32.dp)
+                                .fillMaxWidth(),
+                            thickness = 10.dp,
+                            color = LottoMateGray20
+                        )
+                    }
+
+                    item {
+                        BottomInterviewListContent(
+                            modifier = Modifier.fillMaxWidth(),
+                            interviewList = interviews,
+                            onClickInterviewItem = onClickWinnerInterview,
+                        )
+                    }
+
+                    item { Spacer(modifier = Modifier.height(40.dp)) }
+
+                    item {
+                        BannerCard(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp),
+                            onClickBanner = onClickBanner
+                        )
+                    }
+
+                    item { Spacer(modifier = Modifier.height(60.dp)) }
                 }
             }
-
-            Divider(
-                modifier = Modifier
-                    .padding(top = 32.dp)
-                    .fillMaxWidth(),
-                thickness = 10.dp,
-                color = LottoMateGray20
-            )
-
-            when (winnerInterviewsUiState) {
-                InterviewUiState.Loading -> {
-                    // TODO : Interview Screen loading
-                }
-                is InterviewUiState.Success -> {
-                    val interviews = winnerInterviewsUiState.data
-
-                    BottomInterviewListContent(
-                        modifier = Modifier.fillMaxWidth(),
-                        interviewList = interviews,
-                        onClickInterviewItem = onClickWinnerInterview,
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(40.dp))
-
-            BannerCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                onClickBanner = onClickBanner
-            )
-
-            Spacer(modifier = Modifier.height(60.dp))
         }
 
         LottoMateTopAppBar(
@@ -197,10 +208,8 @@ private fun InterviewScreen(
         if (showInterviewImage) {
             InterviewImageView(
                 index = showInterviewImageIndex,
-                images = (interviewUiState as InterviewUiState.Success).data.imgs,
-                onDismiss = {
-                    showInterviewImage = false
-                },
+                images = (uiState as InterviewUiState.Success).interview.imgs,
+                onDismiss = { showInterviewImage = false },
             )
         }
     }
@@ -408,8 +417,8 @@ private fun InterviewImageView(
 @Composable
 private fun InterviewContentDetail(
     modifier: Modifier = Modifier,
-    interview: InterviewUIModel,
-    onClickOriginArticle: () -> Unit,
+    interview: InterviewDetailUiModel,
+    onClickOriginArticle: (Int) -> Unit,
     onClickInterviewImage: (Int) -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -443,31 +452,34 @@ private fun InterviewContentDetail(
                 .fillMaxWidth()
                 .padding(horizontal = Dimens.DefaultPadding20)
         ) {
-            interview.contents.forEachIndexed { index, qna ->
-                InterviewContentQnA(
-                    question = qna.question,
-                    answer = qna.answer,
-                )
-
-                if (index != interview.contents.lastIndex) Spacer(modifier = Modifier.height(28.dp))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(28.dp)
+            ) {
+                interview.contents.forEach { qna ->
+                    InterviewContentQnA(
+                        question = qna.question,
+                        answer = qna.answer,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
             ) {
                 LottoMateText(
                     text = stringResource(id = R.string.interview_content_bottom_notice),
                     style = LottoMateTheme.typography.caption
-                        .copy(color = LottoMateGray80)
+                        .copy(color = LottoMateGray80),
                 )
 
                 Row(
+                    modifier = Modifier.clickable { onClickOriginArticle(interview.originalNo) },
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.noInteractionClickable { onClickOriginArticle() }
+                    horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
                 ) {
                     LottoMateText(
                         text = "원문 보러가기",
@@ -478,9 +490,8 @@ private fun InterviewContentDetail(
                     Icon(
                         painter = painterResource(id = R.drawable.icon_arrow_right),
                         contentDescription = "",
-                        modifier = Modifier
-                            .padding(start = 4.dp)
-                            .size(14.dp)
+                        tint = LottoMateGray100,
+                        modifier = Modifier.size(14.dp),
                     )
                 }
             }
@@ -491,41 +502,45 @@ private fun InterviewContentDetail(
 @Composable
 private fun InterviewTitle(
     modifier: Modifier = Modifier,
-    interview: InterviewUIModel,
+    interview: InterviewDetailUiModel,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             LottoMateText(
-                text = "${interview.lottoRound}회차",
+                text = interview.place,
                 style = LottoMateTheme.typography.caption
                     .copy(color = LottoMateGray120)
             )
             
-            LottoMateText(
-                text = "|",
-                textAlign = TextAlign.Center,
-                style = LottoMateTheme.typography.caption
-                    .copy(color = LottoMateGray120),
-                modifier = Modifier.padding(start = 4.dp),
-            )
+//            LottoMateText(
+//                text = "|",
+//                textAlign = TextAlign.Center,
+//                style = LottoMateTheme.typography.caption
+//                    .copy(color = LottoMateGray120),
+//                modifier = Modifier.padding(start = 4.dp),
+//            )
 
-            LottoMateText(
-//                text = "${interview.subTitle} ${if (interview.lottoPrize % 10 == 0.0) Math.round(interview.lottoPrize) else interview.lottoPrize}억",
-                text = "",
-                style = LottoMateTheme.typography.caption
-                    .copy(color = LottoMateGray120),
-                modifier = Modifier.padding(start = 4.dp),
-            )
+//            LottoMateText(
+////                text = "${interview.subTitle} ${if (interview.lottoPrize % 10 == 0.0) Math.round(interview.lottoPrize) else interview.lottoPrize}억",
+//                text = "",
+//                style = LottoMateTheme.typography.caption
+//                    .copy(color = LottoMateGray120),
+//                modifier = Modifier.padding(start = 4.dp),
+//            )
         }
 
         LottoMateText(
             text = interview.title,
-            style = LottoMateTheme.typography.title3
+            style = LottoMateTheme.typography.title3,
         )
 
         Row(
             modifier = Modifier.padding(top = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
         ) {
             LottoMateText(
                 text = "인터뷰 ${interview.interviewDate}",
@@ -535,16 +550,14 @@ private fun InterviewTitle(
 
             LottoMateText(
                 text = "|",
-                style = LottoMateTheme.typography.caption
+                style = LottoMateTheme.typography.caption2
                     .copy(color = LottoMateGray80),
-                modifier = Modifier.padding(start = 8.dp)
             )
 
             LottoMateText(
                 text = "작성 ${interview.uploadDate}",
                 style = LottoMateTheme.typography.caption2
                     .copy(color = LottoMateGray80),
-                modifier = Modifier.padding(start = 8.dp),
             )
         }
     }
@@ -556,16 +569,20 @@ private fun InterviewContentQnA(
     question: String,
     answer: String,
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         LottoMateText(
             text = "Q. $question",
-            style = LottoMateTheme.typography.headline2,
+            style = LottoMateTheme.typography.headline2
+                .copy(color = LottoMateBlack),
         )
 
         LottoMateText(
             text = answer,
-            style = LottoMateTheme.typography.body1,
-            modifier = Modifier.padding(top = 8.dp),
+            style = LottoMateTheme.typography.body1
+                .copy(color = LottoMateBlack),
         )
     }
 }
@@ -573,19 +590,19 @@ private fun InterviewContentQnA(
 @Composable
 private fun BottomInterviewListContent(
     modifier: Modifier = Modifier,
-    interviewList: List<InterviewUIModel>,
-    onClickInterviewItem: () -> Unit,
+    interviewList: List<InterviewUiModel>,
+    onClickInterviewItem: (Int, String) -> Unit,
 ) {
     Column(modifier = modifier) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = Dimens.DefaultPadding20)
                 .padding(top = 24.dp)
         ) {
             LottoMateText(
                 text = "로또 당첨자 후기",
                 style = LottoMateTheme.typography.headline1
-                    .copy(color = LottoMateGray120)
+                    .copy(color = LottoMateBlack),
             )
 
             LottoMateText(
@@ -597,23 +614,19 @@ private fun BottomInterviewListContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 20.dp),
         ) {
-            repeat(5) {
-                if (it == 0) Spacer(modifier = Modifier.width(20.dp))
-
+            items(
+                items = interviewList,
+                key = { it.no }
+            ) {interview ->
                 BottomInterviewListItem(
-                    title = interviewList[it].title,
-                    thumb = interviewList[it].thumb,
-                    interviewDate = interviewList[it].interviewDate,
-                    onClick = onClickInterviewItem
+                    interview = interview,
+                    onClick = { onClickInterviewItem(interview.no, interview.place) },
                 )
-
-                if (it != 4) Spacer(modifier = Modifier.width(16.dp))
-                else Spacer(modifier = Modifier.width(20.dp))
             }
         }
     }
@@ -622,26 +635,43 @@ private fun BottomInterviewListContent(
 @Composable
 private fun BottomInterviewListItem(
     modifier: Modifier = Modifier,
-    title: String,
-    subTitle: String = "",
-    thumb: String,
-    interviewDate: String,
+    interview: InterviewUiModel,
     onClick: () -> Unit,
 ) {
+    val context = LocalContext.current
     LottoMateCard(
         modifier = modifier.size(width = 220.dp, height = 202.dp),
         onClick = onClick,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            AsyncImage(
-                model = R.drawable.img_review,
-                contentDescription = "",
-                placeholder = painterResource(id = R.drawable.img_review),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                contentScale = ContentScale.Crop
-            )
+            if (interview.thumbs.isEmpty()) {
+                Image(
+                    painter = painterResource(id = interview.emptyThumbs),
+                    contentDescription = "interview Thumbnail empty",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                )
+            } else {
+                SubcomposeAsyncImage(
+                    model = ImageRequest.Builder(context).apply {
+                        data(interview.thumbs)
+                        size(600)
+                        scale(Scale.FILL)
+                    }
+                        .build(),
+                    contentDescription = "interview thumbnail image",
+                    error = {
+                        Image(
+                            painter = painterResource(id = interview.emptyThumbs),
+                            contentDescription = "interview Thumbnail error")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             Box(
                 modifier = Modifier
@@ -650,20 +680,22 @@ private fun BottomInterviewListItem(
             ) {
                 Column {
                     LottoMateText(
-                        text = subTitle,
+                        text = interview.place,
                         style = LottoMateTheme.typography.caption
                             .copy(color = LottoMateGray80)
                     )
                     LottoMateText(
-                        text = title,
-                        style = LottoMateTheme.typography.label2,
+                        text = interview.title,
+                        style = LottoMateTheme.typography.label2
+                            .copy(color = LottoMateBlack),
                         maxLines = 2,
+                        minLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
 
                 LottoMateText(
-                    text = interviewDate,
+                    text = interview.date,
                     style = LottoMateTheme.typography.caption2
                         .copy(color = LottoMateGray80),
                     modifier = Modifier.align(Alignment.BottomStart)
@@ -673,41 +705,61 @@ private fun BottomInterviewListItem(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun InterviewImageSectionPreview() {
-    LottoMateTheme {
-        InterviewScreen(
-            interviewUiState = InterviewUiState.Success(InterviewMockData),
-            winnerInterviewsUiState = InterviewUiState.Success(List(5) { InterviewMockData }),
-            onBackPressed = {},
-            onClickBanner = {},
-            onClickWinnerInterview = {},
-            onClickOriginArticle = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, heightDp = 1500)
 @Composable
 private fun InterviewPreview() {
     LottoMateTheme {
         InterviewScreen(
-            interviewUiState = InterviewUiState.Success(InterviewMockData.copy(title = "만약두줄이넘어가면세로로내려가야하는거겠죠그럼만약에세줄까지나오는경우가있을까요설마", imgs = emptyList())),
-            winnerInterviewsUiState = InterviewUiState.Success(List(5) { InterviewMockData }),
+            uiState = InterviewUiState.Success(InterviewMockData, InterviewsMockData),
+            scrollState = rememberLazyListState(),
             onBackPressed = {},
             onClickBanner = {},
-            onClickWinnerInterview = {},
+            onClickWinnerInterview = { _, _ -> },
             onClickOriginArticle = {}
         )
     }
 }
 
-val InterviewMockData = InterviewUIModel(
+@Preview(showBackground = true)
+@Composable
+private fun LongTitleInterviewPreview() {
+    LottoMateTheme {
+        InterviewScreen(
+            uiState = InterviewUiState.Success(
+                InterviewMockData.copy(
+                    title = "일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십일이"
+                ),
+                InterviewsMockData,
+            ),
+            scrollState = rememberLazyListState(),
+            onBackPressed = {},
+            onClickBanner = {},
+            onClickWinnerInterview = { _, _ -> },
+            onClickOriginArticle = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun InterviewEmptyImagePreview() {
+    LottoMateTheme {
+        InterviewScreen(
+            uiState = InterviewUiState.Success(InterviewMockData.copy(imgs = emptyList()), InterviewsMockData),
+            scrollState = rememberLazyListState(),
+            onBackPressed = {},
+            onClickBanner = {},
+            onClickWinnerInterview = { _, _ -> },
+            onClickOriginArticle = {}
+        )
+    }
+}
+
+val InterviewMockData = InterviewDetailUiModel(
     no = 20,
     title = "스피또 1등은 아버지의 성실함 덕분!",
-    interviewDate = "2017-04-14",
-    uploadDate = "2017-04-14",
+    interviewDate = "2017.04.14",
+    uploadDate = "2017.04.14",
     thumb = "https://lottomate-review.s3.ap-northeast-2.amazonaws.com/13406_1.jpg",
     imgs = listOf(
         "https://lottomate-review.s3.ap-northeast-2.amazonaws.com/13406_1.jpg",
@@ -736,4 +788,16 @@ val InterviewMockData = InterviewUIModel(
         ),
     ),
     originalNo = 13406,
+    place = "스피또 500, 29회차 1등 2억"
 )
+
+val InterviewsMockData = List(5) {
+    InterviewUiModel(
+        no = it,
+        title = "인터뷰 목록 데이터 $it",
+        thumbs = "",
+        emptyThumbs = R.drawable.img_interview_empty01,
+        date = "2023.01.01",
+        place = "스피또 500, 29회차 1등 2억",
+    )
+}

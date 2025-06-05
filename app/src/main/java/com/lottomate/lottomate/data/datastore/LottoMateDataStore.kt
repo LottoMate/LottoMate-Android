@@ -4,9 +4,15 @@ import android.content.Context
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.lottomate.lottomate.data.model.InterviewViewEntity
+import com.lottomate.lottomate.utils.DateUtils
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 object LottoMateDataStore {
     private lateinit var context: Context
@@ -14,6 +20,7 @@ object LottoMateDataStore {
 
     private val MAP_INIT_POPUP_KEY = booleanPreferencesKey("mapInitPopup")
     private val ONBOARDING_KEY = booleanPreferencesKey("onboarding")
+    private val INTERVIEW_VIEWED_KEY = stringPreferencesKey("interviewViewed")
 
     val mapInitPopupFlow: Flow<Boolean>
         get() = context.lottoMateDataStore.data.map { preference ->
@@ -45,9 +52,26 @@ object LottoMateDataStore {
         )
     }
 
-    private suspend fun changeState(
-        key: Preferences.Key<Boolean>,
-        state: Boolean,
+    suspend fun getInterviewViewed(): InterviewViewEntity {
+        val raw = context.lottoMateDataStore.data.first()[INTERVIEW_VIEWED_KEY]
+
+        val parsed = raw?.let {
+            runCatching { Json.decodeFromString<InterviewViewEntity>(it) }.getOrNull()
+        }
+
+        return parsed?.let {
+            if (it.date == DateUtils.getCurrentDate()) it
+            else InterviewViewEntity(DateUtils.getCurrentDate(), emptySet())
+        } ?: InterviewViewEntity(DateUtils.getCurrentDate(), emptySet())
+    }
+
+    suspend fun saveInterviewViewed(interviewViewEntity: InterviewViewEntity) {
+        changeState(INTERVIEW_VIEWED_KEY, Json.encodeToString<InterviewViewEntity>(interviewViewEntity))
+    }
+
+    private suspend fun <T> changeState(
+        key: Preferences.Key<T>,
+        state: T,
     ) {
         context.lottoMateDataStore.edit { preference ->
             preference[key] = state

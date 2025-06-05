@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToBanner
-import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToInterviewDetail
+import com.lottomate.lottomate.presentation.screen.interview.navigation.navigateToInterviewDetail
 import com.lottomate.lottomate.presentation.screen.lounge.LoungeRoute
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 
