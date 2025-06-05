@@ -3,7 +3,7 @@ package com.lottomate.lottomate.presentation.screen.interview.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class InterviewUIModel(
+data class InterviewDetailUiModel(
     val no: Int,
     val title: String,
     val lottoRound: Int = 0,

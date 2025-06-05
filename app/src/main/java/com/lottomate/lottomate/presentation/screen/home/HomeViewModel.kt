@@ -5,13 +5,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.model.LottoType
-import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
 import com.lottomate.lottomate.domain.repository.InterviewRepository
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto645Info
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLotto720Info
 import com.lottomate.lottomate.presentation.screen.home.model.HomeLottoInfo
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUiModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LottoInfo
@@ -56,9 +56,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 fetchLatestLottoInfo()
-                val interviewNumbers = fetchInterviewNumbers()
+                interviewRepository.fetchInterviews()
 
-                observeLottoAndInterviews(interviewNumbers)
+                observeLottoAndInterviews()
             }.onFailure {
                 handleException(it)
             }
@@ -75,29 +75,14 @@ class HomeViewModel @Inject constructor(
     }
 
     /**
-     * 최신 인터뷰 회차를 가져온 후, 이전 인터뷰 5회차 리스트를 생성합니다.
-     *
-     * @return 이전 인터뷰 5회차 리스트
-     */
-    private suspend fun fetchInterviewNumbers(): List<Int> {
-        val latestInterviewNo = withContext(Dispatchers.IO) {
-            interviewRepository.fetchLatestNoOfInterview()
-        }
-
-        return (latestInterviewNo downTo (latestInterviewNo - 5 + 1))
-            .toList()
-            .sorted()
-    }
-
-    /**
      * 로또 정보 및 인터뷰 데이터를 Flow에서 감지하고 UI 상태를 업데이트 합니다.
      *
      * @param interviewNumbers 최신 인터뷰 회차부터 이전 인터뷰 회차 리스트 (5회차)
      */
-    private suspend fun observeLottoAndInterviews(interviewNumbers: List<Int>) {
+    private fun observeLottoAndInterviews() {
         combine(
             lottoInfoRepository.allLatestLottoInfo,
-            interviewRepository.fetchInterviews(interviewNumbers)
+            interviewRepository.interviews
         ) { lottoInfo, interview ->
             val homeLotto645Info = createLotto645Info(lottoInfo)
             val homeLotto720Info = createLotto720Info(lottoInfo)
@@ -204,7 +189,7 @@ sealed interface HomeUiState {
     data object Loading : HomeUiState
     data class Success(
         val lottoInfos: Map<Int, HomeLottoInfo>,
-        val interviews: List<ResponseInterviewsInfo>
+        val interviews: List<InterviewUiModel>,
     ) : HomeUiState
     data class Error(val throwable: Throwable) : HomeUiState
 }

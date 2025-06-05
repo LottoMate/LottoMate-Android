@@ -1,10 +1,12 @@
 package com.lottomate.lottomate.data.mapper
 
 import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewDetail
+import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUiModel
 import com.lottomate.lottomate.presentation.screen.interview.model.InterviewQnA
-import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUIModel
+import com.lottomate.lottomate.presentation.screen.interview.model.InterviewDetailUiModel
 
-fun ResponseInterviewDetail.toUIModel(): InterviewUIModel {
+fun ResponseInterviewDetail.toUIModel(): InterviewDetailUiModel {
     val contents = reviewCont
         .split("▶")
         .filter { it.isNotBlank() }
@@ -18,7 +20,7 @@ fun ResponseInterviewDetail.toUIModel(): InterviewUIModel {
         InterviewQnA(question, answer)
     }
 
-    return InterviewUIModel(
+    return InterviewDetailUiModel(
         no = reviewNo,
         originalNo = reviewHref,
         title = reviewTitle,
@@ -29,3 +31,11 @@ fun ResponseInterviewDetail.toUIModel(): InterviewUIModel {
         contents = qna.toList(),
     )
 }
+
+fun ResponseInterviewsInfo.toUiModel() = InterviewUiModel(
+    no = this.reviewNo,
+    title = this.reviewTitle,
+    thumbs = this.reviewThumb,
+    date = this.intrvDate.replace("-", "."),
+    place = this.reviewPlace,
+)
