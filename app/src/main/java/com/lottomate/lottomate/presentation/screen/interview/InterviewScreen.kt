@@ -88,6 +88,7 @@ fun InterviewRoute(
     vm: InterviewViewModel = hiltViewModel(),
     no: Int,
     place: String,
+    moveToOriginalInterview: (Int) -> Unit,
     onClickBanner: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
@@ -117,9 +118,7 @@ fun InterviewRoute(
         onClickWinnerInterview = { no, place ->
             vm.getInterview(no, place)
         },
-        onClickOriginArticle = {
-
-        },
+        onClickOriginArticle = moveToOriginalInterview,
     )
 }
 
@@ -130,7 +129,7 @@ private fun InterviewScreen(
     onBackPressed: () -> Unit,
     onClickBanner: () -> Unit,
     onClickWinnerInterview: (Int, String) -> Unit,
-    onClickOriginArticle: () -> Unit,
+    onClickOriginArticle: (Int) -> Unit,
 ) {
     var showInterviewImage by remember { mutableStateOf(false) }
     var showInterviewImageIndex by remember { mutableStateOf(0) }
@@ -419,7 +418,7 @@ private fun InterviewImageView(
 private fun InterviewContentDetail(
     modifier: Modifier = Modifier,
     interview: InterviewDetailUiModel,
-    onClickOriginArticle: () -> Unit,
+    onClickOriginArticle: (Int) -> Unit,
     onClickInterviewImage: (Int) -> Unit,
 ) {
     Column(modifier = modifier) {
@@ -478,7 +477,7 @@ private fun InterviewContentDetail(
                 )
 
                 Row(
-                    modifier = Modifier.clickable { onClickOriginArticle() },
+                    modifier = Modifier.clickable { onClickOriginArticle(interview.originalNo) },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally)
                 ) {

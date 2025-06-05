@@ -18,6 +18,8 @@ sealed interface LottoMateRoute {
 
     // 인터뷰
     @Serializable data class InterviewDetail(val no: Int, val place: String) : LottoMateRoute
+    @Serializable data class OriginalInterview(val no: Int) : LottoMateRoute
+
     // 로그인
     @Serializable data object Login : LottoMateRoute
     @Serializable data object LoginComplete : LottoMateRoute
