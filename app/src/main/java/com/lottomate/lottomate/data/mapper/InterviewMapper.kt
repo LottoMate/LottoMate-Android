@@ -36,7 +36,7 @@ fun ResponseInterviewDetail.toUIModel(): InterviewDetailUiModel {
 fun ResponseInterviewsInfo.toUiModel() = InterviewUiModel(
     no = this.reviewNo,
     title = this.reviewTitle,
-    thumbs = "",
+    thumbs = this.reviewThumb,
     emptyThumbs = randomEmptyThumbnailId(),
     date = this.intrvDate.replace("-", "."),
     place = this.reviewPlace,
