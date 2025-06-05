@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.data.mapper
 
+import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewDetail
 import com.lottomate.lottomate.data.remote.response.interview.ResponseInterviewsInfo
 import com.lottomate.lottomate.presentation.screen.interview.model.InterviewUiModel
@@ -35,7 +36,17 @@ fun ResponseInterviewDetail.toUIModel(): InterviewDetailUiModel {
 fun ResponseInterviewsInfo.toUiModel() = InterviewUiModel(
     no = this.reviewNo,
     title = this.reviewTitle,
-    thumbs = this.reviewThumb,
+    thumbs = "",
+    emptyThumbs = randomEmptyThumbnailId(),
     date = this.intrvDate.replace("-", "."),
     place = this.reviewPlace,
 )
+
+fun randomEmptyThumbnailId(): Int {
+    val random = (0..1).random()
+
+    return when (random) {
+        0 -> R.drawable.img_interview_empty01
+        else -> R.drawable.img_interview_empty02
+    }
+}

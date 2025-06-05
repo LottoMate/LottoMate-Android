@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,15 +51,6 @@ internal fun WinInterviewCardsSection(
     val pagerState = rememberPagerState(
         pageCount = { interviews.size }
     )
-
-    val interviewCoverImgList = remember(interviews) {
-        List(interviews.size) {
-            when ((1..2).random()) {
-                1 -> R.drawable.img_interview_empty01
-                else -> R.drawable.img_interview_empty02
-            }
-        }
-    }
 
     Column {
         Column(
@@ -112,9 +102,8 @@ internal fun WinInterviewCardsSection(
                         modifier = Modifier.background(LottoMateWhite)
                     ) {
                         if (interviews[page].thumbs.isEmpty()) {
-
                             Image(
-                                painter = painterResource(id = interviewCoverImgList[page]),
+                                painter = painterResource(id = interviews[page].emptyThumbs),
                                 contentDescription = "interview image empty",
                                 modifier = Modifier
                                     .height(160.dp)
@@ -127,9 +116,8 @@ internal fun WinInterviewCardsSection(
                                     .build(),
                                 contentDescription = "Lotto Interview Image",
                                 contentScale = ContentScale.Crop,
-                                placeholder = painterResource(id = R.drawable.img_review),
-                                // TODO : 기본 이미지 변경 필요
-                                error = painterResource(id = R.drawable.img_review),
+                                placeholder = painterResource(id = interviews[page].emptyThumbs),
+                                error = painterResource(id = interviews[page].emptyThumbs),
                                 modifier = Modifier
                                     .height(160.dp)
                                     .fillMaxWidth(),

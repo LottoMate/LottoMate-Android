@@ -617,7 +617,7 @@ private fun BottomInterviewListContent(
 
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(horizontal = 20.dp),
         ) {
             items(
@@ -645,22 +645,34 @@ private fun BottomInterviewListItem(
         onClick = onClick,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            SubcomposeAsyncImage(
-                model = ImageRequest.Builder(context).apply {
-                    data(interview.thumbs)
-                    size(600)
-                    scale(Scale.FILL)
-                }
-                    .build(),
-                contentDescription = "interview thumbnail image",
-                error = {
-                    Image(painter = painterResource(id = R.drawable.img_interview_empty01), contentDescription = "interview Thumbnail error")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                contentScale = ContentScale.Crop
-            )
+            if (interview.thumbs.isEmpty()) {
+                Image(
+                    painter = painterResource(id = interview.emptyThumbs),
+                    contentDescription = "interview Thumbnail empty",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                )
+            } else {
+                SubcomposeAsyncImage(
+                    model = ImageRequest.Builder(context).apply {
+                        data(interview.thumbs)
+                        size(600)
+                        scale(Scale.FILL)
+                    }
+                        .build(),
+                    contentDescription = "interview thumbnail image",
+                    error = {
+                        Image(
+                            painter = painterResource(id = interview.emptyThumbs),
+                            contentDescription = "interview Thumbnail error")
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
 
             Box(
                 modifier = Modifier
@@ -678,6 +690,7 @@ private fun BottomInterviewListItem(
                         style = LottoMateTheme.typography.label2
                             .copy(color = LottoMateBlack),
                         maxLines = 2,
+                        minLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
@@ -698,7 +711,7 @@ private fun BottomInterviewListItem(
 private fun InterviewPreview() {
     LottoMateTheme {
         InterviewScreen(
-            uiState = InterviewUiState.Success(InterviewMockData, InterviewsMockDate),
+            uiState = InterviewUiState.Success(InterviewMockData, InterviewsMockData),
             scrollState = rememberLazyListState(),
             onBackPressed = {},
             onClickBanner = {},
@@ -717,7 +730,7 @@ private fun LongTitleInterviewPreview() {
                 InterviewMockData.copy(
                     title = "일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십일이"
                 ),
-                InterviewsMockDate,
+                InterviewsMockData,
             ),
             scrollState = rememberLazyListState(),
             onBackPressed = {},
@@ -733,7 +746,7 @@ private fun LongTitleInterviewPreview() {
 private fun InterviewEmptyImagePreview() {
     LottoMateTheme {
         InterviewScreen(
-            uiState = InterviewUiState.Success(InterviewMockData.copy(imgs = emptyList()), InterviewsMockDate),
+            uiState = InterviewUiState.Success(InterviewMockData.copy(imgs = emptyList()), InterviewsMockData),
             scrollState = rememberLazyListState(),
             onBackPressed = {},
             onClickBanner = {},
@@ -779,11 +792,12 @@ val InterviewMockData = InterviewDetailUiModel(
     place = "스피또 500, 29회차 1등 2억"
 )
 
-val InterviewsMockDate = List(5) {
+val InterviewsMockData = List(5) {
     InterviewUiModel(
         no = it,
         title = "인터뷰 목록 데이터 $it",
-        thumbs = "https://lottomate-review.s3.ap-northeast-2.amazonaws.com/13406_2.jpg",
+        thumbs = "",
+        emptyThumbs = R.drawable.img_interview_empty01,
         date = "2023.01.01",
         place = "스피또 500, 29회차 1등 2억",
     )
