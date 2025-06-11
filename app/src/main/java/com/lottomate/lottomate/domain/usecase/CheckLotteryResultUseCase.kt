@@ -62,26 +62,16 @@ class CheckLotteryResultUseCase @Inject constructor(
                 fourthPrize = lottoInfo.lottoPrize[3],
                 fifthPrize = lottoInfo.lottoPrize[4],
             ),
-            isClaimPeriodExpired = DateUtils.isPrizeExpired(lottoInfo.lottoDate),
+            isClaimPeriodExpired = DateUtils.isPrizeExpired(lottoInfo.lottoDate.replace(".", "-")),
         )
     }
 
     private fun checkLotto720Result(myLotto: MyLotto720Info, lottoInfo: Lotto720Info): LotteryResult {
         val winFirstNum = lottoInfo.lottoNum.first() == myLotto.firstNumber
-        val lottoNumWithoutFirst = lottoInfo.lottoNum.filterNot { it == lottoInfo.lottoNum.first() }
-        val excludeNumIndex = mutableListOf<Int>()
+        val lottoNumWithoutFirst = lottoInfo.lottoNum.drop(1)
 
-        val winCount = myLotto.numbers.count { number ->
-            val isWin = lottoNumWithoutFirst
-                .filterIndexed { index, _ -> !excludeNumIndex.contains(index) }
-                .contains(number)
-
-            if (isWin) {
-                val lottoNumIndex = lottoInfo.lottoNum.indexOf(number)-1
-                excludeNumIndex.add(lottoNumIndex)
-            }
-
-            isWin
+        val winCount = myLotto.numbers.withIndex().count { (index, number) ->
+            lottoNumWithoutFirst[index] == number
         }.plus(if (winFirstNum) 1 else 0)
 
         val isWinningBonus = myLotto.numbers.all { number ->
@@ -106,7 +96,7 @@ class CheckLotteryResultUseCase @Inject constructor(
                 sixthPrize = lottoInfo.lottoWinnerNum[5],
                 seventhPrize = lottoInfo.lottoWinnerNum[6],
             ),
-            isClaimPeriodExpired = DateUtils.isPrizeExpired(lottoInfo.lottoDate),
+            isClaimPeriodExpired = DateUtils.isPrizeExpired(lottoInfo.lottoDate.replace(".", "-")),
         )
     }
 
