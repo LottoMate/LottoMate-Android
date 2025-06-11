@@ -14,7 +14,12 @@ import kotlinx.coroutines.flow.flow
 
 class FakeLottoInfoRepository : LottoInfoRepository {
     private val _allLatestLottoInfo = MutableStateFlow<Map<Int, LottoInfo>>(emptyMap())
-    private val _latestLottoRoundInfo = MutableStateFlow<Map<Int, LatestRoundInfo>>(emptyMap())
+    private val _latestLottoRoundInfo = MutableStateFlow<Map<Int, LatestRoundInfo>>(
+        mapOf(
+            LottoType.L645.num to LatestRoundInfo(1175, "2025-06-07"),
+            LottoType.L720.num to LatestRoundInfo(266, "2025-06-05")
+        )
+    )
     override val latestLottoRoundInfo: StateFlow<Map<Int, LatestRoundInfo>>
         get() = _latestLottoRoundInfo.asStateFlow()
     override val allLatestLottoInfo: Flow<Map<Int, LottoInfo>>
