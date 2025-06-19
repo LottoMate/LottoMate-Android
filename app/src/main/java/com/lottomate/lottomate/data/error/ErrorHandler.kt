@@ -12,8 +12,12 @@ class LottoMateErrorHandlerImpl @Inject constructor() : LottoMateErrorHandler {
     override fun handleError(throwable: Throwable): LottoMateErrorType {
         return when (throwable) {
             is UnknownHostException -> LottoMateErrorType.Network
+            is InvalidLottoQRFormatException -> {
+                Log.d("🔴 Error ", throwable.message ?: throwable.stackTraceToString())
+                LottoMateErrorType.QRParsingException
+            }
             else -> {
-                Log.d("예상하지 못한 오류 발생", throwable.stackTraceToString())
+                Log.d("🔴 Error ", throwable.stackTraceToString())
 
                 LottoMateErrorType.Unknown
             }

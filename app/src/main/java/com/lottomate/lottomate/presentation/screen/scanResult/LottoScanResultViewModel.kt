@@ -6,6 +6,7 @@ import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.mapper.toUiModel
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.di.DispatcherModule
+import com.lottomate.lottomate.domain.repository.InterviewRepository
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.domain.usecase.CheckLotteryResultUseCase
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
@@ -32,7 +33,9 @@ class LottoScanResultViewModel @Inject constructor(
     @DispatcherModule.DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     private val lottoInfoRepository: LottoInfoRepository,
     private val checkLotteryResultUseCase: CheckLotteryResultUseCase,
+    private val interviewRepository: InterviewRepository,
 ) : BaseViewModel(errorHandler) {
+    val interviews = interviewRepository.interviews.value
     private var _state = MutableStateFlow<LottoScanResultUiState>(LottoScanResultUiState.Loading)
     val state: StateFlow<LottoScanResultUiState> get() = _state.asStateFlow()
 
@@ -49,16 +52,19 @@ class LottoScanResultViewModel @Inject constructor(
                     val remainDays = DateUtils.getDaysUntilNextDay(week)
 
                     delay(2_000)
-                    _state.update { LottoScanResultUiState.NotYet(remainDays) }
+                    _state.update { LottoScanResultUiState.NotYet(lottoType, remainDays) }
                     return@launch
                 }
 
                 val result = checkLotteryResultUseCase(lottoType, myLotto).getOrThrow()
 
-                delay(1_500)
-                _state.update { LottoScanResultUiState.CelebrationLoading }
-                delay(1_500)
-                _state.update { LottoScanResultUiState.Success(result.toUiModel(myLotto)) }
+                if (result.isWinner) {
+                    delay(1_500)
+                    _state.update { LottoScanResultUiState.CelebrationLoading }
+                    delay(1_500)
+                } else delay(2_000)
+
+                _state.update { LottoScanResultUiState.Success(result.toUiModel(lottoType, myLotto)) }
             } catch (e: Exception) {
                 handleException(InvalidLottoQRFormatException())
             }
@@ -106,7 +112,7 @@ class LottoScanResultViewModel @Inject constructor(
         return MyLotto720Info(
             round = round.toInt(),
             firstNumber = jo.toInt(),
-            numbers = numbers.map { it.toInt() },
+            numbers = numbers.map { it.toString().toInt() },
         )
     }
 
@@ -137,7 +143,7 @@ sealed interface LottoScanResultUiState {
     data object Loading : LottoScanResultUiState
     // 당첨되어 결과를 기다릴때 보여주는 로딩 화면
     data object CelebrationLoading : LottoScanResultUiState
-    data class NotYet(val data: Int) : LottoScanResultUiState
+    data class NotYet(val type: LottoType, val days: Int) : LottoScanResultUiState
     data class Success(val data: ScanResultUiModel) : LottoScanResultUiState
 }
 

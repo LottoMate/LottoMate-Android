@@ -221,7 +221,7 @@ private fun InterviewItem(
         onClick = onClick,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            if (interview.thumbs.isNotEmpty()) {
+            if (interview.thumbs.isEmpty()) {
                 Image(
                     painter = painterResource(id = interview.emptyThumbs),
                     contentDescription = "interview thumbnail image empty",

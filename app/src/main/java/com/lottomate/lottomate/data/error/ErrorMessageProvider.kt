@@ -12,6 +12,7 @@ object ErrorMessageProvider {
             is LottoMateErrorType.Network -> context.getString(R.string.error_message_network)
             is LottoMateErrorType.LocationUpdateFailed -> context.getString(R.string.error_message_location_update)
             is LottoMateErrorType.Unknown -> context.getString(R.string.error_message_unknown)
+            else -> context.getString(R.string.error_message_unknown)
         }
     }
 }

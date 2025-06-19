@@ -190,7 +190,7 @@ private fun InterviewScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 20.dp),
-                            onClickBanner = onClickBanner
+                            onClickBanner = { onClickBanner }
                         )
                     }
 

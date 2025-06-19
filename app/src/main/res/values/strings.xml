@@ -158,6 +158,12 @@
         <item quantity="other">당첨 발표일까지 %s 남았어요</item>
     </plurals>
 
+    <string name="lotto_result_days_today_keyword_645">오후 8시 45분 이후에</string>
+    <string name="lotto_result_days_today_keyword_720">오후 7시 5분 이후에</string>
+    <plurals name="lotto_result_days_today">
+        <item quantity="other">오늘 %s 확인해보세요</item>
+    </plurals>
+
     <!-- 당첨자 가이드 -->
     <string name="guide_title">당첨자 가이드</string>
     <string name="guide_top_notice_content01">당첨 결과 발표 후부터</string>
