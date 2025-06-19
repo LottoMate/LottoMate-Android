@@ -15,6 +15,7 @@ data class LotteryResult(
     val lottoType: LottoType,
     val isWinner: Boolean,
     val winningRanks: List<LottoRank>,
+    val winningNumbers: List<List<Int>>,
     val winningInfo: WinResultInfo,
     val isClaimPeriodExpired: Boolean,
 )

@@ -65,6 +65,16 @@ class LottoScanResultViewModel @Inject constructor(
         }
     }
 
+    fun saveWinningNumbers(numbers: List<List<Int>>) {
+        viewModelScope.launch {
+            try {
+                // TODO : 당첨 로또 번호 저장 api 필요
+            } catch (e: Exception) {
+                handleException(e)
+            }
+        }
+    }
+
     private suspend fun checkAnnouncement(type: LottoType, round: Int): Boolean {
         val latestRound = lottoInfoRepository.latestLottoRoundInfo.first().getValue(type.num)
         return latestRound.round >= round

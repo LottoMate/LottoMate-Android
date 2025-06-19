@@ -5,7 +5,10 @@ import com.lottomate.lottomate.domain.model.LottoRank
 import com.lottomate.lottomate.domain.model.WinResultInfo
 
 data class ScanResultUiModel(
-    val myLotto: Map<LottoType, MyLottoInfo> = emptyMap(),
+    val type: LottoType,
+    val myLotto: MyLottoInfo,
+    // 당첨된 번호
+    val myWinningNumbers: List<List<Int>>,
     // 당첨 여부
     val isWinner: Boolean = false,
     // 당첨 내역 (로또 타입, 당첨 등수)

@@ -4,6 +4,7 @@ import com.lottomate.lottomate.data.error.LottoMateErrorHandlerImpl
 import com.lottomate.lottomate.domain.usecase.CheckLotteryResultUseCase
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultUiState
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultViewModel
+import com.lottomate.lottomate.repository.FakeInterviewRepository
 import com.lottomate.lottomate.repository.FakeLottoInfoRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -28,7 +29,8 @@ class LottoScanResultViewModelTest {
             dispatcher = testDispatcher,
             errorHandler = LottoMateErrorHandlerImpl(),
             lottoInfoRepository = FakeLottoInfoRepository(),
-            checkLotteryResultUseCase = CheckLotteryResultUseCase(FakeLottoInfoRepository())
+            checkLotteryResultUseCase = CheckLotteryResultUseCase(FakeLottoInfoRepository()),
+            interviewRepository = FakeInterviewRepository(),
         )
     }
 

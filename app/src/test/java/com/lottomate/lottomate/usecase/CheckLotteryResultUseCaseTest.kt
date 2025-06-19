@@ -131,13 +131,35 @@ class CheckLotteryResultUseCaseTest {
     }
 
     @Test
+    fun `당첨된 로또645일 경우, winningNumbers에 당첨된 번호가 존재한다`() = runTest {
+        val lotto645 = listOf(
+            listOf(4, 6, 32, 11, 13, 14), // 5등
+        )
+
+        val result = useCase(LottoType.L645, myLotto645.copy(numbers = lotto645)).getOrThrow()
+
+        Assert.assertEquals(lotto645, result.winningNumbers)
+    }
+
+    @Test
+    fun `미당첨된 로또645일 경우, winningNumbers에 당첨된 번호가 존재하지 않는다`() = runTest {
+        val lotto645 = listOf(
+            listOf(7, 14, 22, 25, 28, 38),  // 미당첨
+        )
+
+        val result = useCase(LottoType.L645, myLotto645.copy(numbers = lotto645)).getOrThrow()
+
+        Assert.assertEquals(emptyList<List<Int>>(), result.winningNumbers)
+    }
+
+    @Test
     fun `미당첨된 연금복권720일 경우, 당첨 결과의 isWinner는 false이다`() = runTest {
         val firstNumber = 5
-        val lotto720 = listOf(1, 2, 3, 4, 5, 6, 7)
+        val lotto720 = listOf(1, 2, 3, 4, 5, 6)
 
         val result = useCase(LottoType.L720, myLotto720.copy(firstNumber = firstNumber, numbers = lotto720)).getOrThrow()
 
-        Assert.assertTrue(result.isWinner)
+        Assert.assertFalse(result.isWinner)
     }
 
     @Test
@@ -230,6 +252,16 @@ class CheckLotteryResultUseCaseTest {
     }
 
     @Test
+    fun `당첨된 연금복권720일 경우, winningNumbers에 당첨 번호가 존재한다`() = runTest {
+        val firstNumber = 5
+        val lotto720 = listOf(3, 4, 6, 8, 7, 2)
+
+        val result = useCase(LottoType.L720, myLotto720.copy(firstNumber = firstNumber, numbers = lotto720)).getOrThrow()
+
+        Assert.assertEquals(listOf(listOf(firstNumber) + lotto720), result.winningNumbers)
+    }
+
+    @Test
     fun `보너스에 당첨된 연금복권720일 경우, winningRanks에 BONUS가 포함되어야 한다`() = runTest {
         val firstNumber = 5
         val lotto720 = listOf(5, 4, 9, 4, 1, 7)
@@ -247,6 +279,16 @@ class CheckLotteryResultUseCaseTest {
         val result = useCase(LottoType.L720, myLotto720.copy(firstNumber = firstNumber, numbers = lotto720)).getOrThrow()
 
         Assert.assertTrue(result.winningRanks.contains(LottoRank.NONE))
+    }
+
+    @Test
+    fun `미당첨된 연금복권720일 경우, winningNumbers에 당첨 번호가 존재하지 않는다`() = runTest {
+        val firstNumber = 5
+        val lotto720 = listOf(3, 4, 6, 8, 7, 8)
+
+        val result = useCase(LottoType.L720, myLotto720.copy(firstNumber = firstNumber, numbers = lotto720)).getOrThrow()
+
+        Assert.assertEquals(listOf<List<Int>>(emptyList()), result.winningNumbers)
     }
 
     companion object {

@@ -44,23 +44,28 @@ class CheckLotteryResultUseCase @Inject constructor(
     }
 
     private fun checkLotto645Result(myLotto: MyLotto645Info, lottoInfo: Lotto645Info): LotteryResult {
-        val winningRanks = myLotto.numbers.map { myNumbers ->
+        val winningRanks = myLotto.numbers.mapIndexed { index, myNumbers ->
             val winCount = myNumbers.count { lottoInfo.lottoNum.contains(it) }
             val bonus = myNumbers.contains(lottoInfo.lottoBonusNum.first())
 
-            LottoRank.getLotto645Rank(winCount, bonus)
+            index to LottoRank.getLotto645Rank(winCount, bonus)
         }
+
+        val winningNumbers = winningRanks
+            .filterNot { it.second == LottoRank.NONE }
+            .map { myLotto.numbers[it.first] }
 
         return LotteryResult(
             lottoType = LottoType.L645,
-            isWinner = winningRanks.any { it != LottoRank.NONE },
-            winningRanks = winningRanks,
+            isWinner = winningRanks.any { it.second != LottoRank.NONE },
+            winningRanks = winningRanks.map { it.second },
+            winningNumbers = winningNumbers,
             winningInfo = Lotto645ResultInfo(
-                firstPrize = lottoInfo.lottoPrize[0],
-                secondPrize = lottoInfo.lottoPrize[1],
-                thirdPrize = lottoInfo.lottoPrize[2],
-                fourthPrize = lottoInfo.lottoPrize[3],
-                fifthPrize = lottoInfo.lottoPrize[4],
+                firstPrize = lottoInfo.lottoPrizePerPerson[0],
+                secondPrize = lottoInfo.lottoPrizePerPerson[1],
+                thirdPrize = lottoInfo.lottoPrizePerPerson[2],
+                fourthPrize = lottoInfo.lottoPrizePerPerson[3],
+                fifthPrize = lottoInfo.lottoPrizePerPerson[4],
             ),
             isClaimPeriodExpired = DateUtils.isPrizeExpired(lottoInfo.lottoDate.replace(".", "-")),
         )
@@ -87,6 +92,7 @@ class CheckLotteryResultUseCase @Inject constructor(
             lottoType = LottoType.L720,
             isWinner = winningRank != LottoRank.NONE,
             winningRanks = listOf(winningRank),
+            winningNumbers = listOf(if (winningRank != LottoRank.NONE) listOf(myLotto.firstNumber) + myLotto.numbers else emptyList()),
             winningInfo = Lotto720ResultInfo(
                 firstPrize = lottoInfo.lottoWinnerNum[0],
                 secondPrize = lottoInfo.lottoWinnerNum[1],
