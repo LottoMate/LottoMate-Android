@@ -16,6 +16,7 @@ import com.lottomate.lottomate.presentation.screen.interview.navigation.navigate
 import com.lottomate.lottomate.presentation.screen.lottoinfo.LottoInfoRoute
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
+import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigateToPocketTab
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
 import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
@@ -103,7 +104,16 @@ fun NavGraphBuilder.homeNavGraph(
                 navController.navigateToHomeTab(navOptions)
             },
             moveToWinningGuide = { navController.navigateToWinnerGuide() },
-            onBackPressed = { navController.popBackStack() },
+            moveToMap = { navController.navigateToMap() },
+            moveToInterview = { no, place -> navController.navigateToInterviewDetail(no, place)},
+            moveToPocket = {
+                val navOptions = NavOptions.Builder().apply {
+                    setPopUpTo<BottomTabRoute.Pocket>(true)
+                }.build()
+
+                navController.navigateToPocketTab(navOptions)
+            },
+            onBackPressed = { navController.popBackStack(route = LottoMateRoute.LottoScan, inclusive = true) },
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }

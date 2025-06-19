@@ -1,107 +1,140 @@
 package com.lottomate.lottomate.presentation.screen.scanResult
 
 import androidx.lifecycle.viewModelScope
+import com.lottomate.lottomate.data.error.InvalidLottoQRFormatException
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
+import com.lottomate.lottomate.data.mapper.toUiModel
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.di.DispatcherModule
+import com.lottomate.lottomate.domain.repository.InterviewRepository
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
-import com.lottomate.lottomate.domain.repository.LottoRepository
+import com.lottomate.lottomate.domain.usecase.CheckLotteryResultUseCase
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
-import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.scanResult.model.ScanResultUiModel
+import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class LottoScanResultViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
-    private val lottoRepository: LottoRepository,
+    @DispatcherModule.DefaultDispatcher private val dispatcher: CoroutineDispatcher,
     private val lottoInfoRepository: LottoInfoRepository,
+    private val checkLotteryResultUseCase: CheckLotteryResultUseCase,
+    private val interviewRepository: InterviewRepository,
 ) : BaseViewModel(errorHandler) {
-    private var _lottoWinResultInfo = MutableStateFlow<LottoScanResultUiState>(LottoScanResultUiState.Loading)
-    val lottoWinResultInfo: StateFlow<LottoScanResultUiState> get() = _lottoWinResultInfo.asStateFlow()
+    val interviews = interviewRepository.interviews.value
+    private var _state = MutableStateFlow<LottoScanResultUiState>(LottoScanResultUiState.Loading)
+    val state: StateFlow<LottoScanResultUiState> get() = _state.asStateFlow()
 
-    fun getLottoResultByRound(data: String) {
-        viewModelScope.launch {
-            val round = data.split("q")[0]
+    fun getLottoResult(data: String) {
+        viewModelScope.launch(dispatcher) {
+            try {
+                val parseData = data.substringAfter("?v=")
 
-            // 구매한 로또 번호 목록
-            val purchasedLottoNumbers = data.split("q").drop(1).mapNotNull {
-                it.chunked(2).mapNotNull { chunk -> chunk.toIntOrNull() }
+                val (lottoType, myLotto) = parseMyLotto(parseData)
+                val isAnnouncement = checkAnnouncement(lottoType, myLotto.round)
+
+                if (!isAnnouncement) {
+                    val week = if (lottoType == LottoType.L645) Calendar.SATURDAY else Calendar.THURSDAY
+                    val remainDays = DateUtils.getDaysUntilNextDay(week)
+
+                    delay(2_000)
+                    _state.update { LottoScanResultUiState.NotYet(lottoType, remainDays) }
+                    return@launch
+                }
+
+                val result = checkLotteryResultUseCase(lottoType, myLotto).getOrThrow()
+
+                if (result.isWinner) {
+                    delay(1_500)
+                    _state.update { LottoScanResultUiState.CelebrationLoading }
+                    delay(1_500)
+                } else delay(2_000)
+
+                _state.update { LottoScanResultUiState.Success(result.toUiModel(lottoType, myLotto)) }
+            } catch (e: Exception) {
+                handleException(InvalidLottoQRFormatException())
             }
-
-            // 당첨 숫자 목록
-            val winningNumbers = async { lottoRepository.fetchLottoWinResultByRound(round) }.await()
-            lottoInfoRepository.fetchLottoInfo(LottoType.L645.num, round.toInt())
-                .onStart {
-                    _lottoWinResultInfo.update {
-                        LottoScanResultUiState.Loading
-                    }
-                }
-                .catch { handleException(it) }
-                .collectLatest { collectData ->
-                    val winResultInfo = collectData as Lotto645Info
-
-                    when {
-                        winningNumbers.isEmpty() -> {
-                            // 당첨 발표 전
-                            _lottoWinResultInfo.update {
-                                LottoScanResultUiState.NotYet
-                            }
-                        }
-                        else -> {
-                            // 보너스 숫자 (1개)
-                            val bonusNum = winningNumbers.last()
-                            // 당첨 숫자 (6개)
-                            val winNumbers = winningNumbers.filter { it != bonusNum }
-                            // 구매한 로또 번호 중 당첨 번호와 일치하는 번호의 개수
-                            // 6개(1등) / 5개(2,3등) / 4개(4등) / 3개(5등) / 그 외(낙첨)
-                            val matchingCounts = purchasedLottoNumbers.map { list -> list.filter { it != bonusNum }.count { it in winNumbers } }
-                            val hasBonusNumber = purchasedLottoNumbers.map { list -> bonusNum in list }
-
-                            val lottoResults = mutableListOf<LottoResultInfo?>()
-                            purchasedLottoNumbers.forEachIndexed { index, _ ->
-                                val lottoResult = when (matchingCounts[index]) {
-                                    6 -> LottoResultInfo(1, winResultInfo.lottoPrizePerPerson[0])
-                                    5 -> {
-                                        if (hasBonusNumber[index]) LottoResultInfo(2, winResultInfo.lottoPrizePerPerson[1])
-                                        else LottoResultInfo(3, winResultInfo.lottoPrizePerPerson[2])
-                                    }
-                                    4 -> LottoResultInfo(4, winResultInfo.lottoPrizePerPerson[3])
-                                    3 -> LottoResultInfo(5, winResultInfo.lottoPrizePerPerson[4])
-                                    else -> null
-                                }
-
-                                lottoResults.add(lottoResult)
-                            }
-
-                            val isWinning = lottoResults.any { it != null }
-
-                            when (isWinning) {
-                                true -> {
-                                    _lottoWinResultInfo.update { LottoScanResultUiState.Loading }
-                                    delay(1_500)
-                                    _lottoWinResultInfo.update { LottoScanResultUiState.CelebrationLoading }
-                                    delay(1_500)
-                                }
-                                false -> delay(2_000)
-                            }
-
-                            _lottoWinResultInfo.update {
-                                LottoScanResultUiState.Success(lottoResults)
-                            }
-                        }
-                    }
-                }
         }
+    }
+
+    fun saveWinningNumbers(numbers: List<List<Int>>) {
+        viewModelScope.launch {
+            try {
+                // TODO : 당첨 로또 번호 저장 api 필요
+            } catch (e: Exception) {
+                handleException(e)
+            }
+        }
+    }
+
+    private suspend fun checkAnnouncement(type: LottoType, round: Int): Boolean {
+        val latestRound = lottoInfoRepository.latestLottoRoundInfo.first().getValue(type.num)
+        return latestRound.round >= round
+    }
+
+    private fun parseMyLotto(data: String): Pair<LottoType, MyLottoInfo> {
+        return when {
+            data.contains("pd") -> {
+                LottoType.L720 to parseLotto720(data.substringAfter("pd"))
+            }
+            else -> {
+                LottoType.L645 to parseLotto645(data)
+            }
+        }
+    }
+
+    /**
+     * 실물 복권 용지(연금복권720)를 스캔한 데이터를 회차, 번호로 파싱합니다.
+     *
+     * @param data 실물 복권 용지를 스캔했을 때 나오는 데이터
+     * @return MyLottoInfo 파싱된 데이터
+     */
+    private fun parseLotto720(data: String): MyLottoInfo {
+        val (roundPart, numbers) = data.split("s")
+
+        val round = roundPart.substring(3, 6)  // "256"
+        val jo = roundPart.substring(6, 7)     // "1"
+
+        return MyLotto720Info(
+            round = round.toInt(),
+            firstNumber = jo.toInt(),
+            numbers = numbers.map { it.toString().toInt() },
+        )
+    }
+
+    /**
+     * 실물 복권 용지(로또645)를 스캔한 데이터를 회차, 번호로 파싱합니다.
+     *
+     * @param data 실물 복권 용지를 스캔했을 때 나오는 데이터
+     * @return MyLottoInfo 파싱된 데이터
+     */
+    private fun parseLotto645(data: String): MyLottoInfo {
+        val round = Regex("^\\d+").find(data)?.value
+
+        val regex = "(q|n|m)(\\d+)".toRegex()
+        val numbers = regex.findAll(data)
+            .map { matchResult ->
+                matchResult.groupValues[2].take(12)
+            }.toList()
+
+        return MyLotto645Info(
+            round = round?.toInt() ?: 0,
+            numbers = numbers.map { raw -> raw.chunked(2).map { it.toInt() } },
+        )
     }
 }
 
@@ -110,8 +143,8 @@ sealed interface LottoScanResultUiState {
     data object Loading : LottoScanResultUiState
     // 당첨되어 결과를 기다릴때 보여주는 로딩 화면
     data object CelebrationLoading : LottoScanResultUiState
-    data object NotYet : LottoScanResultUiState
-    data class Success(val data: List<LottoResultInfo?>) : LottoScanResultUiState
+    data class NotYet(val type: LottoType, val days: Int) : LottoScanResultUiState
+    data class Success(val data: ScanResultUiModel) : LottoScanResultUiState
 }
 
 data class LottoResultInfo(

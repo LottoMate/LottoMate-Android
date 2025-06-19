@@ -126,13 +126,10 @@ enum class BannerType(
         }
 
         fun getRandomBannerTypeBeforeResult(): BannerType {
-            return listOf(DRAW_LOTTO, INTERVIEW).random()
+            return listOf(WINNER_GUIDE, INTERVIEW).random()
         }
 
-        fun getRandomBannerTypeAfterResult(isExpired: Boolean): BannerType {
-            return if (isExpired) REQUEST_WINNER_LOTTO_STORE
-            else WINNER_GUIDE
-        }
+        fun getBannerResultExpired() = REQUEST_WINNER_LOTTO_STORE
 
         fun getResultScreenBannerType(isWinner: Boolean): BannerType {
             return if (isWinner) WINNER_GUIDE else MAP
@@ -176,23 +173,20 @@ fun LottoMateCard(
 fun BannerCard(
     modifier: Modifier = Modifier,
     type: BannerType = BannerType.WINNER_GUIDE,
-    onClickBanner: () -> Unit,
+    onClickBanner: (BannerType) -> Unit,
 ) {
-    val randomBanner = Random(7).nextInt()
-    val randomBannerType = BannerType.find(randomBanner)
-
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(100.dp)
             .background(
-                color = randomBannerType.backgroundColor,
+                color = type.backgroundColor,
                 shape = RoundedCornerShape(Dimens.RadiusLarge)
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = { onClickBanner() }
+                onClick = { onClickBanner(type) }
             )
     ) {
         Column(
@@ -202,21 +196,21 @@ fun BannerCard(
             verticalArrangement = Arrangement.Center,
         ) {
             LottoMateText(
-                text = randomBannerType.title,
+                text = type.title,
                 style = LottoMateTheme.typography.headline2,
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
             LottoMateText(
-                text = randomBannerType.subTitle,
+                text = type.subTitle,
                 style = LottoMateTheme.typography.caption
                     .copy(LottoMateGray90),
             )
         }
 
         Image(
-            bitmap = ImageBitmap.imageResource(id = randomBannerType.img),
+            bitmap = ImageBitmap.imageResource(id = type.img),
             contentDescription = "Lotto Info Bottom Banner Image",
             modifier = Modifier
                 .align(Alignment.BottomEnd)

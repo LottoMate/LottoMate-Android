@@ -118,6 +118,25 @@ object DateUtils {
         return pastDate < today
     }
 
+    fun isPrizeExpired(date: String): Boolean {
+        val formatter = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
+        val deadlineDate = formatter.parse(calculatePrizeDeadline(date)) ?: return false
+        val currentDate = formatter.parse(getCurrentDate()) ?: return false
+
+        return currentDate.after(deadlineDate)
+    }
+
+    private fun calculatePrizeDeadline(date: String): String {
+        val formatter = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
+        val originalDate = formatter.parse(date) ?: throw IllegalArgumentException("날짜 형식이 올바르지 않습니다")
+        val calendar = Calendar.getInstance().apply {
+            time = originalDate
+            add(Calendar.YEAR, 1)
+        }
+
+        return formatter.format(calendar.time)
+    }
+
     private fun getIgnoredTimeDays(calendar: Calendar): Long {
         return calendar.apply {
             set(Calendar.HOUR_OF_DAY, 0)
