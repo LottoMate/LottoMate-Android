@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.compose.compiler)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
@@ -14,7 +16,7 @@ localProperties.load(FileInputStream(rootProject.file("local.properties")))
 
 android {
     namespace = "com.lottomate.lottomate"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.lottomate.lottomate"
@@ -47,8 +49,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true
@@ -57,15 +61,16 @@ android {
     viewBinding {
         enable = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
     sourceSets["main"].assets.srcDirs("src/main/assets")
+    composeCompiler {
+        enableStrongSkippingMode = true
+        includeSourceInformation = true
+    }
 }
 
 dependencies {
@@ -93,15 +98,8 @@ dependencies {
     implementation(libs.androidx.material3.android)
     ksp(libs.hilt.compiler)
 
-    // Retrofit2 + okhttp3
-    implementation(libs.squareup.retrofit2)
-    implementation(libs.squareup.okhttp3)
-    implementation(libs.squareup.okhttp3.logger.interceptor)
-
-    // Kotlin Serialization
-    implementation(libs.org.jetbrains.kotlin.serialization)
-    implementation(libs.org.jetbrains.kotlinx.serialization.json)
-    implementation(libs.retrofit2.converter.serialization)
+    // Network
+    implementation(libs.bundles.network)
 
     // Coil
     implementation(libs.io.coil.compose)
