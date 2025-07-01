@@ -1,8 +1,5 @@
 package com.lottomate.lottomate.presentation.screen.setting
 
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,42 +10,59 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.lottomate.lottomate.R
+import com.lottomate.lottomate.domain.model.LoginType
+import com.lottomate.lottomate.presentation.component.LoginIconButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
+import com.lottomate.lottomate.presentation.component.LottoMateTooltip
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
+import com.lottomate.lottomate.presentation.component.ToolTipDirection
+import com.lottomate.lottomate.presentation.model.LoginTypeUiModel
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.login.LoginViewModel
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
-import com.lottomate.lottomate.utils.noInteractionClickable
+import kotlin.math.roundToInt
 
 @Composable
 fun SettingRoute(
-    vm: LoginViewModel = hiltViewModel(),
+    vm: SettingViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToMyPage: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
+    val latestLoginType by vm.latestLoginType
+
     SettingScreen(
+        latestLoginType = latestLoginType,
         onClickMyPage = moveToMyPage,
         onBackPressed = onBackPressed,
     )
@@ -57,23 +71,15 @@ fun SettingRoute(
 @Composable
 private fun SettingScreen(
     modifier: Modifier = Modifier,
+    latestLoginType: LoginTypeUiModel?,
     onClickMyPage: () -> Unit = {},
     onBackPressed: () -> Unit,
 ) {
-    val context = LocalContext.current
-    val resultLoginWithGoogle = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-        val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+    val density = LocalDensity.current
 
-        if (task.isSuccessful) {
-            Log.d("Google Login", task.result.toString())
-
-            task.result.idToken?.let {  idToken ->
-                task.result.serverAuthCode?.let { accessToken ->
-//                    vm.loginWithGoogle(idToken, accessToken)
-                }
-            }
-        }
-    }
+    var loginIconOffset by remember { mutableStateOf(Offset.Zero) }
+    var loginIconSize by remember { mutableStateOf(IntSize.Zero) }
+    var latestLoginToolTipSize by remember { mutableStateOf(IntSize.Zero) }
 
     Box(
         modifier = modifier
@@ -88,102 +94,15 @@ private fun SettingScreen(
                     .fillMaxWidth()
                     .padding(top = 28.dp),
             ) {
-                LottoMateText(
-                    text = "소셜 로그인 하기",
-                    style = LottoMateTheme.typography.body1
-                        .copy(color = LottoMateGray100),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
+                TopLoginSection(
+                    latestLoginType = latestLoginType,
+                    onGloballyPositioned = { coordinates ->
+                        val position = coordinates.positionInRoot()
+
+                        loginIconOffset = position
+                        loginIconSize = coordinates.size
+                    }
                 )
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.img_kakao),
-                        contentDescription = null
-                    )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.img_naver),
-                        contentDescription = null,
-                        modifier = Modifier.padding(start = 20.dp),
-                    )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.img_google),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .noInteractionClickable {
-//                                val signInWithGoogleOption = GetSignInWithGoogleOption
-//                                    .Builder("143180959109-sk88uf4he0n41fo7470kkagcm4qng4sj.apps.googleusercontent.com")
-//                                    .build()
-//
-////                                val googleIdOption = GetGoogleIdOption
-////                                    .Builder()
-////                                    .setFilterByAuthorizedAccounts(true)
-////                                    .setServerClientId("143180959109-sk88uf4he0n41fo7470kkagcm4qng4sj.apps.googleusercontent.com")
-////                                    .build()
-//
-//                                val request: GetCredentialRequest = GetCredentialRequest
-//                                    .Builder()
-//                                    .addCredentialOption(signInWithGoogleOption)
-//                                    .build()
-//
-//                                coroutineScope.launch {
-//                                    try {
-//                                        var responseJson = ""
-//                                        val credentialManager = CredentialManager.create(context)
-//                                        val result = credentialManager.getCredential(
-//                                            context,
-//                                            request
-//                                        )
-//
-//                                        val credential = result.credential
-//                                        Log.d("SettingPage", "credential: $credential")
-//                                        when (credential) {
-//                                            is PublicKeyCredential -> {
-//                                                responseJson = credential.authenticationResponseJson
-//                                            }
-//
-//                                            is CustomCredential -> {
-//                                                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-//                                                    val googleIdTokenCredential =
-//                                                        GoogleIdTokenCredential.createFrom(
-//                                                            credential.data
-//                                                        )
-//
-//
-//
-//                                                    Log.d("SettingPage", "idToken: ${googleIdTokenCredential.idToken.}")
-//                                                }
-//                                            }
-//
-//                                            else -> {
-//
-//                                            }
-//                                        }
-//                                    } catch (e: Exception) {
-//                                        Log.e(
-//                                            "SettingPage",
-//                                            "SettingPage: ${e.stackTraceToString()}",
-//                                            e
-//                                        )
-//                                    }
-//                                }
-//                                val gso = vm.loginWithGoogleClient(context)
-//                                gso.signOut()
-//
-//                                resultLoginWithGoogle.launch(gso.signInIntent)
-
-//                                vm.loginWithGoogleOauth(context)
-                            }
-                        )
-                }
 
                 Divider(
                     color = LottoMateGray20,
@@ -300,6 +219,24 @@ private fun SettingScreen(
                 }
             }
         }
+
+        latestLoginType?.let {
+            LottoMateTooltip(
+                text = "최근 로그인했어요",
+                direction = ToolTipDirection.TOP,
+                modifier = Modifier
+                    .onGloballyPositioned { latestLoginToolTipSize = it.size }
+                    .offset {
+                        val margin = with (density) { 12.dp.toPx() }
+
+                        IntOffset(
+                            x = ((loginIconOffset.x + loginIconSize.width/2f) - latestLoginToolTipSize.width/2f).roundToInt(),
+                            y = (loginIconOffset.y + loginIconSize.height + margin).roundToInt()
+                        )
+                    }
+            )
+        }
+
         LottoMateTopAppBar(
             titleRes = R.string.setting_title,
             hasNavigation = true,
@@ -308,11 +245,46 @@ private fun SettingScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+private fun TopLoginSection(
+    latestLoginType: LoginTypeUiModel?,
+    onGloballyPositioned: (LayoutCoordinates) -> Unit,
+) {
+    Column {
+        LottoMateText(
+            text = "소셜 로그인 하기",
+            style = LottoMateTheme.typography.body1
+                .copy(color = LottoMateGray100),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
+        ) {
+            LoginTypeUiModel.entries.forEach { loginTypeUiModel ->
+                LoginIconButton(
+                    iconRes = loginTypeUiModel.iconRes,
+                    descRes = loginTypeUiModel.descRes,
+                    type = loginTypeUiModel,
+                    latest = latestLoginType,
+                    onPositioned = onGloballyPositioned,
+                    onClick = { }
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, widthDp = 375)
 @Composable
 private fun SettingPagePreview() {
     LottoMateTheme {
         SettingScreen(
+            latestLoginType = LoginTypeUiModel.EMAIL,
             onBackPressed = {},
         )
     }

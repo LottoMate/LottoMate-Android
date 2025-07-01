@@ -35,6 +35,13 @@ fun NavGraphBuilder.introNavGraph(
                 navController.navigateToHomeTab(navOptions)
             },
             moveToOnboarding = { navController.navigateToOnboarding() },
+            moveToLogin = {
+                val navOption = NavOptions.Builder().apply {
+                    setPopUpTo(LottoMateRoute.Intro, true)
+                }.build()
+
+                navController.navigateToLogin(navOption)
+            },
         )
     }
 
