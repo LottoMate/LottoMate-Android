@@ -1,0 +1,35 @@
+package com.lottomate.lottomate.data.remote.repository
+
+import com.lottomate.lottomate.data.datastore.LottoMateDataStore
+import com.lottomate.lottomate.domain.model.LatestLoginInfo
+import com.lottomate.lottomate.domain.model.LoginType
+import com.lottomate.lottomate.domain.model.UserProfile
+import com.lottomate.lottomate.domain.repository.UserRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+
+private val testUserProfile = UserProfile(nickname = "Test User Nickname")
+
+class UserRepositoryImpl @Inject constructor(
+
+) : UserRepository {
+    private val _userProfile = MutableStateFlow<UserProfile?>(null)
+    override val userProfile: StateFlow<UserProfile?>
+        get() = _userProfile.asStateFlow()
+
+    override suspend fun setLatestLoginInfo(type: LoginType): Result<Unit> {
+        return try {
+            val loginInfo = LatestLoginInfo(type = type, date = System.currentTimeMillis())
+
+            _userProfile.update { testUserProfile }
+            LottoMateDataStore.saveLatestLoginInfo(loginInfo)
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+}
