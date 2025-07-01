@@ -38,13 +38,13 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun PermissionNoticeRoute(
-    moveToHome: () -> Unit,
+    moveToLogin: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
         coroutineScope.launch {
             LottoMateDataStore.changeOnBoardingState()
-        }.invokeOnCompletion { moveToHome() }
+        }.invokeOnCompletion { moveToLogin() }
     }
 
     PermissionNoticeScreen(

@@ -8,6 +8,7 @@ import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToHomeTab
 import com.lottomate.lottomate.presentation.screen.intro.IntroRoute
+import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.onboarding.OnboardingRoute
 import com.lottomate.lottomate.presentation.screen.onboarding.PermissionNoticeRoute
 
@@ -47,12 +48,12 @@ fun NavGraphBuilder.introNavGraph(
     // 권한 안내 화면
     composable<LottoMateRoute.PermissionNotice> {
         PermissionNoticeRoute(
-            moveToHome = {
+            moveToLogin = {
                 val navOptions = NavOptions.Builder().apply {
                     this.setPopUpTo<LottoMateRoute.Intro>(true)
                 }.build()
 
-                navController.navigateToHomeTab(navOptions)
+                navController.navigateToLogin(navOptions)
             },
         )
     }
