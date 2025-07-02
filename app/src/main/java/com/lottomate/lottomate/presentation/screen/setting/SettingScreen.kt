@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.domain.model.LoginType
+import com.lottomate.lottomate.domain.model.UserProfile
 import com.lottomate.lottomate.presentation.component.LoginIconButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTooltip
@@ -45,7 +48,9 @@ import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.component.ToolTipDirection
 import com.lottomate.lottomate.presentation.model.LoginTypeUiModel
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
+import com.lottomate.lottomate.presentation.ui.LottoMateGray120
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateRed50
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
@@ -59,11 +64,19 @@ fun SettingRoute(
     moveToMyPage: () -> Unit,
     onBackPressed: () -> Unit,
 ) {
+    val userProfile by vm.userProfile.collectAsState()
     val latestLoginType by vm.latestLoginType
 
     SettingScreen(
+        userProfile = userProfile,
         latestLoginType = latestLoginType,
         onClickMyPage = moveToMyPage,
+        onClickLogin = { loginType ->
+            when (loginType) {
+                LoginTypeUiModel.EMAIL -> { vm.loginWithEmail() }
+                else -> {}
+            }
+        },
         onBackPressed = onBackPressed,
     )
 }
@@ -71,8 +84,10 @@ fun SettingRoute(
 @Composable
 private fun SettingScreen(
     modifier: Modifier = Modifier,
+    userProfile: UserProfile?,
     latestLoginType: LoginTypeUiModel?,
     onClickMyPage: () -> Unit = {},
+    onClickLogin: (LoginTypeUiModel) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val density = LocalDensity.current
@@ -90,24 +105,28 @@ private fun SettingScreen(
             modifier = Modifier.padding(top = Dimens.BaseTopPadding)
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 28.dp),
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                TopLoginSection(
-                    latestLoginType = latestLoginType,
-                    onGloballyPositioned = { coordinates ->
-                        val position = coordinates.positionInRoot()
+                userProfile?.let { profile ->
+                    TopUserProfileSection(
+                        userProfile = profile,
+                    )
+                } ?: run {
+                    TopLoginSection(
+                        latestLoginType = latestLoginType,
+                        onGloballyPositioned = { coordinates ->
+                            val position = coordinates.positionInRoot()
 
-                        loginIconOffset = position
-                        loginIconSize = coordinates.size
-                    }
-                )
+                            loginIconOffset = position
+                            loginIconSize = coordinates.size
+                        },
+                        onClickLogin = onClickLogin,
+                    )
+                }
 
                 Divider(
                     color = LottoMateGray20,
                     thickness = 10.dp,
-                    modifier = Modifier.padding(top = 28.dp),
                 )
 
                 Column(
@@ -220,21 +239,23 @@ private fun SettingScreen(
             }
         }
 
-        latestLoginType?.let {
-            LottoMateTooltip(
-                text = "최근 로그인했어요",
-                direction = ToolTipDirection.TOP,
-                modifier = Modifier
-                    .onGloballyPositioned { latestLoginToolTipSize = it.size }
-                    .offset {
-                        val margin = with (density) { 12.dp.toPx() }
+        userProfile ?: run {
+            latestLoginType?.let {
+                LottoMateTooltip(
+                    text = "최근 로그인했어요",
+                    direction = ToolTipDirection.TOP,
+                    modifier = Modifier
+                        .onGloballyPositioned { latestLoginToolTipSize = it.size }
+                        .offset {
+                            val margin = with (density) { 12.dp.toPx() }
 
-                        IntOffset(
-                            x = ((loginIconOffset.x + loginIconSize.width/2f) - latestLoginToolTipSize.width/2f).roundToInt(),
-                            y = (loginIconOffset.y + loginIconSize.height + margin).roundToInt()
-                        )
-                    }
-            )
+                            IntOffset(
+                                x = ((loginIconOffset.x + loginIconSize.width/2f) - latestLoginToolTipSize.width/2f).roundToInt(),
+                                y = (loginIconOffset.y + loginIconSize.height + margin).roundToInt()
+                            )
+                        }
+                )
+            }
         }
 
         LottoMateTopAppBar(
@@ -247,10 +268,14 @@ private fun SettingScreen(
 
 @Composable
 private fun TopLoginSection(
+    modifier: Modifier = Modifier,
     latestLoginType: LoginTypeUiModel?,
     onGloballyPositioned: (LayoutCoordinates) -> Unit,
+    onClickLogin: (LoginTypeUiModel) -> Unit,
 ) {
-    Column {
+    Column(
+        modifier = modifier.padding(vertical = 28.dp),
+    ) {
         LottoMateText(
             text = "소셜 로그인 하기",
             style = LottoMateTheme.typography.body1
@@ -272,10 +297,47 @@ private fun TopLoginSection(
                     type = loginTypeUiModel,
                     latest = latestLoginType,
                     onPositioned = onGloballyPositioned,
-                    onClick = { }
+                    onClick = { onClickLogin(loginTypeUiModel) },
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun TopUserProfileSection(
+    userProfile: UserProfile
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = Dimens.DefaultPadding20)
+            .padding(top = 36.dp, bottom = 20.dp),
+    ) {
+        LottoMateText(
+            text = "안녕하세요",
+            style = LottoMateTheme.typography.headline1
+                .copy(color = LottoMateBlack),
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            LottoMateText(
+                text = "${userProfile.nickname}님",
+                style = LottoMateTheme.typography.headline1
+                    .copy(color = LottoMateBlack),
+            )
+            
+            Icon(
+                painter = painterResource(R.drawable.icon_pen),
+                contentDescription = "NickName Edit",
+                tint = LottoMateGray100,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+
     }
 }
 
@@ -284,8 +346,25 @@ private fun TopLoginSection(
 private fun SettingPagePreview() {
     LottoMateTheme {
         SettingScreen(
+            userProfile = UserProfile(
+                nickname = "NIckName"
+            ),
             latestLoginType = LoginTypeUiModel.EMAIL,
             onBackPressed = {},
+            onClickLogin = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, widthDp = 375)
+@Composable
+private fun SettingPageNotLoginPreview() {
+    LottoMateTheme {
+        SettingScreen(
+            userProfile = null,
+            latestLoginType = LoginTypeUiModel.EMAIL,
+            onBackPressed = {},
+            onClickLogin = {},
         )
     }
 }

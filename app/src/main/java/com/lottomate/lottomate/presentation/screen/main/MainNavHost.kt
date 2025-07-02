@@ -37,6 +37,7 @@ fun MainNavHost(
 
         mapNavGraph(
             padding = padding,
+            navController = navigator.navController,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
 

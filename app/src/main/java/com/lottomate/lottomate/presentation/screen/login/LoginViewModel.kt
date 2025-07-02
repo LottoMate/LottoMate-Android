@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
+import com.lottomate.lottomate.data.remote.repository.testUserProfile
 import com.lottomate.lottomate.domain.model.LoginType
 import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.presentation.model.LoginTypeUiModel
@@ -35,7 +36,10 @@ class LoginViewModel @Inject constructor(
             runCatching {
                 userRepository.setLatestLoginInfo(LoginType.EMAIL)
             }
-                .onSuccess { _effect.send(true) }
+                .onSuccess {
+                    userRepository.setUserProfile(testUserProfile)
+                    _effect.send(true)
+                }
                 .onFailure { handleException(it) }
         }
     }

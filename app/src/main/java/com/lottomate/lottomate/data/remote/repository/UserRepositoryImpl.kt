@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-private val testUserProfile = UserProfile(nickname = "Test User Nickname")
+val testUserProfile = UserProfile(nickname = "Test User Nickname")
 
 class UserRepositoryImpl @Inject constructor(
 
@@ -24,9 +24,17 @@ class UserRepositoryImpl @Inject constructor(
         return try {
             val loginInfo = LatestLoginInfo(type = type, date = System.currentTimeMillis())
 
-            _userProfile.update { testUserProfile }
             LottoMateDataStore.saveLatestLoginInfo(loginInfo)
 
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun setUserProfile(profile: UserProfile?): Result<Unit> {
+        return try {
+            _userProfile.update { profile }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

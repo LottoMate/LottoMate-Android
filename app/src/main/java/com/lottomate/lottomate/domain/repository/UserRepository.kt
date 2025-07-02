@@ -8,4 +8,5 @@ interface UserRepository {
     val userProfile: StateFlow<UserProfile?>
 
     suspend fun setLatestLoginInfo(type: LoginType): Result<Unit>
+    suspend fun setUserProfile(profile: UserProfile?): Result<Unit>
 }
