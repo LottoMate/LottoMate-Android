@@ -252,6 +252,7 @@ fun MapRoute(
         onChangeRefreshToolTip = { vm.changeRefreshToolTipState(it) },
         onCameraMoved = { vm.handleEvent(MapContract.Event.MoveCamera(it)) },
         onFilterSelected = { vm.handleEvent(MapContract.Event.SelectStoreListFilter(it)) },
+        moveToLogin = moveToLogin,
     )
 }
 
@@ -277,6 +278,7 @@ private fun MapScreen(
     onCameraMoved: (LatLng) -> Unit,
     onChangeRefreshToolTip: (Boolean) -> Unit,
     onFilterSelected: (StoreListFilter) -> Unit,
+    moveToLogin: () -> Unit,
 ) {
     val density = LocalDensity.current
     val mapNaverLogoTopPadding = Dimens.StatusBarHeight.plus(16.dp)
@@ -382,6 +384,7 @@ private fun MapScreen(
                 onSizeChanged = { bottomSheetHeight = it },
                 onLoadNextPage = onLoadNextPage,
                 onFilterSelected = onFilterSelected,
+                moveToLogin = moveToLogin,
             )
         },
         sheetShape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),

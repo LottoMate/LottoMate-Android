@@ -36,6 +36,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -109,8 +110,10 @@ fun StoreBottomSheet(
     onSelectStore: (StoreInfo) -> Unit,
     onLoadNextPage: () -> Unit,
     onFilterSelected: (StoreListFilter) -> Unit,
+    moveToLogin: () -> Unit,
 ) {
     val context = LocalContext.current
+    val userProfile by vm.userProfile.collectAsState()
     val uiState by vm.state.collectAsStateWithLifecycle()
 
     StoreInfoBottomSheetContent(
@@ -121,7 +124,10 @@ fun StoreBottomSheet(
         isInSeoul = isInSeoul,
         bottomSheetExpendedType = bottomSheetExpendedType,
         onClickStore = { onSelectStore(it) },
-        onClickStoreLike = { vm.setFavoriteStore(it) },
+        onClickStoreLike = { storeNo ->
+            userProfile?.let { vm.setFavoriteStore(storeNo) }
+                ?: run { moveToLogin() }
+        },
         onClickFilter = onFilterSelected,
         onClickStoreInfoCopy = { store ->
             vm.copyStoreInfo(
