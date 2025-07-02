@@ -15,6 +15,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,7 +54,9 @@ fun PocketRoute(
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
     moveToSaveNumberScreen: () -> Unit,
+    moveToLogin: () -> Unit,
 ) {
+    val userProfile by vm.userProfile.collectAsState()
     var currentTabIndex by vm.currentTabIndex
     val drewRandomNumbers by vm.drewRandomNumbers.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -84,7 +87,10 @@ fun PocketRoute(
         onClickSaveRandomNumbers = { vm.saveDrewRandomNumber(it) },
         onClickQRScan = moveToLottoScan,
         onClickSetting = moveToSetting,
-        moveToSaveNumberScreen = moveToSaveNumberScreen,
+        moveToSaveNumberScreen = {
+            userProfile?.let { moveToSaveNumberScreen() }
+                ?: run { moveToLogin() }
+        },
     )
 }
 
@@ -229,6 +235,7 @@ private fun PocketScreenPreview() {
             onClickDrawRandomNumbers = {},
             onClickStorageOfRandomNumbers = {},
             moveToSaveNumberScreen = {},
+            moveToLogin = {},
         )
     }
 }

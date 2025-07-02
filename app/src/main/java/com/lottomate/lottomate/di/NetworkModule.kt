@@ -1,9 +1,7 @@
 package com.lottomate.lottomate.di
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.lottomate.lottomate.BuildConfig
 import com.lottomate.lottomate.data.remote.api.InterviewApi
-import com.lottomate.lottomate.data.remote.api.LoginApi
 import com.lottomate.lottomate.data.remote.api.LottoApi
 import com.lottomate.lottomate.data.remote.api.LottoInfoApi
 import com.lottomate.lottomate.data.remote.api.StoreApi
@@ -16,6 +14,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -84,10 +83,6 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideStoreApi(retrofit: Retrofit): StoreApi = retrofit.create(StoreApi::class.java)
-
-    @Provides
-    @Singleton
-    fun provideLoginApi(retrofit: Retrofit): LoginApi = retrofit.create(LoginApi::class.java)
 
     @Provides
     @Singleton

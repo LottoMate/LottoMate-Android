@@ -186,12 +186,17 @@
 
     <!-- 로그인 -->
     <string name="login_title">로또 당첨을 위해\n로또메이트와 함께!</string>
-    <string name="login_title_success">가입을 축하해요!</string>
-    <string name="login_title_sub_success">1등 당첨을 기원합니다.</string>
+    <string name="login_title_success">환영해요!</string>
+    <string name="login_title_sub_success">1등 당첨을 위해 행운을 모아볼까요?</string>
 
-    <string name="login_text_bottom">가장 편한 방법으로 로그인하고\n로또메이트에서 더 많은 행운을 불러오세요.</string>
+    <string name="login_text_bottom">가장 편한 방법으로 로그인하고\n로또메이트에서 더 많은 행운을 불러오세요</string>
     <string name="login_text_tooltip">최근 로그인했어요!</string>
     <string name="login_btn_start">시작하기</string>
+
+    <string name="login_desc_email">이메일 로그인</string>
+    <string name="login_desc_kakao">카카오 로그인</string>
+    <string name="login_desc_naver">네이버 로그인</string>
+    <string name="login_desc_google">구글 로그인</string>
 
     <!-- 바로가기 배너 -->
     <string name="banner_lotto_info_title">행운의 1등 로또\n어디서 샀을까?</string>

@@ -6,11 +6,13 @@ import com.lottomate.lottomate.data.remote.repository.LottoInfoRepositoryImpl
 import com.lottomate.lottomate.data.remote.repository.LottoRepositoryImpl
 import com.lottomate.lottomate.data.remote.repository.RemoteLottoNumberRepository
 import com.lottomate.lottomate.data.remote.repository.StoreRepositoryImpl
+import com.lottomate.lottomate.data.remote.repository.UserRepositoryImpl
 import com.lottomate.lottomate.domain.repository.InterviewRepository
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.domain.repository.LottoNumberRepository
 import com.lottomate.lottomate.domain.repository.LottoRepository
 import com.lottomate.lottomate.domain.repository.StoreRepository
+import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.domain.repository.local.RandomLottoRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -56,4 +58,10 @@ abstract class RepositoryModule {
     abstract fun bindLottoNumberRepository(
         remoteLottoNumberRepository: RemoteLottoNumberRepository,
     ): LottoNumberRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl,
+    ): UserRepository
 }

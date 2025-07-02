@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.domain.repository.StoreRepository
+import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.map.model.StoreInfo
 import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
@@ -22,7 +23,9 @@ import javax.inject.Inject
 class StoreBottomSheetViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
     private val storeRepository: StoreRepository,
+    private val userRepository: UserRepository,
 ) : BaseViewModel(errorHandler) {
+    val userProfile = userRepository.userProfile
     private val _state = MutableStateFlow(StoreBottomSheetUiState.State())
     val state get() = _state.asStateFlow()
 

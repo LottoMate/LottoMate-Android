@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.lottomate.lottomate.presentation.component.LottoMateBackHandler
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +24,8 @@ class MainActivity : ComponentActivity() {
                 MainScreen(
                     navigator = navigator,
                 )
+
+                LottoMateBackHandler()
             }
         }
     }

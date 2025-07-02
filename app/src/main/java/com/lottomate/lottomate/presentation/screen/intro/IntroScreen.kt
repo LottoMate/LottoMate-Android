@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.datastore.LottoMateDataStore
 import com.lottomate.lottomate.presentation.component.LottoMateText
@@ -34,9 +35,12 @@ import kotlinx.coroutines.flow.filterNotNull
 
 @Composable
 fun IntroRoute(
+    vm: IntroViewModel = hiltViewModel(),
     moveToHome: () -> Unit,
     moveToOnboarding: () -> Unit,
+    moveToLogin: () -> Unit,
 ) {
+    val isLogin by vm.isLogin
     val onboardingState by LottoMateDataStore.onBoardingFlow
         .filterNotNull()
         .collectAsState(initial = false)
@@ -60,7 +64,10 @@ fun IntroRoute(
             currentSplashIndex = index
         }
 
-        if (onboardingState) moveToHome() else moveToOnboarding()
+        if (onboardingState) {
+            if (isLogin) moveToHome()
+            else moveToLogin()
+        } else moveToOnboarding()
     }
 
     IntroScreen(currentSplashIndex, splashRes)
@@ -112,6 +119,7 @@ private fun IntroScreenPreview() {
         IntroRoute(
             moveToHome = {},
             moveToOnboarding = {},
+            moveToLogin = {},
         )
     }
 }

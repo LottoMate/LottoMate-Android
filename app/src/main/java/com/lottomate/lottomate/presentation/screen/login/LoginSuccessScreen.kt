@@ -5,11 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,27 +18,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.presentation.component.BannerCard
+import com.lottomate.lottomate.presentation.component.BannerType
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 
 @Composable
 fun LoginSuccessRoute(
+    vm: LoginCompleteViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToHome: () -> Unit,
-    moveToMap: () -> Unit,
+    moveToInterviewDetail: (Int, String) -> Unit,
     onErrorSnackBar: (throwable: Throwable?) -> Unit,
 ) {
     LoginSuccessScreen(
         padding = padding,
         moveToHome = moveToHome,
-        moveToMap = moveToMap,
+        moveToInterviewDetail = {
+            if (vm.interviews.isNotEmpty()) {
+                val latestInterview = vm.interviews.first()
+                moveToInterviewDetail(latestInterview.no, latestInterview.place)
+            }
+        },
     )
 }
 
@@ -47,7 +55,7 @@ fun LoginSuccessRoute(
 private fun LoginSuccessScreen(
     padding: PaddingValues,
     moveToHome: () -> Unit,
-    moveToMap: () -> Unit,
+    moveToInterviewDetail: () -> Unit,
 ) {
     val bottomPadding = if (padding.calculateBottomPadding() < 36.dp) {
         36.dp.minus(padding.calculateBottomPadding()).plus(padding.calculateBottomPadding())
@@ -69,23 +77,24 @@ private fun LoginSuccessScreen(
             LottoMateText(
                 text = stringResource(id = R.string.login_title_success),
                 textAlign = TextAlign.Center,
-                style = LottoMateTheme.typography.title2,
+                style = LottoMateTheme.typography.title1
+                    .copy(color = LottoMateBlack),
             )
-
-            Spacer(modifier = Modifier.height(2.dp))
 
             LottoMateText(
                 text = stringResource(id = R.string.login_title_sub_success),
                 textAlign = TextAlign.Center,
                 style = LottoMateTheme.typography.body1
                     .copy(color = LottoMateGray100),
+                modifier = Modifier.padding(top = 4.dp),
             )
-
-            Spacer(modifier = Modifier.height(57.dp))
 
             Image(
                 bitmap = ImageBitmap.imageResource(id = R.drawable.img_login_2),
                 contentDescription = stringResource(id = R.string.desc_login_success_image),
+                modifier = Modifier
+                    .padding(top = 47.dp)
+                    .size(236.dp),
             )
         }
         Column(
@@ -93,13 +102,13 @@ private fun LoginSuccessScreen(
                 .fillMaxWidth()
                 .padding(bottom = bottomPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             BannerCard(
                 modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20),
-                onClickBanner = moveToMap,
+                type = BannerType.INTERVIEW,
+                onClickBanner = { moveToInterviewDetail() },
             )
-
-            Spacer(modifier = Modifier.height(28.dp))
             
             LottoMateSolidButton(
                 text = stringResource(id = R.string.login_btn_start), 
@@ -120,7 +129,7 @@ private fun LoginSuccessScreenPreview() {
         LoginSuccessScreen(
             padding = PaddingValues(0.dp),
             moveToHome = {},
-            moveToMap = {}
+            moveToInterviewDetail = {},
         )
     }
 }

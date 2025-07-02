@@ -46,5 +46,6 @@ sealed interface MapContract {
         data class ShowSnackBar(val message: String) : Effect
         data object ShowLocationPermissionDialog : Effect
         data object ShowLotterySelectionBottomSheet : Effect
+        data object ShowLogin : Effect
     }
 }
