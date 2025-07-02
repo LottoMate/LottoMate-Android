@@ -10,6 +10,7 @@ import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScan
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScanResult
+import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
@@ -47,6 +48,20 @@ fun NavGraphBuilder.pocketNavGraph(
             onClickDrawRandomNumbers = { navController.navigateToDrawRandomNumbers() },
             onClickStorageOfRandomNumbers = { navController.navigateToRandomNumberStorage() },
             moveToSaveNumberScreen = { navController.navigateToSaveNumbers() },
+            moveToLogin = {
+                val navOptions = NavOptions.Builder().apply {
+                    setPopUpTo(
+                        route = BottomTabRoute.Pocket,
+                        inclusive = false,
+                        saveState = true,
+                    )
+
+                    setLaunchSingleTop(true)
+                    setRestoreState(true)
+                }.build()
+
+                navController.navigateToLogin(navOptions)
+            }
         )
     }
 

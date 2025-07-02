@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
 import com.lottomate.lottomate.domain.repository.LottoNumberRepository
+import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.utils.ClipboardUtils
 import com.lottomate.lottomate.utils.DateUtils
@@ -29,7 +30,9 @@ class PocketViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
     private val randomLottoRepository: RandomLottoRepository,
     private val lottoNumberRepository: LottoNumberRepository,
+    private val userRepository: UserRepository,
 ) : BaseViewModel(errorHandler) {
+    val userProfile = userRepository.userProfile
     var currentTabIndex = mutableIntStateOf(0)
 
     private var _snackBarFlow = MutableSharedFlow<String>()

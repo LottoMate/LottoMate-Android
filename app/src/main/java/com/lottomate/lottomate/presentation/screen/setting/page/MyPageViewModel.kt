@@ -15,6 +15,9 @@ class MyPageViewModel @Inject constructor(
     fun logOut() {
         viewModelScope.launch {
             userRepository.setUserProfile(null)
+                .onSuccess {
+                    Log.d("MyPageVM", "로그아웃 성공!")
+                }
                 .onFailure {
                     Log.d("MyPageVM", "logOut: ${it.stackTraceToString()}")
                 }
