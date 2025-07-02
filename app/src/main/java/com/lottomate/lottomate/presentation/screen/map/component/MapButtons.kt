@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
@@ -166,10 +167,15 @@ private fun BottomButtons(
     val density = LocalDensity.current
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
+    var bottomSheetOffset by remember { mutableStateOf(BottomSheetPeekHeight.dp) }
+
     // BottomSheet의 높이를 실시간 관찰
-    val bottomSheetOffset by remember {
-        derivedStateOf {
-            with(density) { bottomSheetState.requireOffset().toDp() }
+    LaunchedEffect(bottomSheetState) {
+        snapshotFlow {
+            runCatching { bottomSheetState.requireOffset() }
+                .getOrDefault(0f)
+        }.collect { offset ->
+            bottomSheetOffset = with(density) { offset.toDp() }
         }
     }
 
