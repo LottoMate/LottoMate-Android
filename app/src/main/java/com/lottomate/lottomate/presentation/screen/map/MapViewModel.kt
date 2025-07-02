@@ -6,6 +6,7 @@ import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.data.remote.model.StoreInfoRequestBody
 import com.lottomate.lottomate.domain.repository.StoreRepository
+import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.map.model.MapContract
 import com.lottomate.lottomate.presentation.screen.map.model.StoreListFilter
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
     private val storeRepository: StoreRepository,
+    private val userRepository: UserRepository,
 ) : BaseViewModel(errorHandler) {
     private var lastCameraCenter: LatLng? = null
 
@@ -182,6 +184,11 @@ class MapViewModel @Inject constructor(
     }
 
     private fun handleFavoriteStoresClick() {
+        userRepository.userProfile.value ?: run {
+            sendEffect(MapContract.Effect.ShowLogin)
+            return
+        }
+
         val isInSeoul = checkIsInSeoul(cameraCenter.value)
 
         _state.update {

@@ -84,6 +84,7 @@ private const val ZOOM_LEVEL_MAXIMUM = 20.0
 fun MapRoute(
     vm: MapViewModel = hiltViewModel(),
     padding: PaddingValues,
+    moveToLogin: () -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -130,6 +131,9 @@ fun MapRoute(
                 }
                 MapContract.Effect.ShowLotterySelectionBottomSheet -> {
                     showLotterySelectionBottomSheet = true
+                }
+                MapContract.Effect.ShowLogin -> {
+                    moveToLogin()
                 }
             }
         }
