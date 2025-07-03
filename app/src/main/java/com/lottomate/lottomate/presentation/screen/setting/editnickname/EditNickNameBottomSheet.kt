@@ -49,6 +49,7 @@ import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
 private const val LIMIT_NICKNAME_LENGTH = 10
 
@@ -163,7 +164,12 @@ private fun NickNameEditBottomSheetContents(
                 },
             ),
             supportText = if (uiState.isComplete) stringResource(R.string.setting_nickname_complete) else null,
-            onChangeValue = { onChangeValue(it) },
+            onChangeValue = { input ->
+                val pattern = Pattern.compile("[^\\p{L}\\p{Nd}]")
+                val filtered = input.trim().replace(pattern.toRegex(), "")
+
+                onChangeValue(filtered)
+            },
         )
 
         Row(
