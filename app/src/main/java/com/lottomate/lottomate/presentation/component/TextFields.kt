@@ -231,7 +231,7 @@ fun LottoMateTextField(
                         LottoMateText(
                             text = "${text.length}/$it",
                             style = LottoMateTheme.typography.label1
-                                .copy(color = if (isError) LottoMateError else LottoMateGray100),
+                                .copy(color = if (isError || text.length == limitTextLength) LottoMateError else LottoMateGray100),
                             textAlign = TextAlign.End,
                             modifier = Modifier.padding(end = 2.dp),
                         )
@@ -239,7 +239,7 @@ fun LottoMateTextField(
                 }
 
                 HorizontalDivider(
-                    color = if (isError) LottoMateError else LottoMateGray60,
+                    color = if (isError || text.length == limitTextLength) LottoMateError else LottoMateGray60,
                 )
 
 
@@ -275,7 +275,6 @@ private fun LottoMateTextFieldPreview() {
             onChangeValue = { text1 = it },
             placeHolder = "2글자 이상 입력",
             limitTextLength = 10,
-            errorText = "사용할 수 있는 닉네임이에요"
         )
     }
 }
