@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,13 +16,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -43,6 +45,7 @@ import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.ui.LottoMateError
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray60
+import com.lottomate.lottomate.presentation.ui.LottoMatePositive
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import kotlinx.coroutines.launch
@@ -173,9 +176,112 @@ fun LottoMateMultiTextField(
     )
 }
 
+@Composable
+fun LottoMateTextField(
+    modifier: Modifier = Modifier,
+    text: String,
+    placeHolder: String,
+    supportText: String? = null,
+    errorText: String? = null,
+    limitTextLength: Int? = null,
+    onChangeValue: (String) -> Unit,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+) {
+    val isError = errorText != null
+
+    BasicTextField(
+        modifier = modifier.padding(bottom = 24.dp),
+        value = text,
+        textStyle = LottoMateTheme.typography.body1,
+        onValueChange = { input ->
+            limitTextLength?.let { limitLength ->
+                if (input.length <= limitLength) onChangeValue(input)
+            } ?: run { onChangeValue(input) }
+        },
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
+        singleLine = true,
+        visualTransformation = visualTransformation,
+        decorationBox = { innerTextField ->
+            Column {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        if (text.isEmpty()) {
+                            LottoMateText(
+                                text = placeHolder,
+                                style = LottoMateTheme.typography.body1
+                                    .copy(color = LottoMateGray60),
+                                modifier = Modifier.padding(bottom = 8.dp, start = 4.dp),
+                            )
+                        } else {
+                            Box(modifier = Modifier.padding(bottom = 8.dp)) {
+                                innerTextField()
+                            }
+                        }
+                    }
+
+                    limitTextLength?.let {
+                        LottoMateText(
+                            text = "${text.length}/$it",
+                            style = LottoMateTheme.typography.label1
+                                .copy(color = if (isError) LottoMateError else LottoMateGray100),
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.padding(end = 2.dp),
+                        )
+                    }
+                }
+
+                HorizontalDivider(
+                    color = if (isError) LottoMateError else LottoMateGray60,
+                )
+
+
+                supportText?.let { supportText ->
+                    LottoMateText(
+                        text = supportText,
+                        style = LottoMateTheme.typography.label2
+                            .copy(color = LottoMatePositive),
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
+                }
+
+                errorText?.let { errorText ->
+                    LottoMateText(
+                        text = errorText,
+                        style = LottoMateTheme.typography.label2
+                            .copy(color = LottoMateError),
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
+                }
+            }
+        }
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun LottoMateTextFieldPreview() {
+    var text1 by remember { mutableStateOf("") }
+    Column {
+        LottoMateTextField(
+            text = text1,
+            onChangeValue = { text1 = it },
+            placeHolder = "2글자 이상 입력",
+            limitTextLength = 10,
+            errorText = "사용할 수 있는 닉네임이에요"
+        )
+    }
+}
+@Preview(showBackground = true)
+@Composable
+private fun LottoMateMultiTextFieldPreview() {
     LottoMateTheme {
         var text by remember { mutableStateOf("") }
         var text1 by remember { mutableStateOf("") }
@@ -203,6 +309,5 @@ private fun LottoMateTextFieldPreview() {
                 textStyle = LottoMateTheme.typography.body1,
             )
         }
-
     }
 }
