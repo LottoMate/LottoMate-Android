@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
-val testUserProfile = UserProfile(nickname = "Test User Nickname")
+val testUserProfile = UserProfile(nickname = "nickname")
 
 class UserRepositoryImpl @Inject constructor(
 
@@ -35,6 +35,15 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun setUserProfile(profile: UserProfile?): Result<Unit> {
         return try {
             _userProfile.update { profile }
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUserNickName(nickName: String): Result<Unit> {
+        return try {
+            _userProfile.update { it?.copy(nickname = nickName) }
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
