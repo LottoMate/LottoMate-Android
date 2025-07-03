@@ -9,4 +9,5 @@ interface UserRepository {
 
     suspend fun setLatestLoginInfo(type: LoginType): Result<Unit>
     suspend fun setUserProfile(profile: UserProfile?): Result<Unit>
+    suspend fun updateUserNickName(nickName: String): Result<Unit>
 }
