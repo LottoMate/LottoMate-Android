@@ -101,6 +101,13 @@ enum class LottoType(
                 else -> LottoType.L645
             }
         }
+        fun findLottoTypeByCode(code: String): LottoType {
+            return when {
+                code.contains(L645.code) -> L645
+                code.contains(L720.code) -> L720
+                else -> L645
+            }
+        }
         fun getLottoNameByType(type: LottoType): String = type.kr
     }
 }

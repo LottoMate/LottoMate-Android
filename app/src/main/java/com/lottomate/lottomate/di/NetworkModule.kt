@@ -4,6 +4,7 @@ import com.lottomate.lottomate.BuildConfig
 import com.lottomate.lottomate.data.remote.api.InterviewApi
 import com.lottomate.lottomate.data.remote.api.LottoApi
 import com.lottomate.lottomate.data.remote.api.LottoInfoApi
+import com.lottomate.lottomate.data.remote.api.MyNumberApi
 import com.lottomate.lottomate.data.remote.api.StoreApi
 import dagger.Module
 import dagger.Provides
@@ -92,4 +93,8 @@ object NetworkModule {
     @Singleton
     @DHLottery
     fun provideLottoApi(@DHLottery retrofit: Retrofit): LottoApi = retrofit.create(LottoApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMyNumberApi(retrofit: Retrofit): MyNumberApi = retrofit.create(MyNumberApi::class.java)
 }
