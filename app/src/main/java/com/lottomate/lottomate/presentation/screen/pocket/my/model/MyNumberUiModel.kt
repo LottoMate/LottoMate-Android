@@ -26,6 +26,7 @@ data class MyNumberDetailUiModel(
 )
 
 data class MyNumberRowUiModel(
+    val id: Int,
     val numbers: List<Int>,
     val isWin: Boolean,
     val condition: LottoCondition = LottoCondition.NOT_CHECKED,

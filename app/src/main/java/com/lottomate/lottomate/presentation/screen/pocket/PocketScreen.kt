@@ -30,6 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.error.LottoMateErrorType
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateAssistiveButton
 import com.lottomate.lottomate.presentation.component.LottoMateButtonProperty
 import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
@@ -37,7 +38,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.pocket.my.MyNumberContent
+import com.lottomate.lottomate.presentation.screen.pocket.my.MyNumberScreen
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumberContent
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -50,11 +51,13 @@ fun PocketRoute(
     padding: PaddingValues,
     moveToLottoScan: () -> Unit,
     moveToSetting: () -> Unit,
+    onShowGlobalSnackBar: (String) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onClickStorageOfRandomNumbers: () -> Unit,
     onClickDrawRandomNumbers: () -> Unit,
     moveToSaveNumberScreen: () -> Unit,
     moveToLogin: () -> Unit,
+    moveToLotteryResult: (LottoType, Int, List<Int>) -> Unit,
 ) {
     val userProfile by vm.userProfile.collectAsState()
     var currentTabIndex by vm.currentTabIndex
@@ -87,10 +90,12 @@ fun PocketRoute(
         onClickSaveRandomNumbers = { vm.saveDrewRandomNumber(it) },
         onClickQRScan = moveToLottoScan,
         onClickSetting = moveToSetting,
+        onShowGlobalSnackBar = onShowGlobalSnackBar,
         moveToSaveNumberScreen = {
             userProfile?.let { moveToSaveNumberScreen() }
                 ?: run { moveToLogin() }
         },
+        moveToLotteryResult = moveToLotteryResult,
     )
 }
 
@@ -107,7 +112,9 @@ private fun PocketScreen(
     onClickSaveRandomNumbers: (List<Int>) -> Unit,
     onClickQRScan: () -> Unit,
     onClickSetting: () -> Unit,
+    onShowGlobalSnackBar: (String) -> Unit,
     moveToSaveNumberScreen: () -> Unit,
+    moveToLotteryResult: (LottoType, Int, List<Int>) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -128,12 +135,13 @@ private fun PocketScreen(
 
             when (currentTabIndex) {
                 0 -> {
-                    MyNumberContent(
-                        modifier = Modifier.padding(top = 24.dp),
+                    MyNumberScreen(
                         onClickQRScan = onClickQRScan,
                         onClickLottoInfo = {},
                         onClickBanner = {},
                         onClickSaveNumbers = { moveToSaveNumberScreen() },
+                        onShowGlobalSnackBar = onShowGlobalSnackBar,
+                        moveToLotteryResult = moveToLotteryResult,
                     )
                 }
                 1 -> {
@@ -236,6 +244,8 @@ private fun PocketScreenPreview() {
             onClickStorageOfRandomNumbers = {},
             moveToSaveNumberScreen = {},
             moveToLogin = {},
+            onShowGlobalSnackBar = {},
+            moveToLotteryResult = { _, _, _ -> },
         )
     }
 }

@@ -45,6 +45,7 @@ fun NavGraphBuilder.pocketNavGraph(
             moveToLottoScan = { navController.navigateToLottoScan() },
             moveToSetting = { navController.navigateToSetting() },
             onShowErrorSnackBar = onShowErrorSnackBar,
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onClickDrawRandomNumbers = { navController.navigateToDrawRandomNumbers() },
             onClickStorageOfRandomNumbers = { navController.navigateToRandomNumberStorage() },
             moveToSaveNumberScreen = { navController.navigateToSaveNumbers() },
@@ -61,6 +62,9 @@ fun NavGraphBuilder.pocketNavGraph(
                 }.build()
 
                 navController.navigateToLogin(navOptions)
+            },
+            moveToLotteryResult = { type, round, numbers ->
+
             }
         )
     }
