@@ -11,7 +11,7 @@ fun MyNumberEntity.toDomain() = MyNumber(
     no = this.memberLottoNo,
     type = LottoType.findLottoTypeByCode(this.lottoType),
     drawNo = this.lottoDrwNo,
-    numbers = this.lottoNum + this.lottoNum,
+    numbers = this.lottoNum,
     isWinner = this.winnYn,
 )
 
@@ -28,6 +28,7 @@ fun List<MyNumber>.toUiModel() = MyNumberUiModel(
                         round = round,
                         numberRows = numbers.map { row ->
                             MyNumberRowUiModel(
+                                id = row.no,
                                 numbers = row.numbers,
                                 isWin = row.isWinner,
                             )
