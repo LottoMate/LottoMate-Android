@@ -139,6 +139,9 @@ dependencies {
     // Splash Screen
     implementation(libs.androidx.splash)
 
+    // Logger
+    implementation(libs.com.jakewharton.timber)
+
     testImplementation(libs.junit)
     testImplementation(libs.jetbrains.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
