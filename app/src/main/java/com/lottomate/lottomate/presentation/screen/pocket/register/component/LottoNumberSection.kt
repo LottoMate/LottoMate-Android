@@ -27,7 +27,7 @@ import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumber
+import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberUiModel
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray40
 import com.lottomate.lottomate.presentation.ui.LottoMateGray70
@@ -40,7 +40,7 @@ fun LottoNumberSection(
     lotteryType: LottoType,
     round: Int,
     date: String,
-    inputNumbers: List<RegisterLottoNumber>,
+    inputNumbers: List<RegisterLottoNumberUiModel>,
     hasPreRound: Boolean,
     hasNextRound: Boolean,
     onAddNewInputNumber: () -> Unit,
@@ -233,7 +233,7 @@ private fun MiddleLotteryRoundPicker(
 @Composable
 private fun Lotto645SectionPreview() {
     LottoMateTheme {
-        val inputNumbers = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
+        val inputNumbers = remember { mutableStateListOf(RegisterLottoNumberUiModel.EMPTY) }
 
         LottoNumberSection(
             lotteryType = LottoType.L645,
@@ -242,7 +242,7 @@ private fun Lotto645SectionPreview() {
             inputNumbers = inputNumbers,
             hasPreRound = true,
             hasNextRound = false,
-            onAddNewInputNumber = { inputNumbers.add(0, RegisterLottoNumber.EMPTY)},
+            onAddNewInputNumber = { inputNumbers.add(0, RegisterLottoNumberUiModel.EMPTY)},
             onRemoveInputNumber = { index -> inputNumbers.removeAt(index) },
             onChangeInputNumber = { index, number -> inputNumbers[index] = inputNumbers[index].copy(lottoNumbers = number) },
             onChangeReset = { inputNumbers[it] = inputNumbers[it].copy(lottoNumbers = "", isError = false)},
@@ -257,7 +257,7 @@ private fun Lotto645SectionPreview() {
 @Composable
 private fun Lotto720SectionPreview() {
     LottoMateTheme {
-        val inputNumbers720 = remember { mutableStateListOf(RegisterLottoNumber.EMPTY) }
+        val inputNumbers720 = remember { mutableStateListOf(RegisterLottoNumberUiModel.EMPTY) }
 
 
         LottoNumberSection(
@@ -267,7 +267,7 @@ private fun Lotto720SectionPreview() {
             inputNumbers = inputNumbers720,
             hasPreRound = true,
             hasNextRound = false,
-            onAddNewInputNumber = { inputNumbers720.add(0, RegisterLottoNumber.EMPTY)},
+            onAddNewInputNumber = { inputNumbers720.add(0, RegisterLottoNumberUiModel.EMPTY)},
             onRemoveInputNumber = { index -> inputNumbers720.removeAt(index) },
             onChangeInputNumber = { index, number -> inputNumbers720[index] = inputNumbers720[index].copy(lottoNumbers = number) },
             onChangeReset = { inputNumbers720[it] = inputNumbers720[it].copy(lottoNumbers = "", isError = false)},

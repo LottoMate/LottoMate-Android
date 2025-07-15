@@ -88,7 +88,9 @@ fun NavGraphBuilder.pocketNavGraph(
     composable<LottoMateRoute.RegisterLottoNumber> {
         RegisterLottoNumbersRoute(
             padding = padding,
-            moveToLottoResult = { navController.navigateToLottoScanResult(it) },
+            moveToLottoResult = { inputType, myLotto ->
+                navController.navigateToLottoScanResult(LotteryResultFrom.REGISTER, inputType, myLotto)
+            },
             onShowGlobalSnackBar = onShowGlobalSnackBar,
             onBackPressed = { navController.navigateUp() },
         )

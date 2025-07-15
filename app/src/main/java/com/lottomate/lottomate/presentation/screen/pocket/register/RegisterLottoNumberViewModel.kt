@@ -1,213 +1,194 @@
 package com.lottomate.lottomate.presentation.screen.pocket.register
 
-import android.content.Context
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lottomate.lottomate.R
+import com.lottomate.lottomate.data.error.LottoMateErrorHandler
+import com.lottomate.lottomate.data.mapper.toDomain
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
+import com.lottomate.lottomate.domain.repository.MyNumberRepository
+import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
-import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumber
-import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterNavigationType
+import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberContract
+import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberUiModel
+import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720InfoNumbers
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterLottoNumberViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    errorHandler: LottoMateErrorHandler,
     private val lottoInfoRepository: LottoInfoRepository,
-) : ViewModel() {
-    private val latestLottoRoundInfo: StateFlow<Map<Int, LatestRoundInfo>>
-        get() = lottoInfoRepository.latestLottoRoundInfo
+    private val myNumberRepository: MyNumberRepository,
+) : BaseViewModel(errorHandler) {
+    private val latestLottoRoundInfo = lottoInfoRepository.latestLottoRoundInfo
+    private val _currentLotto645Round = MutableStateFlow(latestLottoRoundInfo.value.getValue(LottoType.L645.num))
+    private val _currentLotto720Round = MutableStateFlow(latestLottoRoundInfo.value.getValue(LottoType.L720.num))
 
-    private val _currentLotto645Round = MutableStateFlow(LatestRoundInfo.EMPTY)
-    private val _currentLotto720Round = MutableStateFlow(LatestRoundInfo.EMPTY)
-    val currentLotto645Round: StateFlow<LatestRoundInfo>
-        get() = _currentLotto645Round.asStateFlow()
-    val currentLotto720Round: StateFlow<LatestRoundInfo>
-        get() = _currentLotto720Round.asStateFlow()
+    val state = combine(
+        lottoInfoRepository.latestLottoRoundInfo,
+        _currentLotto645Round,
+        _currentLotto720Round,
+    ) { latestLottoRoundInfo, current645Round, current720Round ->
+        val latestLotto645Round = latestLottoRoundInfo.getValue(LottoType.L645.num)
+        val latestLotto720Round = latestLottoRoundInfo.getValue(LottoType.L720.num)
 
-    private val _registerNavigationFlow = MutableStateFlow<RegisterNavigationType>(RegisterNavigationType.None)
-    val registerNavigationFlow: StateFlow<RegisterNavigationType>
-        get() = _registerNavigationFlow.asStateFlow()
-
-    var hasLotto645PreRound = mutableStateOf(true)
-        private set
-    var hasLotto645NextRound = mutableStateOf(false)
-        private set
-    var hasLotto720PreRound = mutableStateOf(true)
-        private set
-    var hasLotto720NextRound = mutableStateOf(false)
-        private set
-
-    private var _snackBarFlow = MutableSharedFlow<String>()
-    val snackBarFlow: SharedFlow<String> get() = _snackBarFlow.asSharedFlow()
-
-    init {
-        loadLatestLottoRoundInfo()
+        RegisterLottoNumberContract.State(
+            currentLotto645RoundInfo = current645Round,
+            currentLotto720RoundInfo = current720Round,
+            hasLotto645PreRound = current645Round.round != latestLotto645Round.round - REGISTRABLE_ROUND_LIMIT,
+            hasLotto645NextRound = current645Round.round != latestLotto645Round.round,
+            hasLotto720PreRound = current720Round.round != latestLotto720Round.round - REGISTRABLE_ROUND_LIMIT,
+            hasLotto720NextRound = current720Round.round != latestLotto720Round.round,
+        )
     }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = RegisterLottoNumberContract.State(),
+        )
 
-    fun saveLottoNumbers(inputLotto645List: List<RegisterLottoNumber>, inputLotto720List: List<RegisterLottoNumber>) {
-        // 로또 번호 저장
-        val msg = context.getString(R.string.register_lotto_number_text_complete)
-        sendSnackBarMsg(msg)
+    private val _effect = Channel<RegisterLottoNumberContract.Effect>()
+    val effect = _effect.receiveAsFlow()
 
-        // 화면 전환 확인
-        checkNavigation(inputLotto645List, inputLotto720List)
+    fun handleEvent(event: RegisterLottoNumberContract.Event) {
+        when (event) {
+            is RegisterLottoNumberContract.Event.ClickSave -> {
+                saveLottoNumbers(event.inputLotto645List, event.inputLotto720List)
+            }
+            is RegisterLottoNumberContract.Event.ClickPreRound -> updateLottoRoundByType(true, event.type)
+            is RegisterLottoNumberContract.Event.ClickNextRound -> updateLottoRoundByType(false, event.type)
+            is RegisterLottoNumberContract.Event.ChangeLottoRound -> selectLottoRound(event.lottoType, event.round)
+        }
     }
 
     /**
-     * 번호 등록 후, 이동되어질 화면을 결정합니다.
+     * 사용자가 입력한 번호를 저장합니다.
      *
-     * - 최신 회차일 경우: 보관소(내 번호 Tab)로 이동
-     * - 이전 회차일 경우: 결과 화면으로 이동
+     * @param inputLotto645List 로또645 번호 리스트 (ex. 010511121343)
+     * @param inputLotto720List 연금복권720 번호 리스트 (ex. 125347)
      */
-    private fun checkNavigation(
-        inputLotto645List: List<RegisterLottoNumber>,
-        inputLotto720List: List<RegisterLottoNumber>
+    private fun saveLottoNumbers(inputLotto645List: List<RegisterLottoNumberUiModel>, inputLotto720List: List<RegisterLottoNumberUiModel>) {
+        val registerLottoNumber = listOfNotNull(
+            inputLotto645List.takeIf { it.isNotEmpty() }?.map {
+                it.toDomain(LottoType.L645, state.value.currentLotto645RoundInfo.round)
+            },
+            inputLotto720List.takeIf { it.isNotEmpty() }?.map {
+                it.toDomain(LottoType.L720, state.value.currentLotto720RoundInfo.round)
+            }
+        ).flatten()
+
+        viewModelScope.launch {
+            val results: List<Result<Unit>> = supervisorScope {
+                registerLottoNumber
+                    .filter { it.numbers.isNotEmpty() }
+                    .map { lotto ->
+                        async { myNumberRepository.insertMyNumber(lotto) }
+                    }.awaitAll()
+                }
+
+            val successResultCount = results.count { it.isSuccess }
+            val failureResultCount = results.count { it.isFailure }
+
+            when {
+                // 모두 성공
+                failureResultCount == 0 -> {
+                    _effect.send(RegisterLottoNumberContract.Effect.ShowSuccessSnackBar)
+
+                    navigateToLotteryResult(inputLotto645List, inputLotto720List)
+                }
+                // 모두 실패
+                successResultCount == 0 -> {
+                    handleException(IllegalArgumentException("모든 번호 저장 실패"))
+                }
+                // 일부만 실패
+                else -> {
+                    val failedItems = registerLottoNumber
+                        .zip(results)
+                        .filter { it.second.isFailure }
+                        .map { it.first }
+                }
+            }
+        }
+    }
+
+    /**
+     * 복권 결과 화면으로 이동합니다.
+     *
+     * @param inputLotto645Numbers 로또645 번호 리스트 (ex. 010511121343)
+     * @param inputLotto720Numbers 연금복권720 번호 리스트 (ex. 125347)
+     */
+    private suspend fun navigateToLotteryResult(
+        inputLotto645Numbers: List<RegisterLottoNumberUiModel>,
+        inputLotto720Numbers: List<RegisterLottoNumberUiModel>
     ) {
-        val has645 = inputLotto645List.isNotEmpty()
-        val has720 = inputLotto720List.isNotEmpty()
+        val has645 = inputLotto645Numbers.filterNot { it.lottoNumbers.isEmpty() }.isNotEmpty()
+        val has720 = inputLotto720Numbers.filterNot { it.lottoNumbers.isEmpty() }.isNotEmpty()
 
-        // 각각의 로또가 최신 회차인지 여부 판단
-        val is645Latest = isLatestRound(LottoType.L645)
-        val is720Latest = isLatestRound(LottoType.L720)
-
-        when {
-            has645 && has720 -> {
-                // 로또645와 연금복권720 모두 입력된 경우
-                when {
-                    // 두 회차 모두 최신 → 보관소로 이동
-                    is645Latest && is720Latest -> navigateBack()
-
-                    // 둘 중 하나라도 이전 회차일 경우 → 결과 화면으로 이동
-                    else -> {
-                        // 하나 또는 둘 다 이전 회차 → 결과 화면으로 이동
-                        val resultList = mutableListOf<RegisterLottoNumber>()
-
-                        if (!is645Latest) resultList += inputLotto645List
-                        if (!is720Latest) resultList += inputLotto720List
-
-                        navigateToLottoResult(resultList)
-                    }
-                }
-            }
-
-            has645 -> {
-                if (is645Latest) navigateBack() // 최신 → 보관소
-                else navigateToLottoResult(inputLotto645List) // 이전 → 결과 화면
-            }
-
-            has720 -> {
-                if (is720Latest) navigateBack() // 최신 → 보관소
-                else navigateToLottoResult(inputLotto720List) // 이전 → 결과 화면
-            }
-        }
-    }
-
-    /**
-     * 보관소(내 번호 탭)로 이동
-     */
-    private fun navigateBack() {
-        _registerNavigationFlow.update { RegisterNavigationType.Back }
-    }
-
-    /**
-     * 결과 화면으로 이동
-     * - TODO: 실제 결과 데이터 전달 필요
-     */
-    private fun navigateToLottoResult(inputLottoNumbers: List<RegisterLottoNumber>) {
-        _registerNavigationFlow.update {
-            RegisterNavigationType.LottoResult(
-                emptyList() // TODO: 실제 결과 데이터 리스트로 교체 필요
+        val myLotto645 = if (has645) {
+            MyLotto645Info(
+                round = state.value.currentLotto645RoundInfo.round,
+                numbers = inputLotto645Numbers
+                    .map { it.lottoNumbers.chunked(2) }
+                    .map { chunkedNumbers -> chunkedNumbers.map { it.toInt() } }
             )
+        } else null
+
+        val myLotto720 = if (has720) {
+            MyLotto720Info(
+                round = state.value.currentLotto720RoundInfo.round,
+                numbers = inputLotto720Numbers
+                    .map { it.lottoNumbers.chunked(1) }
+                    .map { chunkedNumbers -> MyLotto720InfoNumbers(chunkedNumbers.map { it.toInt() }) }
+            )
+        } else null
+
+        LotteryInputType.get(myLotto645 != null, myLotto720 != null)?.let { inputType ->
+            _effect.send(RegisterLottoNumberContract.Effect.NavigateToLotteryResult(inputType, MyLottoInfo(myLotto645, myLotto720)))
         }
     }
 
-    fun resetNavigation() {
-        _registerNavigationFlow.value = RegisterNavigationType.None
-    }
-
-
-    private fun isLatestRound(lottoType: LottoType): Boolean {
-        return when (lottoType) {
-            LottoType.L645 -> {
-                currentLotto645Round.value.round == latestLottoRoundInfo.value.getValue(lottoType.num).round
-            }
-            LottoType.L720 -> {
-                currentLotto720Round.value.round == latestLottoRoundInfo.value.getValue(lottoType.num).round
-            }
-            else -> {
-                val msg = context.getString(R.string.register_lotto_number_text_error)
-                sendSnackBarMsg(msg)
-                false
-            }
+    private fun selectLottoRound(lottoType: LottoType, selectedRound: LatestRoundInfo) {
+        if (lottoType == LottoType.L645) {
+            _currentLotto645Round.update { selectedRound }
+        } else {
+            _currentLotto720Round.update { selectedRound }
         }
     }
 
+    private fun updateLottoRoundByType(isPrev: Boolean, lottoType: LottoType) {
+        val currentLotto645RoundInfo = state.value.currentLotto645RoundInfo
+        val currentLotto720RoundInfo = state.value.currentLotto720RoundInfo
 
-    fun updateLottoRoundByType(lottoType: LottoType, roundInfo: LatestRoundInfo) {
-        when (lottoType) {
-            LottoType.L645 -> _currentLotto645Round.update { roundInfo }
-            LottoType.L720 -> _currentLotto720Round.update { roundInfo }
-            else -> {}
-        }
+        if (lottoType == LottoType.L645) {
+            val newRoundInfo = LatestRoundInfo(
+                round = if (isPrev) currentLotto645RoundInfo.round - 1 else currentLotto645RoundInfo.round + 1,
+                drawDate = DateUtils.calLottoRoundDate(currentLotto645RoundInfo.drawDate.replace("-", "."), 1, isFuture = !isPrev)
+            )
 
-        checkPreOrNextLottoRound(lottoType, roundInfo.round)
-    }
+            _currentLotto645Round.update { newRoundInfo }
+        } else {
+            val newRoundInfo = LatestRoundInfo(
+                round = if (isPrev) currentLotto720RoundInfo.round - 1 else currentLotto720RoundInfo.round + 1,
+                drawDate = DateUtils.calLottoRoundDate(currentLotto720RoundInfo.drawDate.replace("-", "."), 1, isFuture = !isPrev)
+            )
 
-    /**
-     * 현재 회차로부터 이전/다음 회차가 존재하는지 확인합니다.
-     *
-     * @param lotteryType
-     * @param lottoRndNum 현재 선택된 로또 회차
-     */
-    private fun checkPreOrNextLottoRound(lotteryType: LottoType, lottoRndNum: Int) {
-        val latestLottoRound = latestLottoRoundInfo.value.getValue(lotteryType.num)
-
-        when (lotteryType) {
-            LottoType.L645 -> {
-                hasLotto645NextRound.value = lottoRndNum != latestLottoRound.round
-                hasLotto645PreRound.value = lottoRndNum != latestLottoRound.round - REGISTRABLE_ROUND_LIMIT
-            }
-            LottoType.L720 -> {
-                hasLotto720NextRound.value = lottoRndNum != latestLottoRound.round
-                hasLotto720PreRound.value = lottoRndNum != latestLottoRound.round - REGISTRABLE_ROUND_LIMIT
-            }
-            else -> {}
-        }
-    }
-
-    /**
-     * 로또645/연금복권720의 최신 회차 정보를 가져옵니다.
-     */
-    private fun loadLatestLottoRoundInfo() {
-        viewModelScope.launch {
-            latestLottoRoundInfo
-                .collectLatest {
-                    val lotto645Round = it.getValue(LottoType.L645.num)
-                    val lotto720Round = it.getValue(LottoType.L720.num)
-
-                    _currentLotto645Round.update { lotto645Round }
-                    _currentLotto720Round.update { lotto720Round }
-                }
-        }
-    }
-
-    private fun sendSnackBarMsg(message: String) {
-        viewModelScope.launch {
-            _snackBarFlow.emit(message)
+            _currentLotto720Round.update { newRoundInfo }
         }
     }
 

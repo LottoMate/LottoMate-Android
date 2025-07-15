@@ -40,6 +40,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.pocket.my.MyNumberScreen
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumberContent
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
@@ -57,7 +58,7 @@ fun PocketRoute(
     onClickDrawRandomNumbers: () -> Unit,
     moveToSaveNumberScreen: () -> Unit,
     moveToLogin: () -> Unit,
-    moveToLotteryResult: (LottoType, Int, List<Int>) -> Unit,
+    moveToLotteryResult: (LottoType, MyLottoInfo) -> Unit,
 ) {
     val userProfile by vm.userProfile.collectAsState()
     var currentTabIndex by vm.currentTabIndex
@@ -114,7 +115,7 @@ private fun PocketScreen(
     onClickSetting: () -> Unit,
     onShowGlobalSnackBar: (String) -> Unit,
     moveToSaveNumberScreen: () -> Unit,
-    moveToLotteryResult: (LottoType, Int, List<Int>) -> Unit,
+    moveToLotteryResult: (LottoType, MyLottoInfo) -> Unit,
 ) {
     Box(
         modifier = modifier
@@ -245,7 +246,7 @@ private fun PocketScreenPreview() {
             moveToSaveNumberScreen = {},
             moveToLogin = {},
             onShowGlobalSnackBar = {},
-            moveToLotteryResult = { _, _, _ -> },
+            moveToLotteryResult = { _, _ -> },
         )
     }
 }
