@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.androidx.navigation.safeargs)
+    alias(libs.plugins.jetbrains.kotlin.parcelize)
 }
 
 val localProperties = Properties()

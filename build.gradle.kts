@@ -5,4 +5,15 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.compose.compiler) apply false
     alias(libs.plugins.google.devtools.ksp) apply false
     alias(libs.plugins.hilt.android) apply false
+    alias(libs.plugins.androidx.navigation.safeargs) apply false
+    alias(libs.plugins.jetbrains.kotlin.parcelize) apply false
+}
+
+buildscript {
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath(libs.androidx.navigation.safe.args)
+    }
 }
