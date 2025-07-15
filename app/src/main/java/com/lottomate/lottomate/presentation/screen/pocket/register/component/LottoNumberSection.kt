@@ -219,7 +219,7 @@ private fun MiddleLotteryRoundPicker(
             )
         }
 
-        if (!hasPreRound) {
+        if (!hasNextRound) {
             LottoMateText(
                 text = stringResource(id = if (lotteryType == LottoType.L645) R.string.register_lotto_number_text_round_notice_645 else R.string.register_lotto_number_text_round_notice_720),
                 style = LottoMateTheme.typography.caption2
