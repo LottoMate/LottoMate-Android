@@ -35,6 +35,7 @@ class MyNumberRepositoryImpl @Inject constructor(
             val response = myNumberApi.insertMyNumber(registerLottoNumber.toEntity())
 
             response?.let {
+                getAllMyNumber()
                 Result.success(Unit)
             } ?: Result.failure(IllegalArgumentException("오류가 발생하였습니다."))
         } catch (e: Exception) {
