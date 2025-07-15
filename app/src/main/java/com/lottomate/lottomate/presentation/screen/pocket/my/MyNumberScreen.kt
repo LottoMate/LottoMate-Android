@@ -447,7 +447,7 @@ fun PaginatedGroupedHistoryColumn(
         if (totalRows > initialCount) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
                     .clickable {
                         itemsToShow = if (itemsToShow < totalRows) (itemsToShow + 10).coerceAtMost(totalRows)
                         else initialCount
