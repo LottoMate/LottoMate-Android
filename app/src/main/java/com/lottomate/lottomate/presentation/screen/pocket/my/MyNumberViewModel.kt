@@ -3,12 +3,17 @@ package com.lottomate.lottomate.presentation.screen.pocket.my
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.data.mapper.toUiModel
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.repository.MyNumberRepository
 import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberContract
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberDetailUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberUiModel
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720InfoNumbers
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -75,7 +80,13 @@ class MyNumberViewModel @Inject constructor(
 
     private fun checkLotteryWin(detail: MyNumberDetailUiModel, numbers: List<Int>) {
         viewModelScope.launch {
-            _effect.send(MyNumberContract.Effect.NavigateToLotteryResylt(detail.type, detail.round, numbers))
+            val myLottoInfo = if (detail.type == LottoType.L645) {
+                MyLottoInfo(myLotto645Info = MyLotto645Info(round = detail.round, numbers = listOf(numbers)))
+            } else {
+                MyLottoInfo(myLotto720Info = MyLotto720Info(round = detail.round, numbers = listOf(MyLotto720InfoNumbers(numbers = numbers))))
+            }
+
+            _effect.send(MyNumberContract.Effect.NavigateToLotteryResult(detail.type, myLottoInfo))
         }
     }
 }

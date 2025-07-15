@@ -56,6 +56,7 @@ import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberContr
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberDetailUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberRowUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberUiModel
+import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateError
@@ -79,7 +80,7 @@ fun MyNumberScreen(
     onClickLottoInfo: () -> Unit,
     onClickBanner: (BannerType) -> Unit,
     onShowGlobalSnackBar: (String) -> Unit,
-    moveToLotteryResult: (LottoType, Int, List<Int>) -> Unit,
+    moveToLotteryResult: (LottoType, MyLottoInfo) -> Unit,
 ) {
     val myNumbers by vm.myNumbers.collectAsStateWithLifecycle()
     val isEdit by vm.isEdit.collectAsStateWithLifecycle()
@@ -88,9 +89,7 @@ fun MyNumberScreen(
         vm.effect.collect { effect ->
             when (effect) {
                 is MyNumberContract.Effect.ShowSnackBar -> onShowGlobalSnackBar(effect.message)
-                is MyNumberContract.Effect.NavigateToLotteryResylt -> {
-                    moveToLotteryResult(effect.type, effect.round, effect.numbers)
-                }
+                is MyNumberContract.Effect.NavigateToLotteryResult -> moveToLotteryResult(effect.type, effect.myLottoInfo)
             }
         }
     }
@@ -106,7 +105,7 @@ fun MyNumberScreen(
         onClickRemove = { vm.handleEvent(MyNumberContract.Event.DeleteMyNumber(it)) },
         onClickChangeMode = { vm.handleEvent(MyNumberContract.Event.ChangeMode) },
         onClickCheckWin = { detail, numbers ->
-
+            vm.handleEvent(MyNumberContract.Event.ClickCheckWin(detail, numbers))
         }
     )
 }
