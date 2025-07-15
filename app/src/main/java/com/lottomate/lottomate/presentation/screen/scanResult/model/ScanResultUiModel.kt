@@ -1,8 +1,11 @@
 package com.lottomate.lottomate.presentation.screen.scanResult.model
 
+import android.os.Parcelable
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.model.LottoRank
 import com.lottomate.lottomate.domain.model.WinResultInfo
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 data class ScanResultUiModel(
     val type: LottoType,
@@ -19,16 +22,30 @@ data class ScanResultUiModel(
     val isClaimPeriodExpired: Boolean = false,
 )
 
-sealed interface MyLottoInfo {
-    val round: Int
-}
-data class MyLotto645Info(
-    override val round: Int,
-    val numbers: List<List<Int>>,
-) : MyLottoInfo
+@Serializable
+@Parcelize
+data class MyLottoInfo(
+    val myLotto645Info: MyLotto645Info? = null,
+    val myLotto720Info: MyLotto720Info? = null,
+) : Parcelable
 
+@Serializable
+@Parcelize
+data class MyLotto645Info(
+    val round: Int,
+    val numbers: List<List<Int>>,
+) : Parcelable
+
+@Serializable
+@Parcelize
 data class MyLotto720Info(
-    override val round: Int,
+    val round: Int,
+    val numbers: List<MyLotto720InfoNumbers>,
+) : Parcelable
+
+@Serializable
+@Parcelize
+data class MyLotto720InfoNumbers(
     val numbers: List<Int>,
-    val firstNumber: Int,
-) : MyLottoInfo
+    val firstNumber: Int = 0,
+) : Parcelable

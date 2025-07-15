@@ -6,6 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.lottomate.lottomate.data.error.LottoMateErrorType
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScan
@@ -15,6 +16,8 @@ import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
 import com.lottomate.lottomate.presentation.screen.pocket.register.RegisterLottoNumbersRoute
+import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultFrom
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 
 fun NavController.navigateToPocketTab(navOptions: NavOptions) {
@@ -63,8 +66,13 @@ fun NavGraphBuilder.pocketNavGraph(
 
                 navController.navigateToLogin(navOptions)
             },
-            moveToLotteryResult = { type, round, numbers ->
+            moveToLotteryResult = { type, myLottoInfo ->
+                val inputType = when (type) {
+                    LottoType.L645 -> LotteryInputType.ONLY645
+                    else -> LotteryInputType.ONLY720
+                }
 
+                navController.navigateToLottoScanResult(from = LotteryResultFrom.MY_NUMBER, inputType = inputType, myLottoInfo)
             }
         )
     }
