@@ -1,5 +1,8 @@
 package com.lottomate.lottomate.presentation.screen.lottoinfo.model
 
+import com.lottomate.lottomate.domain.model.Lotto645ResultInfo
+import com.lottomate.lottomate.domain.model.Lotto720ResultInfo
+
 sealed interface LottoInfo {
     val lottoRound: Int?
     val lottoDate: String?
@@ -22,7 +25,15 @@ data class Lotto645Info(
     override val lottoNum: List<Int>,
     override val lottoBonusNum: List<Int>,
     override val lottoWinnerNum: List<String>,
-): LottoInfoWithBalls
+): LottoInfoWithBalls {
+    fun getWinningInfo() = Lotto645ResultInfo(
+        firstPrize = lottoPrizePerPerson[0],
+        secondPrize = lottoPrizePerPerson[1],
+        thirdPrize = lottoPrizePerPerson[2],
+        fourthPrize = lottoPrizePerPerson[3],
+        fifthPrize = lottoPrizePerPerson[4],
+    )
+}
 
 data class Lotto720Info(
     override val lottoRound: Int,
@@ -30,7 +41,17 @@ data class Lotto720Info(
     override val lottoNum: List<Int>,
     override val lottoBonusNum: List<Int>,
     override val lottoWinnerNum: List<String>
-): LottoInfoWithBalls
+): LottoInfoWithBalls {
+    fun getWinningInfo() = Lotto720ResultInfo(
+        firstPrize = lottoWinnerNum[0],
+        secondPrize = lottoWinnerNum[1],
+        thirdPrize = lottoWinnerNum[2],
+        fourthPrize = lottoWinnerNum[3],
+        fifthPrize = lottoWinnerNum[4],
+        sixthPrize = lottoWinnerNum[5],
+        seventhPrize = lottoWinnerNum[6],
+    )
+}
 
 data class SpeettoInfo(
     val currentPage: Int,

@@ -42,5 +42,7 @@ enum class LottoRank(
                 .firstOrNull { it.group == Group.L720 && it.count == count && it.bonus == isbonus }
                 ?: NONE
         }
+
+        fun isWin(rank: LottoRank): Boolean = rank != NONE
     }
 }

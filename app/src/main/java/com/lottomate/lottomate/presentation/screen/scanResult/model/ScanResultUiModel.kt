@@ -1,21 +1,27 @@
 package com.lottomate.lottomate.presentation.screen.scanResult.model
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.model.LottoRank
 import com.lottomate.lottomate.domain.model.WinResultInfo
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
+@Immutable
 data class ScanResultUiModel(
-    val type: LottoType,
     val myLotto: MyLottoInfo,
-    // 당첨된 번호
-    val myWinningNumbers: List<List<Int>>,
-    // 당첨 여부
+    val isWinner: Boolean,
+    val resultRows: List<LotteryResultRowUiModel>,
+)
+
+@Immutable
+data class LotteryResultRowUiModel(
+    val type: LottoType,
+    val round: Int,
     val isWinner: Boolean = false,
-    // 당첨 내역 (로또 타입, 당첨 등수)
-    val winningRanksByType: List<LottoRank> = emptyList(),
+    val winningRank: LottoRank,
+    val myWinningNumbers: List<Int>,
     // 당첨 결과 정보
     val winningInfoByType: WinResultInfo,
     // 지급 기한 유효 여부
