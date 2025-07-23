@@ -126,6 +126,14 @@ fun NavGraphBuilder.homeNavGraph(
                 navController.navigateToPocketTab(navOptions)
             },
             onBackPressed = { navController.popBackStack(route = LottoMateRoute.LottoScan, inclusive = true) },
+            onBackPressed = {
+                val from = navBackStackEntry.toRoute<LottoMateRoute.LottoScanResult>().from
+
+                when (from) {
+                    LotteryResultFrom.SCAN -> navController.popBackStack(LottoMateRoute.LottoScan, true)
+                    else -> navController.popBackStack()
+                }
+            },
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }
