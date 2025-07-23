@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.androidx.navigation.safeargs) apply false
     alias(libs.plugins.jetbrains.kotlin.parcelize) apply false
+    alias(libs.plugins.google.services) apply false
 }
 
 buildscript {

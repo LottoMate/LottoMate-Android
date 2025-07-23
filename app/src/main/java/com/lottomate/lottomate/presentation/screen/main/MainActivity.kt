@@ -5,16 +5,23 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.lottomate.lottomate.data.manager.AppVersionInfoManager
+import com.lottomate.lottomate.domain.model.AppVersionInfo
 import com.lottomate.lottomate.presentation.component.LottoMateBackHandler
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var appVersionInfoManager: AppVersionInfoManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
+        appVersionInfoManager.checkAppUpdate()
         setHideSoftKey()
 
         setContent {

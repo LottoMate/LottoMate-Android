@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "81394819092",
+    "project_id": "lottomate-92045",
+    "storage_bucket": "lottomate-92045.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:81394819092:android:d21336f956f267e3c08701",
+        "android_client_info": {
+          "package_name": "com.lottomate.lottomate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBITCuTMqjTr0DvQIA4B4T3z9-SWfy2Tzo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

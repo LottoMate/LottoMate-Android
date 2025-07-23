@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization)
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.jetbrains.kotlin.parcelize)
+    alias(libs.plugins.google.services)
 }
 
 val localProperties = Properties()
@@ -140,6 +141,10 @@ dependencies {
 
     // Splash Screen
     implementation(libs.androidx.splash)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.bundles.firebase)
 
     // Logger
     implementation(libs.com.jakewharton.timber)
