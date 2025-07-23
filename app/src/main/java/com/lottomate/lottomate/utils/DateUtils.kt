@@ -66,7 +66,10 @@ object DateUtils {
      * @return 계산 완료한 날짜
      */
     fun calLottoRoundDate(lastRoundDate: String, index: Int, isFuture: Boolean = false): String {
-        val (year, month, day) = lastRoundDate.split(".").map { it.toInt() }
+        val (year, month, day) = if (lastRoundDate.contains("-")) {
+            lastRoundDate.split("-").map { it.toInt() }
+        } else lastRoundDate.split(".").map { it.toInt() }
+
         val date = Calendar.getInstance().apply {
             set(Calendar.YEAR, year)
             set(Calendar.MONTH, month.minus(1))
@@ -119,8 +122,11 @@ object DateUtils {
     }
 
     fun isPrizeExpired(date: String): Boolean {
+        val lottoDate = if (date.contains(".")) {
+            date.replace(".", "-")
+        } else date
         val formatter = SimpleDateFormat(DATE_FORMAT_YYYY_MM_DD, Locale.KOREA)
-        val deadlineDate = formatter.parse(calculatePrizeDeadline(date)) ?: return false
+        val deadlineDate = formatter.parse(calculatePrizeDeadline(lottoDate)) ?: return false
         val currentDate = formatter.parse(getCurrentDate()) ?: return false
 
         return currentDate.after(deadlineDate)

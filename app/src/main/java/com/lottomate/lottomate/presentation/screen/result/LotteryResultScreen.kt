@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.scanResult
+package com.lottomate.lottomate.presentation.screen.result
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,8 +34,6 @@ import coil.compose.AsyncImage
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.error.LottoMateErrorType
 import com.lottomate.lottomate.data.model.LottoType
-import com.lottomate.lottomate.domain.model.Lotto645ResultInfo
-import com.lottomate.lottomate.domain.model.Lotto720ResultInfo
 import com.lottomate.lottomate.domain.model.LottoRank
 import com.lottomate.lottomate.presentation.component.BannerCard
 import com.lottomate.lottomate.presentation.component.BannerType
@@ -46,6 +44,11 @@ import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
+import com.lottomate.lottomate.presentation.screen.result.contract.LotteryResultEffect
+import com.lottomate.lottomate.presentation.screen.result.contract.LotteryResultUiState
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultRowUiModel
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray110
@@ -57,16 +60,16 @@ import com.lottomate.lottomate.utils.StringUtils
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LottoScanResultRoute(
-    vm: LottoScanResultViewModel = hiltViewModel(),
+fun LotteryResultRoute(
+    vm: LotteryResultViewModel = hiltViewModel(),
     padding: PaddingValues,
-    data: String,
     moveToHome: () -> Unit,
     moveToWinningGuide: () -> Unit,
     moveToMap: () -> Unit,
     moveToInterview: (Int, String) -> Unit,
     moveToPocket: () -> Unit,
     onBackPressed: () -> Unit,
+    onShowGlobalSnackBar: (message: String) -> Unit,
     onShowErrorSnackBar: (LottoMateErrorType) -> Unit,
 ) {
     val uiState by vm.state.collectAsStateWithLifecycle()
@@ -76,17 +79,22 @@ fun LottoScanResultRoute(
     }
 
     LaunchedEffect(Unit) {
-        vm.getLottoResult(data)
+        vm.effect.collect { effect ->
+            when (effect) {
+                is LotteryResultEffect.ShowSaveSuccessSnackBar -> {
+                    onShowGlobalSnackBar(effect.message)
+                    vm.sendEffect(LotteryResultEffect.NavigatePocket)
+                }
+                LotteryResultEffect.NavigatePocket -> moveToPocket()
+            }
+        }
     }
 
-    LottoScanResultScreen(
+    LotteryResultScreen(
         modifier = Modifier.padding(top = padding.calculateTopPadding()),
         uiState = uiState,
         moveToHome = moveToHome,
-        onClickNumberSave = { winningNumbers ->
-            vm.saveWinningNumbers(winningNumbers)
-//            moveToPocket()
-        },
+        onClickNumberSave = { myLottoInfo -> vm.saveWinningNumbers(myLottoInfo) },
         onBackPressed = onBackPressed,
         onClickBanner = { banner ->
             when (banner) {
@@ -103,13 +111,13 @@ fun LottoScanResultRoute(
 }
 
 @Composable
-private fun LottoScanResultScreen(
+private fun LotteryResultScreen(
     modifier: Modifier = Modifier,
-    uiState: LottoScanResultUiState,
+    uiState: LotteryResultUiState,
     onClickBanner: (BannerType) -> Unit,
     onBackPressed: () -> Unit,
     moveToHome: () -> Unit,
-    onClickNumberSave: (List<List<Int>>) -> Unit,
+    onClickNumberSave: (MyLottoInfo) -> Unit,
 ) {
     var showNumberSaveDialog by remember { mutableStateOf(false) }
 
@@ -119,21 +127,28 @@ private fun LottoScanResultScreen(
             .background(LottoMateWhite),
     ) {
         when (uiState) {
-            LottoScanResultUiState.Loading -> {
-                LottoScanResultLoading(
+            LotteryResultUiState.Loading -> {
+                LotteryResultLoading(
                     modifier = Modifier.align(Alignment.Center),
                 )
             }
 
-            LottoScanResultUiState.CelebrationLoading -> {
-                LottoScanResultCelebrationLoading(
+            LotteryResultUiState.CelebrationLoading -> {
+                LotteryResultCelebrationLoading(
                     modifier = Modifier.align(Alignment.Center),
                 )
             }
 
-            is LottoScanResultUiState.NotYet -> {
+            LotteryResultUiState.NotWinner -> {
+                LotteryResultLose(
+                    onComplete = onBackPressed,
+                    onClickBanner = onClickBanner,
+                )
+            }
+
+            is LotteryResultUiState.NotYet -> {
                 // 당첨 발표 전
-                LottoScanResultNotYet(
+                LotteryResultNotYet(
                     lottoType = uiState.type,
                     remainDays = uiState.days,
                     moveToHome = moveToHome,
@@ -142,79 +157,49 @@ private fun LottoScanResultScreen(
                 )
             }
 
-            is LottoScanResultUiState.Success -> {
-                val winResult = uiState.data
+            is LotteryResultUiState.Success -> {
+                LotteryResultWin(
+                    from = uiState.from,
+                    resultRows = uiState.data.resultRows,
+                    onComplete = { onBackPressed() },
+                    onClickBanner = onClickBanner,
+                    onShowNumberSaveDialog = { showNumberSaveDialog = true },
+                )
+            }
 
-                when {
-                    winResult.isClaimPeriodExpired -> {
-                        LottoResultExpired(
-                            onClickBanner = onClickBanner,
-                            onClick = onBackPressed,
-                        )
-                    }
-                    winResult.isWinner -> {
-                        val winRank = winResult.winningRanksByType
-                            .filterNot { it == LottoRank.NONE }
-                            .sortedBy { it.rank }
-                        val resultInfo = if (winResult.type == LottoType.L645) winResult.winningInfoByType as Lotto645ResultInfo
-                        else winResult.winningInfoByType as Lotto720ResultInfo
-
-                        var currentIndex by remember { mutableIntStateOf(0) }
-
-                        LottoScanResultWin(
-                            type = winResult.type,
-                            isFailed = false,
-                            rank = winRank[currentIndex].rank,
-                            price = resultInfo.getPrize(winRank[currentIndex].rank),
-                            isLast = currentIndex == winRank.lastIndex,
-                            onNext = {
-                                if (currentIndex < winRank.lastIndex) {
-                                    currentIndex += 1 // 다음 결과로 이동
-                                }
-                            },
-                            onComplete = { onBackPressed() },
-                            onClickBanner = onClickBanner,
-                            onShowNumberSaveDialog = { showNumberSaveDialog = true },
-                        )
-                    }
-                    !winResult.isWinner -> {
-                        LottoScanResultWin(
-                            type = winResult.type,
-                            isFailed = true,
-                            rank = -1,
-                            isLast = true,
-                            onComplete = { onBackPressed() },
-                            onClickBanner = onClickBanner,
-                            onShowNumberSaveDialog = { showNumberSaveDialog = true },
-                        )
-                    }
-                }
+            LotteryResultUiState.Expired -> {
+                LottoResultExpired(
+                    onClickBanner = onClickBanner,
+                    onClick = onBackPressed,
+                )
             }
         }
 
         if (showNumberSaveDialog) {
-            val data = (uiState as LottoScanResultUiState.Success).data
+            if (uiState is LotteryResultUiState.Success) {
+                val data = uiState.data
 
-            LottoMateDialog(
-                title = "${data.type.kr} 당첨 결과를 저장하시겠어요?",
-                body = """
+                LottoMateDialog(
+                    title = "${data.resultRows.first().type.kr} 당첨 결과를 저장하시겠어요?",
+                    body = """
                     '로또 보관소 > 내 로또'에서
                     확인할 수 있어요
                 """.trimIndent(),
-                cancelText = "아니오",
-                confirmText = "저장하기",
-                onDismiss = {
-                    showNumberSaveDialog = false
-                    onBackPressed()
-                },
-                onConfirm = { onClickNumberSave(data.myWinningNumbers) },
-            )
+                    cancelText = "아니오",
+                    confirmText = "저장하기",
+                    onDismiss = {
+                        showNumberSaveDialog = false
+                        onBackPressed()
+                    },
+                    onConfirm = { onClickNumberSave(data.myLotto) },
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun LottoScanResultNotYet(
+private fun LotteryResultNotYet(
     modifier: Modifier = Modifier,
     lottoType: LottoType,
     remainDays: Int,
@@ -225,6 +210,7 @@ private fun LottoScanResultNotYet(
     val banner by remember {
         mutableStateOf(BannerType.getRandomBannerTypeBeforeResult())
     }
+
     Column(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -366,19 +352,79 @@ private fun LottoResultExpired(
     }
 }
 
+@Composable
+private fun LotteryResultLose(
+    onComplete: () -> Unit,
+    onClickBanner: (BannerType) -> Unit,
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = Dimens.DefaultPadding20),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            LottoMateText(
+                text = "아쉽게 미당첨",
+                style = LottoMateTheme.typography.title2
+                    .copy(color = LottoMateBlack),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            LottoMateText(
+                text = "다음 기회엔 꼭 당첨되기를 바라요!",
+                style = LottoMateTheme.typography.headline1
+                    .copy(color = LottoMateGray110),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 2.dp),
+            )
+
+            AsyncImage(
+                model = R.drawable.img_lotto_result00,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(188.dp)
+                    .padding(top = 24.dp),
+            )
+        }
+
+        Column(
+            modifier = Modifier.padding(bottom = 32.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            BannerCard(
+                type = BannerType.getResultScreenBannerType(false),
+                onClickBanner = onClickBanner,
+            )
+
+            LottoMateSolidButton(
+                text = "확인",
+                buttonSize = LottoMateButtonProperty.Size.LARGE,
+                buttonShape = LottoMateButtonProperty.Shape.NORMAL,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onComplete,
+            )
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LottoScanResultWin(
-    type: LottoType,
-    isFailed: Boolean,
-    rank: Int,
-    price: String? = null,
-    isLast: Boolean,
-    onNext: (() -> Unit)? = null,
+private fun LotteryResultWin(
+    from: LotteryResultFrom,
+    resultRows: List<LotteryResultRowUiModel>,
     onComplete: () -> Unit,
     onClickBanner: (BannerType) -> Unit,
     onShowNumberSaveDialog: () -> Unit,
 ) {
+    var currentIndex by remember { mutableIntStateOf(0) }
+    val currentResult = remember(currentIndex) { resultRows[currentIndex] }
     val lotto720Prize = stringArrayResource(id = R.array.lotto720_win_prize)
 
     Column(
@@ -391,45 +437,32 @@ private fun LottoScanResultWin(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             LottoMateText(
-                text = if (isFailed) "아쉽게 미당첨" else {
-                    "${type.kr} ${rank}등 당첨"
+                text = if (currentResult.type == LottoType.L720 && currentResult.winningRank == LottoRank.L720_BONUS) {
+                    "연금복권 보너스 당첨"
+                } else {
+                    "${currentResult.type.kr} ${currentResult.winningRank.rank}등 당첨"
                 },
-                style = when (isFailed) {
-                    true -> LottoMateTheme.typography.title2
-                        .copy(color = LottoMateBlack)
-
-                    false -> LottoMateTheme.typography.title3
-                        .copy(color = LottoMateGray120)
-                },
+                style = LottoMateTheme.typography.title3
+                    .copy(color = LottoMateGray120),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
             )
-
             LottoMateText(
-                text = when (isFailed) {
-                    true -> "다음 기회엔 꼭 당첨되기를 바라요!"
-                    false -> {
-                        if (type == LottoType.L645) price.plus("원") ?: ""
-                        else lotto720Prize[rank - 1]
-                    }
-                },
-                style = when (isFailed) {
-                    true -> LottoMateTheme.typography.headline1
-                        .copy(color = LottoMateGray110)
-                    false -> LottoMateTheme.typography.display2
-                        .copy(color = LottoMateBlack)
-                },
+                text = if (currentResult.type == LottoType.L645) currentResult.winningInfoByType.getPrize(currentResult.winningRank.rank).plus("원")
+                else lotto720Prize[currentResult.winningRank.rank - 1],
+                style = LottoMateTheme.typography.display2
+                    .copy(color = LottoMateBlack),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 2.dp),
             )
 
-            if (type == LottoType.L645 && !isFailed && rank != 5) {
+            if (currentResult.type == LottoType.L645 && currentResult.winningRank.rank != 5) {
                 LottoMateText(
-                    text = when (rank) {
+                    text = when (currentResult.winningRank.rank) {
                         in 1..4 -> StringUtils.formatLottoPrize(
-                            price?.replace(",", "")?.toLong() ?: 0L
+                            currentResult.winningInfoByType.getPrize(currentResult.winningRank.rank).replace(",", "").toLong()
                         )
 
                         else -> ""
@@ -444,15 +477,11 @@ private fun LottoScanResultWin(
             }
 
             AsyncImage(
-                model = if (isFailed) {
-                    R.drawable.img_lotto_result00
-                } else {
-                    when (rank) {
-                        1 -> R.drawable.img_lotto_result03
-                        2, 3 -> R.drawable.img_lotto_result02
-                        4, 5 -> R.drawable.img_lotto_result01
-                        else -> R.drawable.img_lotto_result_loading
-                    }
+                model = when (currentResult.winningRank.rank) {
+                    1 -> R.drawable.img_lotto_result03
+                    2, 3, 8 -> R.drawable.img_lotto_result02
+                    4, 5, 6, 7 -> R.drawable.img_lotto_result01
+                    else -> R.drawable.img_lotto_result_loading
                 },
                 contentDescription = null,
                 modifier = Modifier
@@ -461,17 +490,15 @@ private fun LottoScanResultWin(
                     .padding(top = 24.dp),
             )
 
-            if (!isFailed) {
-                LottoMateText(
-                    text = "당첨금 수령 방법은 가이드를 확인해 주세요",
-                    style = LottoMateTheme.typography.body1
-                        .copy(color = LottoMateGray110),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 24.dp),
-                )
-            }
+            LottoMateText(
+                text = "당첨금 수령 방법은 가이드를 확인해 주세요",
+                style = LottoMateTheme.typography.body1
+                    .copy(color = LottoMateGray110),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp),
+            )
         }
 
         Column(
@@ -479,21 +506,21 @@ private fun LottoScanResultWin(
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             BannerCard(
-                type = BannerType.getResultScreenBannerType(!isFailed),
+                type = BannerType.getResultScreenBannerType(true),
                 onClickBanner = onClickBanner,
             )
 
             LottoMateSolidButton(
-                text = if (isLast) "확인" else "다음",
+                text = if (currentIndex >= resultRows.lastIndex) "확인" else "다음",
                 buttonSize = LottoMateButtonProperty.Size.LARGE,
                 buttonShape = LottoMateButtonProperty.Shape.NORMAL,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    if (isLast) {
-                        if (isFailed) onComplete()
-                        else onShowNumberSaveDialog()
+                    if (currentIndex >= resultRows.lastIndex) {
+                        if (from == LotteryResultFrom.SCAN) onShowNumberSaveDialog()
+                        else onComplete()
                     }
-                    else onNext?.invoke()
+                    else currentIndex++
                 },
             )
         }
@@ -501,7 +528,7 @@ private fun LottoScanResultWin(
 }
 
 @Composable
-private fun LottoScanResultLoading(
+private fun LotteryResultLoading(
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -524,7 +551,7 @@ private fun LottoScanResultLoading(
 }
 
 @Composable
-private fun LottoScanResultCelebrationLoading(
+private fun LotteryResultCelebrationLoading(
     modifier: Modifier = Modifier,
 ) {
     Column(

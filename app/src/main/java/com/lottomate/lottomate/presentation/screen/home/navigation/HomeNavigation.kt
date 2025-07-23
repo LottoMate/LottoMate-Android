@@ -18,11 +18,18 @@ import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigateToPocketTab
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
-import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
+import com.lottomate.lottomate.presentation.screen.result.LotteryResultRoute
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.navigation.LotteryInputTypeType
+import com.lottomate.lottomate.presentation.screen.result.navigation.LotteryResultFromType
+import com.lottomate.lottomate.presentation.screen.result.navigation.MyLottoInfoType
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideNaverMapWebView
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
 import com.lottomate.lottomate.presentation.screen.winnerguide.navigation.navigateToWinnerGuide
+import kotlin.reflect.typeOf
 
 fun NavController.navigateToHomeTab(navOptions: NavOptions) {
     navigate(BottomTabRoute.Home, navOptions)
@@ -36,8 +43,8 @@ fun NavController.navigateToLottoScan() {
     navigate(LottoMateRoute.LottoScan)
 }
 
-fun NavController.navigateToLottoScanResult(data: String) {
-    navigate(LottoMateRoute.LottoScanResult(data))
+fun NavController.navigateToLotteryResult(from: LotteryResultFrom, inputType: LotteryInputType, myLotto: MyLottoInfo) {
+    navigate(LottoMateRoute.LotteryResult(from, inputType, myLotto))
 }
 
 fun NavController.navigateToBanner(bannerType: BannerType) {
@@ -51,6 +58,7 @@ fun NavController.navigateToNaverMap(url: String) {
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     navController: NavController,
+    onShowGlobalSnackBar: (message: String) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Home> {
@@ -84,18 +92,23 @@ fun NavGraphBuilder.homeNavGraph(
     composable<LottoMateRoute.LottoScan> {
         LottoScanRoute(
             padding = padding,
-            moveToLottoScanResult = { navController.navigateToLottoScanResult(it) },
+            moveToLotteryResult = { type, myLotto ->
+                navController.navigateToLotteryResult(LotteryResultFrom.SCAN, type, myLotto)
+            },
             onBackPressed = { navController.popBackStack() },
         )
     }
 
     // 복권 스캔 결과 화면
-    composable<LottoMateRoute.LottoScanResult> { navBackStackEntry ->
-        val data = navBackStackEntry.toRoute<LottoMateRoute.LottoScanResult>().data
-
-        LottoScanResultRoute(
+    composable<LottoMateRoute.LotteryResult>(
+        typeMap = mapOf(
+            typeOf<LotteryResultFrom>() to LotteryResultFromType,
+            typeOf<LotteryInputType>() to LotteryInputTypeType,
+            typeOf<MyLottoInfo>() to MyLottoInfoType,
+        )
+    ) { navBackStackEntry ->
+        LotteryResultRoute(
             padding = padding,
-            data = data,
             moveToHome = {
                 val navOptions = NavOptions.Builder().apply {
                     setPopUpTo<BottomTabRoute.Home>(true)
@@ -113,7 +126,15 @@ fun NavGraphBuilder.homeNavGraph(
 
                 navController.navigateToPocketTab(navOptions)
             },
-            onBackPressed = { navController.popBackStack(route = LottoMateRoute.LottoScan, inclusive = true) },
+            onBackPressed = {
+                val from = navBackStackEntry.toRoute<LottoMateRoute.LotteryResult>().from
+
+                when (from) {
+                    LotteryResultFrom.SCAN -> navController.popBackStack(LottoMateRoute.LottoScan, true)
+                    else -> navController.popBackStack()
+                }
+            },
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }

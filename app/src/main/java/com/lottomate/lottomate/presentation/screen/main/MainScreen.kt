@@ -44,7 +44,7 @@ fun MainScreen(
         }
     }
 
-    val onShowGlobalErrorSnackBar: (message: String) -> Unit = { message ->
+    val onShowGlobalSnackBar: (message: String) -> Unit = { message ->
         coroutineScope.launch {
             snackBarHostState.showSnackbar(message)
         }
@@ -53,7 +53,7 @@ fun MainScreen(
     MainScreenContent(
         navigator = navigator,
         snackBarHostState = snackBarHostState,
-        onShowGlobalSnackBar = {  },
+        onShowGlobalSnackBar = onShowGlobalSnackBar,
         onShowErrorSnackBar = onShowErrorSnackBar
     )
 }

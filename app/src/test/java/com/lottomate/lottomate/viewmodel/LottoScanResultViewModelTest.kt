@@ -2,8 +2,8 @@ package com.lottomate.lottomate.viewmodel
 
 import com.lottomate.lottomate.data.error.LottoMateErrorHandlerImpl
 import com.lottomate.lottomate.domain.usecase.CheckLotteryResultUseCase
-import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultUiState
-import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultViewModel
+import com.lottomate.lottomate.presentation.screen.result.LotteryResultUiState
+import com.lottomate.lottomate.presentation.screen.result.LotteryResultViewModel
 import com.lottomate.lottomate.repository.FakeInterviewRepository
 import com.lottomate.lottomate.repository.FakeLottoInfoRepository
 import kotlinx.coroutines.Dispatchers
@@ -17,15 +17,15 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class LottoScanResultViewModelTest {
+class LotteryResultViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var vm: LottoScanResultViewModel
+    private lateinit var vm: LotteryResultViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
 
-        vm = LottoScanResultViewModel(
+        vm = LotteryResultViewModel(
             dispatcher = testDispatcher,
             errorHandler = LottoMateErrorHandlerImpl(),
             lottoInfoRepository = FakeLottoInfoRepository(),
@@ -47,7 +47,7 @@ class LottoScanResultViewModelTest {
         // Then
         advanceUntilIdle()
         val state = vm.state.value
-        Assert.assertTrue(state is LottoScanResultUiState.NotYet)
+        Assert.assertTrue(state is LotteryResultUiState.NotYet)
     }
 
     @Test
@@ -58,7 +58,7 @@ class LottoScanResultViewModelTest {
         // Then
         advanceUntilIdle()
         val state = vm.state.value
-        Assert.assertTrue(state is LottoScanResultUiState.Success)
+        Assert.assertTrue(state is LotteryResultUiState.Success)
     }
 
     @Test
@@ -69,7 +69,7 @@ class LottoScanResultViewModelTest {
         // Then
         advanceUntilIdle()
         val state = vm.state.value
-        Assert.assertTrue(state is LottoScanResultUiState.NotYet)
+        Assert.assertTrue(state is LotteryResultUiState.NotYet)
     }
 
     @Test
@@ -80,7 +80,7 @@ class LottoScanResultViewModelTest {
         // Then
         advanceUntilIdle()
         val state = vm.state.value
-        Assert.assertTrue(state is LottoScanResultUiState.Success)
+        Assert.assertTrue(state is LotteryResultUiState.Success)
     }
 
     companion object {

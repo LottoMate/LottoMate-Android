@@ -6,15 +6,18 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import com.lottomate.lottomate.data.error.LottoMateErrorType
+import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScan
-import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScanResult
+import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLotteryResult
 import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
 import com.lottomate.lottomate.presentation.screen.pocket.register.RegisterLottoNumbersRoute
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 
 fun NavController.navigateToPocketTab(navOptions: NavOptions) {
@@ -45,6 +48,7 @@ fun NavGraphBuilder.pocketNavGraph(
             moveToLottoScan = { navController.navigateToLottoScan() },
             moveToSetting = { navController.navigateToSetting() },
             onShowErrorSnackBar = onShowErrorSnackBar,
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onClickDrawRandomNumbers = { navController.navigateToDrawRandomNumbers() },
             onClickStorageOfRandomNumbers = { navController.navigateToRandomNumberStorage() },
             moveToSaveNumberScreen = { navController.navigateToSaveNumbers() },
@@ -61,6 +65,14 @@ fun NavGraphBuilder.pocketNavGraph(
                 }.build()
 
                 navController.navigateToLogin(navOptions)
+            },
+            moveToLotteryResult = { type, myLottoInfo ->
+                val inputType = when (type) {
+                    LottoType.L645 -> LotteryInputType.ONLY645
+                    else -> LotteryInputType.ONLY720
+                }
+
+                navController.navigateToLotteryResult(from = LotteryResultFrom.MY_NUMBER, inputType = inputType, myLottoInfo)
             }
         )
     }
@@ -84,7 +96,9 @@ fun NavGraphBuilder.pocketNavGraph(
     composable<LottoMateRoute.RegisterLottoNumber> {
         RegisterLottoNumbersRoute(
             padding = padding,
-            moveToLottoResult = { navController.navigateToLottoScanResult(it) },
+            moveToLottoResult = { inputType, myLotto ->
+                navController.navigateToLotteryResult(LotteryResultFrom.REGISTER, inputType, myLotto)
+            },
             onShowGlobalSnackBar = onShowGlobalSnackBar,
             onBackPressed = { navController.navigateUp() },
         )

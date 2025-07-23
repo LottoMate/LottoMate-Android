@@ -1,6 +1,9 @@
 package com.lottomate.lottomate.presentation.navigation
 
 import com.lottomate.lottomate.data.model.LottoType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import kotlinx.serialization.Serializable
 
 sealed interface LottoMateRoute {
@@ -29,7 +32,7 @@ sealed interface LottoMateRoute {
     @Serializable data object PocketDrawRandomNumbers : LottoMateRoute
     @Serializable data object RegisterLottoNumber : LottoMateRoute
     @Serializable data object LottoScan : LottoMateRoute
-    @Serializable data class LottoScanResult(val data: String) : LottoMateRoute
+    @Serializable data class LotteryResult(val from: LotteryResultFrom, val inputType: LotteryInputType, val myLotto: MyLottoInfo) : LottoMateRoute
 
     @Serializable data object Setting : LottoMateRoute
     @Serializable data object MyPage : LottoMateRoute

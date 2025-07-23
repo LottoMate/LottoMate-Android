@@ -12,10 +12,16 @@ import com.lottomate.lottomate.data.model.LottoType
  * @param isClaimPeriodExpired 지급기한 유효 여부
  */
 data class LotteryResult(
-    val lottoType: LottoType,
     val isWinner: Boolean,
-    val winningRanks: List<LottoRank>,
-    val winningNumbers: List<List<Int>>,
+    val resultInfos: List<LotteryResultInfo>,
+)
+
+data class LotteryResultInfo(
+    val lottoType: LottoType,
+    val round: Int,
+    val isWinner: Boolean,
+    val rank: LottoRank,
+    val winningNumbers: List<Int>,
     val winningInfo: WinResultInfo,
     val isClaimPeriodExpired: Boolean,
 )

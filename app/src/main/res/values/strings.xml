@@ -130,7 +130,6 @@
     <string name="pocket_text_my_number_notice_720_today">연금복권 당첨 발표는 오늘 이에요!</string>
     <string name="pocket_text_my_number_notice_caption">역대 당첨금 확인하기</string>
     <plurals name="pocket_text_my_number_history">
-        <item quantity="one">%4d년 %2d월부터 로또를 총 %2d개 구매했어요</item>
         <item quantity="other">%4d년 %2d월부터 로또를 총 %2d개 구매했어요</item>
     </plurals>
     <plurals name="pocket_text_my_number_history_rate">
@@ -139,6 +138,7 @@
     </plurals>
     <string name="pocket_text_my_number_history_round">회차</string>
     <string name="pocket_text_my_number_history_edit">편집</string>
+    <string name="pocket_text_my_number_history_complete">완료</string>
     <string name="pocket_text_my_number_history_win">당첨</string>
     <string name="pocket_text_my_number_history_failed">미당첨</string>
     <string name="pocket_text_my_number_history_check">확인</string>
