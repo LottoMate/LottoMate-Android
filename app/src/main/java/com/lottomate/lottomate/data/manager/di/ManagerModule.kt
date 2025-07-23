@@ -1,5 +1,7 @@
 package com.lottomate.lottomate.data.manager.di
 
+import com.lottomate.lottomate.data.manager.AppVersionInfoManager
+import com.lottomate.lottomate.data.manager.AppVersionInfoManagerImpl
 import com.lottomate.lottomate.data.manager.InterviewViewManager
 import com.lottomate.lottomate.data.manager.InterviewViewManagerImpl
 import dagger.Binds
@@ -16,4 +18,10 @@ abstract class ManagerModule {
     abstract fun bindInterviewViewManager(
         interviewViewManagerImpl: InterviewViewManagerImpl
     ): InterviewViewManager
+
+    @Binds
+    @Singleton
+    abstract fun bindAppVersionInfoManager(
+        appVersionInfoManagerImpl: AppVersionInfoManagerImpl
+    ): AppVersionInfoManager
 }
