@@ -71,10 +71,30 @@ class LottoScanResultViewModel @Inject constructor(
             loadLotteryResult(from, inputType, myLotto)
         }
     }
+    fun saveWinningNumbers(myLottoInfo: MyLottoInfo) {
+        viewModelScope.launch(ioDispatcher + handler) {
+            val savedLotto645Job = async {
+                myLottoInfo.myLotto645Info?.let { lotto645Info ->
+                    myNumberRepository.saveMyNumberFromScan(lotto645Info.toScanMyNumber())
+                }
+            }
 
-                if (!isAnnouncement) {
-                    val week = if (lottoType == LottoType.L645) Calendar.SATURDAY else Calendar.THURSDAY
-                    val remainDays = DateUtils.getDaysUntilNextDay(week)
+            val savedLotto720Job = async {
+                myLottoInfo.myLotto720Info?.let { lotto720Info ->
+                    myNumberRepository.saveMyNumberFromScan(lotto720Info.toScanMyNumber())
+                }
+            }
+
+            savedLotto645Job.await()
+            savedLotto720Job.await()
+
+            if (savedLotto645Job.isCompleted && savedLotto720Job.isCompleted) {
+                _effect.send(LotteryResultEffect.ShowSaveSuccessSnackBar("로또 번호를 저장했어요"))
+            }
+        }
+    }
+
+
     private fun loadLotteryResult(from: LotteryResultFrom, inputType: LotteryInputType, myLotto: MyLottoInfo) {
         viewModelScope.launch(handler) {
             if (from == LotteryResultFrom.SCAN) {
