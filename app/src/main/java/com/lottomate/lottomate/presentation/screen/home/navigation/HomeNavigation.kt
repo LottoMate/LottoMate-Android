@@ -58,6 +58,7 @@ fun NavController.navigateToNaverMap(url: String) {
 fun NavGraphBuilder.homeNavGraph(
     padding: PaddingValues,
     navController: NavController,
+    onShowGlobalSnackBar: (message: String) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
 ) {
     composable<BottomTabRoute.Home> {
@@ -125,7 +126,6 @@ fun NavGraphBuilder.homeNavGraph(
 
                 navController.navigateToPocketTab(navOptions)
             },
-            onBackPressed = { navController.popBackStack(route = LottoMateRoute.LottoScan, inclusive = true) },
             onBackPressed = {
                 val from = navBackStackEntry.toRoute<LottoMateRoute.LottoScanResult>().from
 
@@ -134,6 +134,7 @@ fun NavGraphBuilder.homeNavGraph(
                     else -> navController.popBackStack()
                 }
             },
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
     }

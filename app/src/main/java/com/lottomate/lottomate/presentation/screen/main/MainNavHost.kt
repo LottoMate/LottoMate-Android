@@ -32,6 +32,7 @@ fun MainNavHost(
         homeNavGraph(
             padding = padding,
             navController = navigator.navController,
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onShowErrorSnackBar = onShowErrorSnackBar,
         )
 
