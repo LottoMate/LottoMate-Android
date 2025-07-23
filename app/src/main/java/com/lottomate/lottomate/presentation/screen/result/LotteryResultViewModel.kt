@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.scanResult
+package com.lottomate.lottomate.presentation.screen.result
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -13,12 +13,12 @@ import com.lottomate.lottomate.domain.repository.MyNumberRepository
 import com.lottomate.lottomate.domain.usecase.CheckLotteryResultUseCase
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
-import com.lottomate.lottomate.presentation.screen.scanResult.contract.LotteryResultEffect
-import com.lottomate.lottomate.presentation.screen.scanResult.contract.LottoScanResultUiState
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultFrom
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
-import com.lottomate.lottomate.presentation.screen.scanResult.model.ScanResultUiModel
+import com.lottomate.lottomate.presentation.screen.result.contract.LotteryResultEffect
+import com.lottomate.lottomate.presentation.screen.result.contract.LotteryResultUiState
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.ScanResultUiModel
 import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -39,7 +39,7 @@ import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
-class LottoScanResultViewModel @Inject constructor(
+class LotteryResultViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
     @DispatcherModule.IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     private val lottoInfoRepository: LottoInfoRepository,
@@ -58,8 +58,8 @@ class LottoScanResultViewModel @Inject constructor(
     private val _effect = Channel<LotteryResultEffect>()
     val effect = _effect.receiveAsFlow()
 
-    private var _state = MutableStateFlow<LottoScanResultUiState>(LottoScanResultUiState.Loading)
-    val state: StateFlow<LottoScanResultUiState> get() = _state.asStateFlow()
+    private var _state = MutableStateFlow<LotteryResultUiState>(LotteryResultUiState.Loading)
+    val state: StateFlow<LotteryResultUiState> get() = _state.asStateFlow()
 
     init {
         val from = savedStateHandle.get<LotteryResultFrom>("from")
@@ -106,7 +106,7 @@ class LottoScanResultViewModel @Inject constructor(
                     val isExpired = checkExpire(latestLotto645RoundInfo, LottoType.L645, lotto645.round)
                     if (notYet) return@launch
                     if (isExpired) {
-                        _state.update { LottoScanResultUiState.Expired }
+                        _state.update { LotteryResultUiState.Expired }
                         return@launch
                     }
                 }
@@ -116,7 +116,7 @@ class LottoScanResultViewModel @Inject constructor(
                     val isExpired = checkExpire(latestLotto720RoundInfo, LottoType.L720, lotto720.round)
                     if (notYet) return@launch
                     if (isExpired) {
-                        _state.update { LottoScanResultUiState.Expired }
+                        _state.update { LotteryResultUiState.Expired }
                         return@launch
                     }
                 }
@@ -132,7 +132,7 @@ class LottoScanResultViewModel @Inject constructor(
             val remainDays = DateUtils.getDaysUntilNextDay(week)
 
             delay(NOT_WINNER_DELAY)
-            _state.update { LottoScanResultUiState.NotYet(type, remainDays) }
+            _state.update { LotteryResultUiState.NotYet(type, remainDays) }
             return@coroutineScope true
         }
 
@@ -153,12 +153,12 @@ class LottoScanResultViewModel @Inject constructor(
 
                 if (result.isWinner) {
                     delay(CELEBRATION_DELAY)
-                    _state.update { LottoScanResultUiState.CelebrationLoading }
+                    _state.update { LotteryResultUiState.CelebrationLoading }
                     delay(CELEBRATION_DELAY)
-                    _state.update { LottoScanResultUiState.Success(from, result) }
+                    _state.update { LotteryResultUiState.Success(from, result) }
                 } else {
                     delay(NOT_WINNER_DELAY)
-                    _state.update { LottoScanResultUiState.NotWinner }
+                    _state.update { LotteryResultUiState.NotWinner }
                 }
             }
             LotteryInputType.ONLY720 -> {
@@ -167,13 +167,13 @@ class LottoScanResultViewModel @Inject constructor(
 
                 if (result.isWinner) {
                     delay(CELEBRATION_DELAY)
-                    _state.update { LottoScanResultUiState.CelebrationLoading }
+                    _state.update { LotteryResultUiState.CelebrationLoading }
                     delay(CELEBRATION_DELAY)
-                    _state.update { LottoScanResultUiState.Success(from, result) }
+                    _state.update { LotteryResultUiState.Success(from, result) }
 
                 } else {
                     delay(NOT_WINNER_DELAY)
-                    _state.update { LottoScanResultUiState.NotWinner }
+                    _state.update { LotteryResultUiState.NotWinner }
                 }
             }
             LotteryInputType.BOTH -> {
@@ -199,15 +199,15 @@ class LottoScanResultViewModel @Inject constructor(
                 when {
                     !lotto645Result.isWinner && !lotto720Result.isWinner -> {
                         delay(NOT_WINNER_DELAY)
-                        _state.update { LottoScanResultUiState.NotWinner }
+                        _state.update { LotteryResultUiState.NotWinner }
                     }
 
                     else -> {
                         delay(CELEBRATION_DELAY)
-                        _state.update { LottoScanResultUiState.CelebrationLoading }
+                        _state.update { LotteryResultUiState.CelebrationLoading }
                         delay(CELEBRATION_DELAY)
                         _state.update {
-                            LottoScanResultUiState.Success(
+                            LotteryResultUiState.Success(
                                 from,
                                 ScanResultUiModel(
                                     myLotto = myLotto,
@@ -228,7 +228,7 @@ class LottoScanResultViewModel @Inject constructor(
         }
     }
 
-    companion object {
+    companion object Companion {
         private const val CELEBRATION_DELAY = 1_500L
         private const val NOT_WINNER_DELAY = 2_000L
     }

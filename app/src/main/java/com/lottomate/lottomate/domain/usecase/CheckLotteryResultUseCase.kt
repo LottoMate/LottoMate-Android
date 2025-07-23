@@ -8,9 +8,9 @@ import com.lottomate.lottomate.domain.model.LottoRank
 import com.lottomate.lottomate.domain.repository.LottoInfoRepository
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto645Info
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.Lotto720Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.utils.DateUtils
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first

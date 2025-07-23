@@ -1,7 +1,7 @@
 package com.lottomate.lottomate.presentation.screen.pocket.my.model
 
 import com.lottomate.lottomate.data.model.LottoType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 
 sealed interface MyNumberContract {
     sealed interface Event {

@@ -40,7 +40,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.pocket.my.MyNumberScreen
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumberContent
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable

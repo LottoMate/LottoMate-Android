@@ -9,14 +9,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 
 @Composable
 fun LottoScanRoute(
     vm: LottoScanViewModel = hiltViewModel(),
     padding: PaddingValues,
-    moveToLottoScanResult: (LotteryInputType, MyLottoInfo) -> Unit,
+    moveToLotteryResult: (LotteryInputType, MyLottoInfo) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val barcodeScannerLauncher = rememberLauncherForActivityResult(contract = ScanContract()) { result ->
@@ -26,7 +26,7 @@ fun LottoScanRoute(
         }
 
         val (type, myLotto) = vm.parseMyLotto(result.contents.substringAfter("?v="))
-        moveToLottoScanResult(type, myLotto)
+        moveToLotteryResult(type, myLotto)
     }
 
     LottoScanScreen(

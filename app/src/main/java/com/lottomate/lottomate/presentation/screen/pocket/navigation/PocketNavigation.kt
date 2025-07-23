@@ -10,14 +10,14 @@ import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.navigation.BottomTabRoute
 import com.lottomate.lottomate.presentation.navigation.LottoMateRoute
 import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScan
-import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLottoScanResult
+import com.lottomate.lottomate.presentation.screen.home.navigation.navigateToLotteryResult
 import com.lottomate.lottomate.presentation.screen.login.navigation.navigateToLogin
 import com.lottomate.lottomate.presentation.screen.pocket.PocketRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.DrawRandomNumbersRoute
 import com.lottomate.lottomate.presentation.screen.pocket.random.RandomNumbersStorageRoute
 import com.lottomate.lottomate.presentation.screen.pocket.register.RegisterLottoNumbersRoute
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 
 fun NavController.navigateToPocketTab(navOptions: NavOptions) {
@@ -72,7 +72,7 @@ fun NavGraphBuilder.pocketNavGraph(
                     else -> LotteryInputType.ONLY720
                 }
 
-                navController.navigateToLottoScanResult(from = LotteryResultFrom.MY_NUMBER, inputType = inputType, myLottoInfo)
+                navController.navigateToLotteryResult(from = LotteryResultFrom.MY_NUMBER, inputType = inputType, myLottoInfo)
             }
         )
     }
@@ -97,7 +97,7 @@ fun NavGraphBuilder.pocketNavGraph(
         RegisterLottoNumbersRoute(
             padding = padding,
             moveToLottoResult = { inputType, myLotto ->
-                navController.navigateToLottoScanResult(LotteryResultFrom.REGISTER, inputType, myLotto)
+                navController.navigateToLotteryResult(LotteryResultFrom.REGISTER, inputType, myLotto)
             },
             onShowGlobalSnackBar = onShowGlobalSnackBar,
             onBackPressed = { navController.navigateUp() },

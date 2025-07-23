@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.scanResult.model
+package com.lottomate.lottomate.presentation.screen.result.model
 
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable

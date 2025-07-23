@@ -10,11 +10,11 @@ import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
 import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberContract
 import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberUiModel
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720InfoNumbers
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto720InfoNumbers
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async

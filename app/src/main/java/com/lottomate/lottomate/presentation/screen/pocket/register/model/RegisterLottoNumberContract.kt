@@ -2,8 +2,8 @@ package com.lottomate.lottomate.presentation.screen.pocket.register.model
 
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.presentation.screen.lottoinfo.model.LatestRoundInfo
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 
 sealed interface RegisterLottoNumberContract {
     data class State(

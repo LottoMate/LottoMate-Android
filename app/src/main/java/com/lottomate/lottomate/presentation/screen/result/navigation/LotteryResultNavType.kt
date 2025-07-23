@@ -1,13 +1,13 @@
-package com.lottomate.lottomate.presentation.screen.scanResult.navigation
+package com.lottomate.lottomate.presentation.screen.result.navigation
 
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.navigation.NavType
 import androidx.savedstate.SavedState
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultFrom
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import kotlinx.serialization.json.Json
 
 val LotteryResultFromType = object : NavType<LotteryResultFrom>(

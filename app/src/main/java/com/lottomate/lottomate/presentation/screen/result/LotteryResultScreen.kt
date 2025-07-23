@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.presentation.screen.scanResult
+package com.lottomate.lottomate.presentation.screen.result
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,11 +44,11 @@ import com.lottomate.lottomate.presentation.component.LottoMateDialog
 import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
-import com.lottomate.lottomate.presentation.screen.scanResult.contract.LotteryResultEffect
-import com.lottomate.lottomate.presentation.screen.scanResult.contract.LottoScanResultUiState
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultFrom
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultRowUiModel
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.contract.LotteryResultEffect
+import com.lottomate.lottomate.presentation.screen.result.contract.LotteryResultUiState
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultRowUiModel
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray110
@@ -60,8 +60,8 @@ import com.lottomate.lottomate.utils.StringUtils
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun LottoScanResultRoute(
-    vm: LottoScanResultViewModel = hiltViewModel(),
+fun LotteryResultRoute(
+    vm: LotteryResultViewModel = hiltViewModel(),
     padding: PaddingValues,
     moveToHome: () -> Unit,
     moveToWinningGuide: () -> Unit,
@@ -90,7 +90,7 @@ fun LottoScanResultRoute(
         }
     }
 
-    LottoScanResultScreen(
+    LotteryResultScreen(
         modifier = Modifier.padding(top = padding.calculateTopPadding()),
         uiState = uiState,
         moveToHome = moveToHome,
@@ -111,9 +111,9 @@ fun LottoScanResultRoute(
 }
 
 @Composable
-private fun LottoScanResultScreen(
+private fun LotteryResultScreen(
     modifier: Modifier = Modifier,
-    uiState: LottoScanResultUiState,
+    uiState: LotteryResultUiState,
     onClickBanner: (BannerType) -> Unit,
     onBackPressed: () -> Unit,
     moveToHome: () -> Unit,
@@ -127,28 +127,28 @@ private fun LottoScanResultScreen(
             .background(LottoMateWhite),
     ) {
         when (uiState) {
-            LottoScanResultUiState.Loading -> {
-                LottoScanResultLoading(
+            LotteryResultUiState.Loading -> {
+                LotteryResultLoading(
                     modifier = Modifier.align(Alignment.Center),
                 )
             }
 
-            LottoScanResultUiState.CelebrationLoading -> {
-                LottoScanResultCelebrationLoading(
+            LotteryResultUiState.CelebrationLoading -> {
+                LotteryResultCelebrationLoading(
                     modifier = Modifier.align(Alignment.Center),
                 )
             }
 
-            LottoScanResultUiState.NotWinner -> {
+            LotteryResultUiState.NotWinner -> {
                 LotteryResultLose(
                     onComplete = onBackPressed,
                     onClickBanner = onClickBanner,
                 )
             }
 
-            is LottoScanResultUiState.NotYet -> {
+            is LotteryResultUiState.NotYet -> {
                 // 당첨 발표 전
-                LottoScanResultNotYet(
+                LotteryResultNotYet(
                     lottoType = uiState.type,
                     remainDays = uiState.days,
                     moveToHome = moveToHome,
@@ -157,8 +157,8 @@ private fun LottoScanResultScreen(
                 )
             }
 
-            is LottoScanResultUiState.Success -> {
-                LottoScanResultWin(
+            is LotteryResultUiState.Success -> {
+                LotteryResultWin(
                     from = uiState.from,
                     resultRows = uiState.data.resultRows,
                     onComplete = { onBackPressed() },
@@ -167,7 +167,7 @@ private fun LottoScanResultScreen(
                 )
             }
 
-            LottoScanResultUiState.Expired -> {
+            LotteryResultUiState.Expired -> {
                 LottoResultExpired(
                     onClickBanner = onClickBanner,
                     onClick = onBackPressed,
@@ -176,7 +176,7 @@ private fun LottoScanResultScreen(
         }
 
         if (showNumberSaveDialog) {
-            if (uiState is LottoScanResultUiState.Success) {
+            if (uiState is LotteryResultUiState.Success) {
                 val data = uiState.data
 
                 LottoMateDialog(
@@ -199,7 +199,7 @@ private fun LottoScanResultScreen(
 }
 
 @Composable
-private fun LottoScanResultNotYet(
+private fun LotteryResultNotYet(
     modifier: Modifier = Modifier,
     lottoType: LottoType,
     remainDays: Int,
@@ -416,7 +416,7 @@ private fun LotteryResultLose(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LottoScanResultWin(
+private fun LotteryResultWin(
     from: LotteryResultFrom,
     resultRows: List<LotteryResultRowUiModel>,
     onComplete: () -> Unit,
@@ -528,7 +528,7 @@ private fun LottoScanResultWin(
 }
 
 @Composable
-private fun LottoScanResultLoading(
+private fun LotteryResultLoading(
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -551,7 +551,7 @@ private fun LottoScanResultLoading(
 }
 
 @Composable
-private fun LottoScanResultCelebrationLoading(
+private fun LotteryResultCelebrationLoading(
     modifier: Modifier = Modifier,
 ) {
     Column(

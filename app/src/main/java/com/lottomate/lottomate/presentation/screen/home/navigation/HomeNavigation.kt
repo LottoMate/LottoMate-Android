@@ -18,13 +18,13 @@ import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMap
 import com.lottomate.lottomate.presentation.screen.map.navigation.navigateToMapTab
 import com.lottomate.lottomate.presentation.screen.pocket.navigation.navigateToPocketTab
 import com.lottomate.lottomate.presentation.screen.scan.LottoScanRoute
-import com.lottomate.lottomate.presentation.screen.scanResult.LottoScanResultRoute
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultFrom
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
-import com.lottomate.lottomate.presentation.screen.scanResult.navigation.LotteryInputTypeType
-import com.lottomate.lottomate.presentation.screen.scanResult.navigation.LotteryResultFromType
-import com.lottomate.lottomate.presentation.screen.scanResult.navigation.MyLottoInfoType
+import com.lottomate.lottomate.presentation.screen.result.LotteryResultRoute
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultFrom
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.navigation.LotteryInputTypeType
+import com.lottomate.lottomate.presentation.screen.result.navigation.LotteryResultFromType
+import com.lottomate.lottomate.presentation.screen.result.navigation.MyLottoInfoType
 import com.lottomate.lottomate.presentation.screen.setting.navigation.navigateToSetting
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideNaverMapWebView
 import com.lottomate.lottomate.presentation.screen.winnerguide.WinnerGuideRoute
@@ -43,8 +43,8 @@ fun NavController.navigateToLottoScan() {
     navigate(LottoMateRoute.LottoScan)
 }
 
-fun NavController.navigateToLottoScanResult(from: LotteryResultFrom, inputType: LotteryInputType, myLotto: MyLottoInfo) {
-    navigate(LottoMateRoute.LottoScanResult(from, inputType, myLotto))
+fun NavController.navigateToLotteryResult(from: LotteryResultFrom, inputType: LotteryInputType, myLotto: MyLottoInfo) {
+    navigate(LottoMateRoute.LotteryResult(from, inputType, myLotto))
 }
 
 fun NavController.navigateToBanner(bannerType: BannerType) {
@@ -92,22 +92,22 @@ fun NavGraphBuilder.homeNavGraph(
     composable<LottoMateRoute.LottoScan> {
         LottoScanRoute(
             padding = padding,
-            moveToLottoScanResult = { type, myLotto ->
-                navController.navigateToLottoScanResult(LotteryResultFrom.SCAN, type, myLotto)
+            moveToLotteryResult = { type, myLotto ->
+                navController.navigateToLotteryResult(LotteryResultFrom.SCAN, type, myLotto)
             },
             onBackPressed = { navController.popBackStack() },
         )
     }
 
     // 복권 스캔 결과 화면
-    composable<LottoMateRoute.LottoScanResult>(
+    composable<LottoMateRoute.LotteryResult>(
         typeMap = mapOf(
             typeOf<LotteryResultFrom>() to LotteryResultFromType,
             typeOf<LotteryInputType>() to LotteryInputTypeType,
             typeOf<MyLottoInfo>() to MyLottoInfoType,
         )
     ) { navBackStackEntry ->
-        LottoScanResultRoute(
+        LotteryResultRoute(
             padding = padding,
             moveToHome = {
                 val navOptions = NavOptions.Builder().apply {
@@ -127,7 +127,7 @@ fun NavGraphBuilder.homeNavGraph(
                 navController.navigateToPocketTab(navOptions)
             },
             onBackPressed = {
-                val from = navBackStackEntry.toRoute<LottoMateRoute.LottoScanResult>().from
+                val from = navBackStackEntry.toRoute<LottoMateRoute.LotteryResult>().from
 
                 when (from) {
                     LotteryResultFrom.SCAN -> navController.popBackStack(LottoMateRoute.LottoScan, true)

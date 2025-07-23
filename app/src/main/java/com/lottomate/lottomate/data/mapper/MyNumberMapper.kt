@@ -7,8 +7,8 @@ import com.lottomate.lottomate.domain.model.ScanMyNumber
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberDetailUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberRowUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberUiModel
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto720Info
 
 fun MyNumberEntity.toDomain() = MyNumber(
     no = this.memberLottoNo,

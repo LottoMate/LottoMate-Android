@@ -3,8 +3,8 @@ package com.lottomate.lottomate.usecase
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.model.LottoRank
 import com.lottomate.lottomate.domain.usecase.CheckLotteryResultUseCase
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto645Info
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLotto720Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto645Info
+import com.lottomate.lottomate.presentation.screen.result.model.MyLotto720Info
 import com.lottomate.lottomate.repository.FakeLottoInfoRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert

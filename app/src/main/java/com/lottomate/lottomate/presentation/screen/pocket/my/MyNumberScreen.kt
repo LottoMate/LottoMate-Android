@@ -56,7 +56,7 @@ import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberContr
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberDetailUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberRowUiModel
 import com.lottomate.lottomate.presentation.screen.pocket.my.model.MyNumberUiModel
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateBlue50
 import com.lottomate.lottomate.presentation.ui.LottoMateError

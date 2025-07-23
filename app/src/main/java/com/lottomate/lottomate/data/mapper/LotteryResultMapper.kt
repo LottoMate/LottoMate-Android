@@ -3,9 +3,9 @@ package com.lottomate.lottomate.data.mapper
 import com.lottomate.lottomate.data.model.LottoType
 import com.lottomate.lottomate.domain.model.LotteryResult
 import com.lottomate.lottomate.domain.model.LotteryResultInfo
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryResultRowUiModel
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
-import com.lottomate.lottomate.presentation.screen.scanResult.model.ScanResultUiModel
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryResultRowUiModel
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.ScanResultUiModel
 
 fun LotteryResult.toUiModel(type: LottoType, myLottoInfo: MyLottoInfo) = ScanResultUiModel(
     myLotto = myLottoInfo,

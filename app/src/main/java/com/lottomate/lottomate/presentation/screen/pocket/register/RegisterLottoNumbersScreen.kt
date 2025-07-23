@@ -54,8 +54,8 @@ import com.lottomate.lottomate.presentation.screen.lottoinfo.rememberPickerState
 import com.lottomate.lottomate.presentation.screen.pocket.register.component.LottoNumberSection
 import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberContract
 import com.lottomate.lottomate.presentation.screen.pocket.register.model.RegisterLottoNumberUiModel
-import com.lottomate.lottomate.presentation.screen.scanResult.model.LotteryInputType
-import com.lottomate.lottomate.presentation.screen.scanResult.model.MyLottoInfo
+import com.lottomate.lottomate.presentation.screen.result.model.LotteryInputType
+import com.lottomate.lottomate.presentation.screen.result.model.MyLottoInfo
 import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray20
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
