@@ -1,6 +1,6 @@
 package com.lottomate.lottomate.di
 
-import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.domain.repository.local.RandomLottoRepository
 import com.lottomate.lottomate.data.remote.repository.InterviewRepositoryImpl
 import com.lottomate.lottomate.data.remote.repository.LottoInfoRepositoryImpl
 import com.lottomate.lottomate.data.remote.repository.LottoRepositoryImpl
@@ -15,7 +15,7 @@ import com.lottomate.lottomate.domain.repository.LottoRepository
 import com.lottomate.lottomate.domain.repository.MyNumberRepository
 import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.domain.repository.UserRepository
-import com.lottomate.lottomate.domain.repository.local.RandomLottoRepositoryImpl
+import com.lottomate.lottomate.data.local.repository.RandomLottoRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

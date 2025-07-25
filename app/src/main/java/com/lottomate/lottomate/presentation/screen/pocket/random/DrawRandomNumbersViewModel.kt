@@ -2,7 +2,7 @@ package com.lottomate.lottomate.presentation.screen.pocket.random
 
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
-import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.domain.repository.local.RandomLottoRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay

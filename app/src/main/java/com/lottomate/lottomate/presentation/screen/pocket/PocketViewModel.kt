@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
-import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.domain.repository.local.RandomLottoRepository
 import com.lottomate.lottomate.domain.repository.LottoNumberRepository
 import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
