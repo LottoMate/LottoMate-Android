@@ -78,7 +78,8 @@ fun RandomNumberContent(
                     drewRandomNumbers.isEmpty() -> {
                         LottoMateText(
                             text = stringResource(id = R.string.pocket_text_random_number),
-                            style = LottoMateTheme.typography.title2,
+                            style = LottoMateTheme.typography.title2
+                                .copy(color = LottoMateBlack),
                         )
                     }
                     else -> {
@@ -121,6 +122,7 @@ fun RandomNumberContent(
             modifier = Modifier
                 .padding(top = 36.dp)
                 .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
         ) {
             Image(
                 painter = painterResource(id = R.drawable.img_pocket_random_number),
@@ -295,14 +297,13 @@ private fun DrawNumberRow(
                 .weight(1f)
                 .padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             numbers.forEach { num ->
                 LottoBall645(
                     number = num,
                     size = 28.dp,
                 )
-                
-                Spacer(modifier = Modifier.width(8.dp))
             }
         }
 
@@ -345,7 +346,7 @@ private fun RandomNumberContentPreview() {
         }
     }
 }
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 480)
 @Composable
 private fun RandomNumberNotEmptyContentPreview() {
     LottoMateTheme {

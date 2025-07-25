@@ -81,6 +81,7 @@ fun NavGraphBuilder.pocketNavGraph(
         RandomNumbersStorageRoute(
             padding = padding,
             onShowErrorSnackBar = onShowErrorSnackBar,
+            onShowGlobalSnackBar = onShowGlobalSnackBar,
             onBackPressed = { navController.navigateUp() }
         )
     }

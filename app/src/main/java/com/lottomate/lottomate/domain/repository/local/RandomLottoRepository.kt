@@ -1,4 +1,4 @@
-package com.lottomate.lottomate.data.local.repository
+package com.lottomate.lottomate.domain.repository.local
 
 import com.lottomate.lottomate.data.local.entity.RandomLotto
 import kotlinx.coroutines.flow.Flow

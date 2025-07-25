@@ -3,6 +3,7 @@ package com.lottomate.lottomate.presentation.screen.pocket.random
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,6 +49,7 @@ import com.lottomate.lottomate.presentation.component.LottoMateSolidButton
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray10
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
@@ -110,7 +112,8 @@ private fun DrawRandomNumbersScreen(
 
                         LottoMateText(
                             text = stringResource(id = R.string.pocket_title_complete),
-                            style = LottoMateTheme.typography.title2,
+                            style = LottoMateTheme.typography.title2
+                                .copy(color = LottoMateBlack),
                             textAlign = TextAlign.Center,
                         )
 
@@ -123,7 +126,7 @@ private fun DrawRandomNumbersScreen(
                         )
 
                         Box(
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier
                                 .padding(top = 48.dp)
                                 .padding(horizontal = Dimens.DefaultPadding20)
                                 .background(
@@ -135,13 +138,13 @@ private fun DrawRandomNumbersScreen(
                             Row(
                                 modifier = Modifier
                                     .align(Alignment.Center)
-                                    .padding(vertical = 4.dp),
+                                    .padding(vertical = 4.dp, horizontal = 8.5.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                             ) {
-                                numbers.forEachIndexed { index, num ->
+                                for (num in numbers) {
                                     LottoBall645(
                                         number = num,
                                         size = 28.dp,
-                                        modifier = Modifier.padding(start = if (index == 0) 0.dp else 8.dp),
                                     )
                                 }
                             }
@@ -181,28 +184,6 @@ private fun DrawRandomNumbersScreen(
 
 @Composable
 private fun GeneratingRandomNumbersScreen() {
-    val context = LocalContext.current
-
-    // TODO : .gif -> 로띠로 수정 예정
-    val lottieComposition by rememberLottieComposition(spec = LottieCompositionSpec.Asset("lottie_sample.json"))
-    val lottieProgress by animateLottieCompositionAsState(
-        composition = lottieComposition,
-        iterations = LottieConstants.IterateForever,
-        isPlaying = true,
-    )
-
-    val imageLoader = remember {
-        ImageLoader.Builder(context)
-            .components {
-                if (Build.VERSION.SDK_INT >= 28) {
-                    add(ImageDecoderDecoder.Factory())
-                } else {
-                    add(GifDecoder.Factory())
-                }
-            }
-            .build()
-    }
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

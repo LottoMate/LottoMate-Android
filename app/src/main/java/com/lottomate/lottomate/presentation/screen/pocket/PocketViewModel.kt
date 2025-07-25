@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.viewModelScope
 import com.lottomate.lottomate.data.error.LottoMateErrorHandler
-import com.lottomate.lottomate.data.local.repository.RandomLottoRepository
+import com.lottomate.lottomate.data.mapper.toDomain
+import com.lottomate.lottomate.domain.repository.local.RandomLottoRepository
 import com.lottomate.lottomate.domain.repository.LottoNumberRepository
 import com.lottomate.lottomate.domain.repository.UserRepository
+import com.lottomate.lottomate.domain.repository.local.RandomMyNumbersRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
+import com.lottomate.lottomate.presentation.screen.pocket.random.model.RandomMyNumbersUiModel
 import com.lottomate.lottomate.utils.ClipboardUtils
 import com.lottomate.lottomate.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,6 +34,7 @@ class PocketViewModel @Inject constructor(
     private val randomLottoRepository: RandomLottoRepository,
     private val lottoNumberRepository: LottoNumberRepository,
     private val userRepository: UserRepository,
+    private val randomMyNumbersRepository: RandomMyNumbersRepository,
 ) : BaseViewModel(errorHandler) {
     val userProfile = userRepository.userProfile
     var currentTabIndex = mutableIntStateOf(0)
@@ -93,11 +97,9 @@ class PocketViewModel @Inject constructor(
      */
     fun saveDrewRandomNumber(numbers: List<Int>) {
         viewModelScope.launch {
-            runCatching {
-                lottoNumberRepository.saveLottoNumber(numbers)
-            }.onSuccess {
-                _snackBarFlow.emit("로또 번호를 저장했어요")
-            }.onFailure { handleException(it) }
+            randomMyNumbersRepository.insertRandomMyNumbers(RandomMyNumbersUiModel(numbers = numbers).toDomain())
+                .onSuccess { _snackBarFlow.emit("로또 번호를 저장했어요") }
+                .onFailure { handleException(it) }
         }
     }
 

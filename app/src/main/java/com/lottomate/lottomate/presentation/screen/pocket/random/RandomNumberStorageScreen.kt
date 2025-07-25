@@ -1,5 +1,6 @@
 package com.lottomate.lottomate.presentation.screen.pocket.random
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,16 +14,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,52 +33,55 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lottomate.lottomate.R
 import com.lottomate.lottomate.data.error.LottoMateErrorType
-import com.lottomate.lottomate.presentation.component.LottoMateSnackBar
-import com.lottomate.lottomate.presentation.component.LottoMateSnackBarHost
 import com.lottomate.lottomate.presentation.component.LottoMateText
 import com.lottomate.lottomate.presentation.component.LottoMateTopAppBar
 import com.lottomate.lottomate.presentation.res.Dimens
 import com.lottomate.lottomate.presentation.screen.lottoinfo.component.LottoBall645
-import com.lottomate.lottomate.presentation.screen.pocket.random.model.RandomLottoNumber
+import com.lottomate.lottomate.presentation.screen.pocket.random.contract.RandomMyNumbersEffect
+import com.lottomate.lottomate.presentation.screen.pocket.random.contract.RandomMyNumbersEvent
+import com.lottomate.lottomate.presentation.screen.pocket.random.contract.RandomMyNumbersUiState
+import com.lottomate.lottomate.presentation.screen.pocket.random.model.RandomMyNumbersGroupUiModel
+import com.lottomate.lottomate.presentation.screen.pocket.random.model.RandomMyNumbersUiModel
+import com.lottomate.lottomate.presentation.ui.LottoMateBlack
 import com.lottomate.lottomate.presentation.ui.LottoMateGray100
 import com.lottomate.lottomate.presentation.ui.LottoMateGray80
 import com.lottomate.lottomate.presentation.ui.LottoMateTheme
 import com.lottomate.lottomate.presentation.ui.LottoMateWhite
 import com.lottomate.lottomate.utils.noInteractionClickable
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun RandomNumbersStorageRoute(
     vm: RandomNumbersStorageViewModel = hiltViewModel(),
     padding: PaddingValues,
+    onShowGlobalSnackBar: (String) -> Unit,
     onShowErrorSnackBar: (errorType: LottoMateErrorType) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    val snackBarHostState = remember { SnackbarHostState() }
-    val lottoNumbers by vm.lottoNumbers.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val uiState by vm.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(true) {
-        vm.snackBarFlow.collectLatest {
-            snackBarHostState.showSnackbar(it)
+    LaunchedEffect(Unit) {
+        vm.effect.collect { effect ->
+            when (effect) {
+                is RandomMyNumbersEffect.ShowSnackBar -> {
+                    onShowGlobalSnackBar(context.getString(effect.messageRes))
+                }
+            }
         }
-
-        vm.errorFlow.collectLatest { error -> onShowErrorSnackBar(error) }
     }
 
     RandomNumberStorageScreen(
-        snackBarHostState = snackBarHostState,
-        lottoNumbers = lottoNumbers,
+        uiState = uiState,
         onBackPressed = onBackPressed,
-        onClickCopyRandomNumbers = { vm.copyLottoNumbers(it) },
-        onClickDeleteRandomNumbers = { vm.deleteLottoNumbers(it) },
+        onClickCopyRandomNumbers = { vm.handleEvent(RandomMyNumbersEvent.CopyRandomNumbers(it)) },
+        onClickDeleteRandomNumbers = { vm.handleEvent(RandomMyNumbersEvent.RemoveRandomNumbers(it)) },
     )
 }
 
 @Composable
 private fun RandomNumberStorageScreen(
     modifier: Modifier = Modifier,
-    snackBarHostState: SnackbarHostState,
-    lottoNumbers: List<RandomLottoNumber>,
+    uiState: RandomMyNumbersUiState,
     onBackPressed: () -> Unit,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickDeleteRandomNumbers: (Int) -> Unit,
@@ -86,47 +91,55 @@ private fun RandomNumberStorageScreen(
             .fillMaxSize()
             .background(LottoMateWhite)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Spacer(modifier = Modifier.height(Dimens.BaseTopPadding.plus(16.dp)))
+            item { Spacer(modifier = Modifier.height(Dimens.BaseTopPadding.plus(16.dp))) }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = Dimens.DefaultPadding20),
-            ) {
-                LottoMateText(
-                    text = stringResource(id = R.string.pocket_title_random_number_save),
-                    style = LottoMateTheme.typography.title3,
-                )
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = Dimens.DefaultPadding20),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
+                    LottoMateText(
+                        text = stringResource(id = R.string.pocket_title_random_number_save),
+                        style = LottoMateTheme.typography.title3
+                            .copy(color = LottoMateBlack),
+                    )
 
-                Spacer(modifier = Modifier.height(2.dp))
-
-                LottoMateText(
-                    text = stringResource(id = R.string.pocket_title_sub_random_number_save),
-                    style = LottoMateTheme.typography.body1
-                        .copy(color = LottoMateGray80),
-                    modifier = Modifier.padding(top = 2.dp),
-                )
+                    LottoMateText(
+                        text = stringResource(id = R.string.pocket_title_sub_random_number_save),
+                        style = LottoMateTheme.typography.body1
+                            .copy(color = LottoMateGray80),
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(34.dp))
+            item { Spacer(modifier = Modifier.height(34.dp)) }
 
-            lottoNumbers.groupBy { it.date }.forEach { (date, randomLottoNumber) ->
-                SavedRandomNumbersSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    savedDate = date,
-                    savedRandomNumbers = randomLottoNumber,
-                    onClickCopyRandomNumbers = onClickCopyRandomNumbers,
-                    onClickDeleteRandomNumbers = onClickDeleteRandomNumbers,
-                )
+            when (uiState) {
+                RandomMyNumbersUiState.Idle -> {}
+                RandomMyNumbersUiState.Empty -> {
+                    item { EmptyRandomMyNumbers(Modifier.padding(top = 164.dp)) }
+                }
+                is RandomMyNumbersUiState.Success -> {
+                    items(uiState.data) { (date, randomMyNumbers) ->
+                        SavedRandomNumbersSection(
+                            modifier = Modifier.fillMaxWidth(),
+                            date = date,
+                            randomMyNumbers = randomMyNumbers,
+                            onClickCopyRandomNumbers = onClickCopyRandomNumbers,
+                            onClickDeleteRandomNumbers = onClickDeleteRandomNumbers,
+                        )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
         }
+
         LottoMateTopAppBar(
             titleRes = R.string.top_app_bar_empty_title,
             hasNavigation = false,
@@ -139,18 +152,32 @@ private fun RandomNumberStorageScreen(
                 )
             }
         )
+    }
+}
 
-        snackBarHostState.currentSnackbarData?.let {
-            LottoMateSnackBarHost(
-                modifier = Modifier.align(Alignment.TopCenter),
-                snackBarHostState = snackBarHostState
-            ) {
-                LottoMateSnackBar(
-                    modifier = Modifier
-                        .padding(top = Dimens.BaseTopPadding.plus(12.dp)),
-                    message = it.visuals.message
-                )
-            }
+@Composable
+private fun EmptyRandomMyNumbers(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                bitmap = ImageBitmap.imageResource(id = R.drawable.img_random_my_numbers_empty),
+                contentDescription = "",
+                modifier = Modifier.size(140.dp)
+            )
+
+            LottoMateText(
+                text = stringResource(R.string.random_my_numbers_text_empty),
+                style = LottoMateTheme.typography.label2
+                    .copy(LottoMateGray100),
+            )
         }
     }
 }
@@ -158,8 +185,8 @@ private fun RandomNumberStorageScreen(
 @Composable
 private fun SavedRandomNumbersSection(
     modifier: Modifier = Modifier,
-    savedDate: String,
-    savedRandomNumbers: List<RandomLottoNumber>,
+    date: String,
+    randomMyNumbers: List<RandomMyNumbersUiModel>,
     onClickCopyRandomNumbers: (List<Int>) -> Unit,
     onClickDeleteRandomNumbers: (Int) -> Unit,
 ) {
@@ -167,22 +194,22 @@ private fun SavedRandomNumbersSection(
         modifier = modifier.padding(horizontal = Dimens.DefaultPadding20),
     ) {
         LottoMateText(
-            text = savedDate,
+            text = date,
             style = LottoMateTheme.typography.label2
                 .copy(LottoMateGray80),
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        savedRandomNumbers.forEachIndexed { index, randomNumbers ->
+        randomMyNumbers.forEachIndexed { index, myNumbers ->
             DrawNumberRow(
                 modifier = Modifier.fillMaxWidth(),
-                numbers = randomNumbers.numbers,
-                onClickCopyRandomNumbers = { onClickCopyRandomNumbers(randomNumbers.numbers) },
-                onClickDeleteRandomNumbers = { onClickDeleteRandomNumbers(randomNumbers.id) },
+                numbers = myNumbers.numbers,
+                onClickCopyRandomNumbers = { onClickCopyRandomNumbers(myNumbers.numbers) },
+                onClickDeleteRandomNumbers = { onClickDeleteRandomNumbers(myNumbers.id) },
             )
 
-            if (index != savedRandomNumbers.lastIndex) {
+            if (index != randomMyNumbers.lastIndex) {
                 Spacer(modifier = Modifier.height(12.dp))
             }
         }
@@ -204,20 +231,22 @@ private fun DrawNumberRow(
         Row(
             modifier = Modifier.padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            numbers.forEach { num ->
+            for (number in numbers) {
                 LottoBall645(
-                    number = num,
+                    number = number,
                     size = 28.dp,
                 )
-
-                Spacer(modifier = Modifier.width(8.dp))
             }
         }
 
         Spacer(modifier = Modifier.width(19.dp))
 
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.icon_copy),
                 contentDescription = null,
@@ -232,7 +261,6 @@ private fun DrawNumberRow(
                 contentDescription = null,
                 tint = LottoMateGray100,
                 modifier = Modifier
-                    .padding(start = 8.dp)
                     .size(24.dp)
                     .noInteractionClickable { onClickDeleteRandomNumbers() }
             )
@@ -245,19 +273,41 @@ private fun DrawNumberRow(
 private fun RandomNumberStorageScreenPreview() {
     LottoMateTheme {
         RandomNumberStorageScreen(
-            snackBarHostState = SnackbarHostState(),
-            lottoNumbers = listOf(
-                RandomLottoNumber(1, listOf(3, 12, 19, 24, 33, 42), "2025-03-16"),
-                RandomLottoNumber(2, listOf(7, 11, 15, 28, 35, 44), "2025-03-16"),
-                RandomLottoNumber(3, listOf(1, 9, 17, 23, 38, 45), "2025-03-18"),
-                RandomLottoNumber(4, listOf(2, 13, 22, 30, 39, 41), "2025-03-19"),
-                RandomLottoNumber(5, listOf(5, 8, 18, 26, 32, 43), "2025-03-20"),
-                RandomLottoNumber(6, listOf(6, 14, 20, 29, 36, 40), "2025-03-21"),
-                RandomLottoNumber(7, listOf(4, 10, 16, 27, 31, 37), "2025-03-22"),
-                RandomLottoNumber(8, listOf(1, 6, 11, 19, 28, 34), "2025-03-23"),
-                RandomLottoNumber(9, listOf(3, 9, 14, 25, 33, 44), "2025-03-24"),
-                RandomLottoNumber(10, listOf(2, 7, 13, 21, 35, 45), "2025-03-25")
-            ).sortedByDescending { it.date },
+            uiState = RandomMyNumbersUiState.Success(
+                listOf(
+                    RandomMyNumbersGroupUiModel(
+                        date = "2024.01.01",
+                        numbers = List(5) {
+                            RandomMyNumbersUiModel(
+                                id = it,
+                                numbers = listOf(1, 2, 3, 4, 5, 6)
+                            )
+                        }
+                    ),
+                    RandomMyNumbersGroupUiModel(
+                        date = "2024.10.05",
+                        numbers = List(10) {
+                            RandomMyNumbersUiModel(
+                                id = it,
+                                numbers = listOf(1, 2, 3, 4, 5, 6)
+                            )
+                        }
+                    )
+                )
+            ),
+            onBackPressed = {},
+            onClickCopyRandomNumbers = {},
+            onClickDeleteRandomNumbers = {},
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun RandomNumberEmptyStorageScreenPreview() {
+    LottoMateTheme {
+        RandomNumberStorageScreen(
+            uiState = RandomMyNumbersUiState.Empty,
             onBackPressed = {},
             onClickCopyRandomNumbers = {},
             onClickDeleteRandomNumbers = {},
