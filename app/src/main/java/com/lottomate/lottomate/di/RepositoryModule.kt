@@ -16,6 +16,8 @@ import com.lottomate.lottomate.domain.repository.MyNumberRepository
 import com.lottomate.lottomate.domain.repository.StoreRepository
 import com.lottomate.lottomate.domain.repository.UserRepository
 import com.lottomate.lottomate.data.local.repository.RandomLottoRepositoryImpl
+import com.lottomate.lottomate.data.local.repository.RandomMyNumbersRepositoryImpl
+import com.lottomate.lottomate.domain.repository.local.RandomMyNumbersRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -72,4 +74,10 @@ abstract class RepositoryModule {
     abstract fun bindMyNumberRepository(
         myNumberRepositoryImpl: MyNumberRepositoryImpl
     ): MyNumberRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindRandomMyNumbersRepository(
+        randomMyNumbersRepositoryImpl: RandomMyNumbersRepositoryImpl
+    ): RandomMyNumbersRepository
 }
