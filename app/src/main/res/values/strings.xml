@@ -113,7 +113,7 @@
         <item quantity="other">내 로또 %s개</item>
     </plurals>
     
-    <string name="pocket_text_empty_draw_lotto">아직 저장된 내 로또가 없어요.</string>
+    <string name="pocket_text_empty_draw_lotto">아직 뽑은 번호가 없어요</string>
     <string name="pocket_text_my_number_scan">QR 스캔하기</string>
     <string name="pocket_text_my_number_save_number">번호 등록하기</string>
     <plurals name="pocket_text_my_number_notice_645">
