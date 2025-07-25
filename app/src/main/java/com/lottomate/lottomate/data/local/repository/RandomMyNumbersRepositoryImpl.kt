@@ -20,7 +20,7 @@ class RandomMyNumbersRepositoryImpl @Inject constructor(
             .map { entities ->
                 entities.groupBy { it.createAt }
                     .map { (date, randomMyNumbers) ->
-                        val randomMyNumbersEntities = randomMyNumbers.map { it.toDomain() }
+                        val randomMyNumbersEntities = randomMyNumbers.sortedBy { it.createAt }.map { it.toDomain() }
                         RandomMyNumbersGroup(date, randomMyNumbersEntities)
                     }
             }

@@ -5,6 +5,7 @@ import com.lottomate.lottomate.data.error.LottoMateErrorHandler
 import com.lottomate.lottomate.domain.repository.local.RandomLottoRepository
 import com.lottomate.lottomate.presentation.screen.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,12 +51,8 @@ class DrawRandomNumbersViewModel @Inject constructor(
         }
     }
 
-    private fun saveRandomLotto(numbers: List<Int>) {
-        viewModelScope.launch {
-            runCatching {
-                randomLottoRepository.insertRandomLotto(numbers)
-            }.onFailure { handleException(it) }
-        }
+    private suspend fun saveRandomLotto(numbers: List<Int>) = coroutineScope {
+        randomLottoRepository.insertRandomLotto(numbers)
     }
 
     companion object {

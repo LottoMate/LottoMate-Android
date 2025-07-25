@@ -159,6 +159,10 @@
     <string name="draw_random_number_title_complete">오늘의 랜덤 번호를\n확인하세요!</string>
     <string name="draw_random_number_text_complete_snackbar">뽑은 번호는 오늘 뽑은 번호에서 확인할 수 있어요</string>
 
+    <string name="random_my_numbers_text_empty">저장한 번호가 없어요</string>
+    <string name="random_my_numbers_message_copy">로또 번호를 복사했어요</string>
+    <string name="random_my_numbers_message_remove">로또 번호를 삭제했어요</string>
+
     <!-- 로또 결과 -->
     <plurals name="lotto_result_days_left">
         <item quantity="one">당첨 발표일까지 %s 남았어요</item>
