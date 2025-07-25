@@ -12,7 +12,7 @@ interface RandomMyNumbersDao {
     fun fetchAllRandomMyNumbers(): Flow<List<RandomMyNumbersEntity>>
 
     @Insert
-    suspend fun insertRandomMyNumbers(randomMyNumbersEntity: RandomMyNumbersEntity): Int
+    suspend fun insertRandomMyNumbers(randomMyNumbersEntity: RandomMyNumbersEntity)
 
     @Query("DELETE FROM RandomMyNumbers WHERE `key` = :key")
     suspend fun deleteRandomMyNumbers(key: Int)
