@@ -119,17 +119,10 @@ private fun RandomNumberStorageScreen(
 
             item { Spacer(modifier = Modifier.height(34.dp)) }
 
-            lottoNumbers.groupBy { it.date }.forEach { (date, randomLottoNumber) ->
-                SavedRandomNumbersSection(
-                    modifier = Modifier.fillMaxWidth(),
-                    savedDate = date,
-                    savedRandomNumbers = randomLottoNumber,
-                    onClickCopyRandomNumbers = onClickCopyRandomNumbers,
-                    onClickDeleteRandomNumbers = onClickDeleteRandomNumbers,
-                )
             when (uiState) {
                 RandomMyNumbersUiState.Idle -> {}
                 RandomMyNumbersUiState.Empty -> {
+                    item { EmptyRandomMyNumbers(Modifier.padding(top = 164.dp)) }
                 }
                 is RandomMyNumbersUiState.Success -> {
                     items(uiState.data) { (date, randomMyNumbers) ->
@@ -159,6 +152,33 @@ private fun RandomNumberStorageScreen(
                 )
             }
         )
+    }
+}
+
+@Composable
+private fun EmptyRandomMyNumbers(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                bitmap = ImageBitmap.imageResource(id = R.drawable.img_random_my_numbers_empty),
+                contentDescription = "",
+                modifier = Modifier.size(140.dp)
+            )
+
+            LottoMateText(
+                text = stringResource(R.string.random_my_numbers_text_empty),
+                style = LottoMateTheme.typography.label2
+                    .copy(LottoMateGray100),
+            )
+        }
     }
 }
 
