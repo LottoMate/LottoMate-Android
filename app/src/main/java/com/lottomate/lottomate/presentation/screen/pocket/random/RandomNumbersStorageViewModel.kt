@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,7 +29,7 @@ class RandomNumbersStorageViewModel @Inject constructor(
     errorHandler: LottoMateErrorHandler,
     private val randomMyNumberRepository: RandomMyNumbersRepository,
 ) : BaseViewModel(errorHandler) {
-    private val _effect = Channel<RandomMyNumbersEffect>()
+    private val _effect = Channel<RandomMyNumbersEffect>(Channel.BUFFERED)
     val effect = _effect.receiveAsFlow()
 
     val state = randomMyNumberRepository.getAllRandomMyNumbers()
